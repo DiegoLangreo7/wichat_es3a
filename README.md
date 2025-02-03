@@ -9,6 +9,15 @@
 <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
 </p>
 
+<p>
+Fernando Begega Suarez uo295286@uniovi.es
+Sara Fernández González uo288195@uniovi.es
+Yeray Rodríguez Granda uo284247@uniovi.es
+Daniel Álvarez Blanco danielalvarez.dab@gmail.com
+Diego García González uo294255@uniovi.es
+Carlos Cabrera Moral uo288595@uniov.es
+</p>
+
 This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components.
 
 - **User service**. Express service that handles the insertion of new users in the system.
