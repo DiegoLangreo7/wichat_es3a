@@ -1,5 +1,18 @@
 # wichat_es3a
 
+## Contributors:
+
+| Contributor | Profile |
+| ------------- | ------------- |
+| Begega Suarez, Fernando  | <a href="https://github.com/fernandoBegegaS"><img src="https://img.shields.io/badge/uo295286-Fernando Begega-FF0000"></a>  |
+| Fernández González, Sara  | <a href="https://github.com/holmess23"><img src="https://img.shields.io/badge/uo288195-Sara Fernández-00FF00"></a>  |
+| Rodríguez Granda, Yeray | <a href="https://github.com/uo284247"><img src="https://img.shields.io/badge/uo284247-Yeray Rodríguez-00FFFF"></a>  |
+| Álvarez Blanco, Daniel  | <a href="https://github.com/germandelallana"><img src="https://img.shields.io/badge/uoxxxxxx-Daniel Álvarez-FFFF00"></a>  |
+| García González, Diego  | <a href="https://github.com/DiegoLangreo7"><img src="https://img.shields.io/badge/uo294255-Diego García-0000FF"></a>  |
+| Cabrera Moral, Carlos  | <a href="https://github.com/germandelallana"><img src="https://img.shields.io/badge/uo288595-Carlos Cabrera-FF00FF"></a>  |
+
+##
+
 [![Actions Status](https://github.com/arquisoft/wichat_es3a/workflows/CI%20for%20wichat_es3a/badge.svg)](https://github.com/arquisoft/wichat_es3a/actions)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es3a&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es3a)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es3a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es3a)
@@ -7,15 +20,6 @@
 <p float="left">
 <img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100">
 <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
-</p>
-
-<p>
-Fernando Begega Suarez uo295286@uniovi.es
-Sara Fernández González uo288195@uniovi.es
-Yeray Rodríguez Granda uo284247@uniovi.es
-Daniel Álvarez Blanco danielalvarez.dab@gmail.com
-Diego García González uo294255@uniovi.es
-Carlos Cabrera Moral uo288595@uniov.es
 </p>
 
 This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components.
