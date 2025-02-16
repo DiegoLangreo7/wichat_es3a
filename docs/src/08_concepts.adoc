@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-concepts]]
-== Cross-cutting Concepts
+== 8. Cross-cutting Concepts
 
 
 ifdef::arc42help[]
@@ -57,18 +57,41 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== _<Concept 1>_
+=== 8.1. Domain Model
+* **Users**: Represents the players, including data such as name, email, game statistics, answer history, and preference settings (theme choice and internationalization).  
+* **Questions and Answers**: Model that includes the image, statement, answer options (correct and incorrect), and the source (Wikidata).  
+* **Hints**: Data dynamically generated from a language model (LLM) and complemented with validated information from Wikidata.  
+* **Game Sessions**: Records the users' sessions, including given answers, times, and results.  
 
-_<explanation>_
+=== 8.2. Rules for Technology Usage
+* **Frontend**: React with TypeScript for better typing and maintainability.  
+* **Backend**:
+  ** Node.js with Express to create the RESTful API.  
+  ** MongoDB as a NoSQL database for flexible storage of questions and users.  
+* **AI and Data**:
+  ** Use of **Wikidata** as the main information source for questions and images.  
+  ** LLM (e.g., OpenAI API or Llama) to generate conversational hints about images.  
+  ** Techniques for mitigating hallucinations by cross-referencing answers with external databases.
 
+=== 8.3. Design Principles  
+[cols="1,2" options="header"]
+|===
+| **Principle** | **Description**
+| Simplicity and clarity | _The interface should be intuitive and easy to use for players of all ages._
+| Immediate feedback | _The system will provide visual feedback when answering questions or requesting hints._
+| Accessibility | _Standards will be adopted to ensure an inclusive experience._
+|===  
 
-
-=== _<Concept 2>_
-
-_<explanation>_
-
-...
-
-=== _<Concept n>_
-
-_<explanation>_
+=== 8.4. User Flow  
+    1. **Registration and Login**  
+        * Simple interface to create an account or log in.  
+    2. **Select Game or Theme**  
+        * Ability to choose question categories before starting.  
+    3. **Interacting with the Questions**  
+        * The question image is displayed on screen with answer options.  
+        * Button to request a hint, which will appear in an interactive chat.  
+        * Visible timer indicating the remaining time.  
+    4. **Results and Statistics**  
+        * Visual indicator of correct and incorrect answers.  
+        * Score obtained and comparison with other players.  
+        * Ability to review the game history and personal statistics.
