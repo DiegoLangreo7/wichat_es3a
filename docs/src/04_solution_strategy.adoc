@@ -3,6 +3,25 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-solution-strategy]]
 == Solution Strategy
 
+=== Technological Decisions
+For the development of the system, technologies have been selected to optimize performance, maintainability, and scalability of the project.
+
+==== Programming Language: TypeScript
+TypeScript was chosen as the main language for the project. Unlike JavaScript, TypeScript is a statically typed language, which helps with early error detection during programming. Its adoption avoided the need to completely migrate the existing JavaScript code to Java with Spring Boot.
+
+==== Database: MongoDB
+MongoDB was chosen as the NoSQL database. This database allows handling data in a flexible format and scaling efficiently, facilitating integration with Node.js.
+
+==== Frameworks and Libraries
+* *React.js:* Used for developing the user interface due to its modularity and ease of building interactive web applications.
+* *Node.js:* Used as the runtime environment for the backend layer, enabling a full-stack architecture based on JavaScript/TypeScript.
+
+==== Version Control: GitHub
+GitHub was selected for version control. It allows for efficient source code management, continuous integration, and remote collaboration.
+
+==== APIs: Wikidata
+Wikidata will be used to retrieve structured information about any given topic. The system will query Wikidata to gather relevant data, which will then be processed to dynamically generate questions. By using Wikidata as a data source, the system ensures that the information is accurate and up-to-date.
+
 
 ifdef::arc42help[]
 [role="arc42help"]
