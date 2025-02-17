@@ -67,35 +67,3 @@ endif::arc42help[]
 The user interacts with the application through a user interface. In this interface, the user must either register or log in. Once the user has been identified, they can start a quiz or check their participation history.
 
 Regarding the quiz, the user will see a question on the screen along with a series of possible answers. When one of these answers is selected, the user will receive feedback based on whether the chosen answer is correct or not. Additionally, there will be a chat in the bottom left corner that will interact with the user to provide a series of hints.
-
-=== 8.3. Rules for Technology Usage
-* **Frontend**: React with TypeScript for better typing and maintainability.  
-* **Backend**:
-  ** Node.js with Express to create the RESTful API.  
-  ** MongoDB as a NoSQL database for flexible storage of questions and users.  
-* **AI and Data**:
-  ** Use of **Wikidata** as the main information source for questions and images.  
-  ** LLM (e.g., OpenAI API or Llama) to generate conversational hints about images.  
-
-=== 8.3. Design Principles  
-[cols="1,2" options="header"]
-|===
-| **Principle** | **Description**
-| Simplicity and clarity | _The interface should be intuitive and easy to use for players of all ages._
-| Immediate feedback | _The system will provide visual feedback when answering questions or requesting hints._
-| Accessibility | _Standards will be adopted to ensure an inclusive experience._
-|=== 
-
-=== 8.4. User Flow  
-    1. **Registration and Login**  
-        * Simple interface to create an account or log in.  
-    2. **Select Game or Theme**  
-        * Ability to choose question categories before starting.  
-    3. **Interacting with the Questions**  
-        * The question image is displayed on screen with answer options.  
-        * Button to request a hint, which will appear in an interactive chat.  
-        * Visible timer indicating the remaining time.  
-    4. **Results and Statistics**  
-        * Visual indicator of correct and incorrect answers.  
-        * Score obtained and comparison with other players.  
-        * Ability to review the game history and personal statistics.
