@@ -7,28 +7,18 @@ ifdef::arc42help[]
 [role="arc42help"]
 ****
 .Contents
-The most important domain and technical terms that your stakeholders use when discussing the system.
-
-You can also see the glossary as source for translations if you work in multi-language teams.
+Insert a brief description of what this glossary contains.
 
 .Motivation
-You should clearly define your terms, so that all stakeholders
-
-* have an identical understanding of these terms
-* do not use synonyms and homonyms
-
+Explain why it’s important to define these terms for your stakeholders:
+* Ensure a shared understanding.
+* Avoid ambiguity with synonyms or homonyms.
 
 .Form
-
-A table with columns <Term> and <Definition>.
-
-Potentially more columns in case you need translations.
-
+Describe the structure of this glossary (e.g., a table with columns for Term and Definition).
 
 .Further Information
-
-See https://docs.arc42.org/section-12/[Glossary] in the arc42 documentation.
-
+Insert any additional references or links (e.g., documentation or guidelines).
 ****
 endif::arc42help[]
 
@@ -36,9 +26,35 @@ endif::arc42help[]
 |===
 |Term |Definition
 
-|<Term-1>
-|<definition-1>
+|LLM (Large Language Model)
+|Large Language Model based on artificial intelligence and deep learning. It is used to process and generate text with contextual understanding, such as OpenAI’s GPT, Google Bard, and others.
 
-|<Term-2>
-|<definition-2>
+|Microservices Architecture
+|A software architecture style in which an application is divided into small independent services that communicate with each other through APIs. Each microservice focuses on a specific functionality and can be developed, deployed, and scaled independently.
+
+|Docker
+|A containerization platform that allows packaging applications and their dependencies into portable containers. It facilitates consistent execution across different environments without worrying about compatibility issues.
+
+|JavaScript
+|An interpreted programming language primarily used for web development. It enables the creation of interactive and dynamic pages, functioning both in the browser and on the server through environments like Node.js.
+
+|React
+|A JavaScript library developed by Meta (Facebook) for building interactive and efficient user interfaces. It utilizes a component-based model and a Virtual DOM to improve performance in web applications.
+
+|Node.js
+|A server-side JavaScript runtime environment built on Google Chrome's V8 engine. It allows building scalable and high-performance applications using an asynchronous, event-driven programming model.
+
+|Backend
+|The part of an application that handles business logic, databases, authentication, and communication with the frontend. It is typically developed using technologies such as Node.js, Python, or Java.
+
+|Frontend
+|The visual interface of an application with which users interact. It is built using HTML, CSS, and JavaScript, along with frameworks like React, Angular, or Vue.js.
+
+|Express.js
+|A minimalist web framework for Node.js that simplifies the creation of applications and APIs. It provides tools for handling routing, middleware, and HTTP requests efficiently.
+
+|Term 
+|...
+
+
 |===
