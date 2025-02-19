@@ -1,7 +1,8 @@
-// src/components/AddUser.js
+// src/components/AddUser.tsx
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import {ErrorResponse} from './ErrorInterface';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -11,14 +12,20 @@ const AddUser = () => {
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const addUser = async () => {
-    try {
-      await axios.post(`${apiEndpoint}/adduser`, { username, password });
-      setOpenSnackbar(true);
-    } catch (error) {
-      setError(error.response.data.error);
-    }
-  };
+
+    const addUser = async () => {
+        try {
+            await axios.post(`${apiEndpoint}/adduser`, { username, password });
+            setOpenSnackbar(true);
+        } catch (error) {
+            const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
+            if (axiosError.response && axiosError.response.data) {
+                setError(axiosError.response.data.error); // Accede al mensaje de error
+            } else {
+                setError('An unknown error occurred');
+            }
+        }
+    };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);

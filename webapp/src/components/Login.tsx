@@ -1,8 +1,9 @@
 // src/components/Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
+import {ErrorResponse} from './ErrorInterface';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -38,7 +39,12 @@ const Login = () => {
 
       setOpenSnackbar(true);
     } catch (error) {
-      setError(error.response.data.error);
+      const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
+      if (axiosError.response && axiosError.response.data) {
+        setError(axiosError.response.data.error); // Accede al mensaje de error
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
