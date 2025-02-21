@@ -1,8 +1,9 @@
 // src/components/AddUser.tsx
 import React, { useState } from 'react';
 import axios, {AxiosError} from 'axios';
-import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/material';
 import {ErrorResponse} from './ErrorInterface';
+import { useNavigate } from 'react-router-dom';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -12,6 +13,7 @@ const AddUser = () => {
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const navigate = useNavigate();
 
     const addUser = async () => {
         try {
@@ -33,6 +35,10 @@ const AddUser = () => {
 
   return (
     <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
+        <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
+            Welcome to the 2025 edition of the Software Architecture course
+        </Typography>
+        <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
       <Typography component="h1" variant="h5">
         Add User
       </Typography>
@@ -60,6 +66,10 @@ const AddUser = () => {
       {error && (
         <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
       )}
+        <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
+        <Link component="button" variant="body2" onClick={() => navigate('/login')}>
+            Already have an account? Login here.
+        </Link>
     </Container>
   );
 };

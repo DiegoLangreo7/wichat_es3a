@@ -1,9 +1,10 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import axios, {AxiosError} from 'axios';
-import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 import {ErrorResponse} from './ErrorInterface';
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -13,6 +14,8 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [createdAt, setCreatedAt] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const navigate = useNavigate();
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
   const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
@@ -54,6 +57,10 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
+      <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
+        Welcome to the 2025 edition of the Software Architecture course
+      </Typography>
+      <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
       {loginSuccess ? (
         <div>
           <Typewriter
@@ -93,6 +100,10 @@ const Login = () => {
           {error && (
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
           )}
+          <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
+          <Link component="button" variant="body2" onClick={() => navigate('/register')}>
+            Don't have an account? Sing up here.
+          </Link>
         </div>
       )}
     </Container>
