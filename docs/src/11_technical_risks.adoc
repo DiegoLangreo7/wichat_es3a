@@ -1,27 +1,23 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-technical-risks]]
-== Risks and Technical Debts
+== Risks and Technical Debts 
 
+=== Risks
+[cols="1,1,3", options="header"]
+|===
+| Risk | Relevance |  Considerations
+| Limited knowledge of certain tools or languages | High | A solution could be to use the tools and languages that are most well-known to the team members. Also, each member should try to learn those aspects they know less about.
+| Limited expertise in emerging technologies | High | Ignorance of emerging technologies relevant to the project might result in missed opportunities for innovation and efficiency.
+| The team has not worked together before | Low | A suggestion could be to mantain a good communication and inform about any aspect that could affect others.
+| Delivery time | Medium | Being  many members can difficult the communication. However, if the previous suggestions are followed there should not be any problem.
+| Connection failure | Medium | It is possible that some of the parts of the project that may require a connection to a server are not available, and due to time it may cause problems.
+| Documentation | Low | Since the documentation is carried out at the same time as the project, it can generate delays.
+|===
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-A list of identified technical risks or technical debts, ordered by priority
-
-.Motivation
-“Risk management is project management for grown-ups” (Tim Lister, Atlantic Systems Guild.) 
-
-This should be your motto for systematic detection and evaluation of risks and technical debts in the architecture, which will be needed by management stakeholders (e.g. project managers, product owners) as part of the overall risk analysis and measurement planning.
-
-.Form
-List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 documentation.
-
-****
-endif::arc42help[]
+=== Technical debts 
+[cols="1,1,3", options="header"]
+|===
+| Technical Debt | Relevance |  Considerations
+| Not implementing automated tests from the beginning | High | It is not a recommended practice and can avoid problems in the future.
+|===
