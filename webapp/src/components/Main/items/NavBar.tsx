@@ -1,29 +1,76 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import {Button} from '@mui/material';
+import React, { useState, useRef } from "react";
+import { AppBar, Typography, Box, Toolbar, Menu, MenuItem, Button, ClickAwayListener } from "@mui/material";
 
-const NavBar = () => {
+const NavBar: React.FC = () => {
+    const [openUserMenu, setOpenUserMenu] = useState(false); // Estado para controlar la visibilidad del menú
+    const buttonRef = useRef<HTMLButtonElement | null>(null);  // Referencia al botón
+
+    const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setOpenUserMenu((prev) => !prev);  // Cambiar estado para abrir o cerrar el menú
+    };
+
+    const handleMenuClose = () => {
+        setOpenUserMenu(false);  // Cerrar el menú
+    };
+
     return (
-        <nav className="bg-blue-600 p-4">
-            <div className="container mx-auto flex justify-between items-center">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="contained" color="primary">
-                            Usuario
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white text-gray-700 w-48">
-                        <DropdownMenuItem>
-                            <Link to="/historial" className="w-full">Historial</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Link to="/cuenta" className="w-full">Cuenta</Link>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </nav>
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end'}}>
+            <AppBar position="static">
+                <Toolbar sx= {{backgroundColor: "#2F353B"}}>
+                    {/* Botón "Usuario" que abrirá el menú */}
+                    <ClickAwayListener onClickAway={handleMenuClose}>
+                    <Button
+                        ref={buttonRef}  // Vinculamos la referencia
+                        size="large"
+                        color="inherit"
+                        aria-haspopup="true"
+                        onClick={handleUserMenu}  // Abre el menú
+                        data-testid="open-language-menu"
+                    >
+                        Usuario
+                    </Button>
+                        </ClickAwayListener>
+                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Typography variant="h6" component="div" style={{ color: "white" }}>
+                            WI CHAT
+                        </Typography>
+                    </Box>
+
+                    {/* Usamos ClickAwayListener para cerrar el menú al hacer clic fuera */}
+
+                        <Menu
+                            id="language-appbar"
+                            open={openUserMenu}  // Controlamos la apertura con el estado
+                            anchorEl={buttonRef.current}  // Usamos el botón como ancla
+                            onClose={handleMenuClose}  // Cerrar el menú al hacer clic fuera
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'center',
+                            }}
+                            PaperProps={{
+                                sx: {
+                                    marginTop : .5,
+                                    backgroundColor: "#2F353B",  // Color de fondo del menú
+                                    boxShadow: 3,  // Sombra para mejor visibilidad
+                                    borderRadius: 2,  // Bordes redondeados
+                                },
+                            }}
+                        >
+                            {/* Opciones dentro del menú */}
+                            <MenuItem onClick={handleMenuClose}  sx= {{color: "#FFFFFF",}}>
+                                Historial
+                            </MenuItem>
+                            <MenuItem onClick={handleMenuClose} sx= {{color: "#FFFFFF",}}>
+                                Cuenta
+                            </MenuItem>
+                        </Menu>
+                </Toolbar>
+            </AppBar>
+        </Box>
     );
 };
 

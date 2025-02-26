@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios, {AxiosError} from 'axios';
-import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/material';
+import {Container, Box, Button} from '@mui/material';
 import {ErrorResponse} from '../ErrorInterface';
 import { useNavigate } from 'react-router-dom';
 import NavBar from "./items/NavBar";
@@ -21,7 +21,9 @@ const Main = () => {
 
     return (
         <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
+            <Box>
             <NavBar></NavBar>
+            </Box>
         </Container>
     );
 };
