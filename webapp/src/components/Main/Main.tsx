@@ -20,11 +20,22 @@ const Main = () => {
     };
 
     return (
-        <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
-            <Box>
-            <NavBar></NavBar>
+        <Box component="main" sx={{
+            margin: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
+            <Box sx={{ width: '100%' }}>
+                <NavBar />
             </Box>
-        </Container>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', margin: 10}}>
+                <Button sx={{backgroundColor: '#2F353B', color: 'white', padding: 2}}>Jugar</Button>
+            </Box>
+        </Box>
+
     );
 };
 
