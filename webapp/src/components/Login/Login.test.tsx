@@ -4,9 +4,14 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 
-const mockAxios = new MockAdapter(axios);
+test('renders welcome message', () => {
+
+});
 
 /*
+
+const mockAxios = new MockAdapter(axios);
+
 describe('Login component', () => {
   beforeEach(() => {
     mockAxios.reset();

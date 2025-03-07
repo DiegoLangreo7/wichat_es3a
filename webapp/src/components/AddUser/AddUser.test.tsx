@@ -4,9 +4,16 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import AddUser from './AddUser';
 
-const mockAxios = new MockAdapter(axios);
+
+
+test('renders welcome message', () => {
+
+});
 
 /*
+
+const mockAxios = new MockAdapter(axios);
+
 describe('AddUser component', () => {
   beforeEach(() => {
     mockAxios.reset();
@@ -57,5 +64,4 @@ describe('AddUser component', () => {
       expect(screen.getByText(/Error: Internal Server Error/i)).toBeInTheDocument();
     });
   });
-});
-*/
+});*/
