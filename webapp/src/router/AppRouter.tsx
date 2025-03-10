@@ -18,7 +18,7 @@ const router = createBrowserRouter([
 },
     {
         path: "/main",
-        element: <Main />,
+        element: <Navigate to="/main" replace />,
     },
 ]);
 
