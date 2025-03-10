@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import axios, {AxiosError} from 'axios';
 import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/material';
-import { Typewriter } from "react-simple-typewriter";
-import {ErrorResponse} from './ErrorInterface';
+import {ErrorResponse} from '../ErrorInterface';
 import {useNavigate} from "react-router-dom";
 
 const Login = () => {
@@ -11,13 +10,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  const [createdAt, setCreatedAt] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const navigate = useNavigate();
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3000';
   const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
 
   const loginUser = async () => {
@@ -37,11 +34,10 @@ const Login = () => {
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
-      setCreatedAt(userCreatedAt);
-      setLoginSuccess(true);
-
       setOpenSnackbar(true);
+      navigate('/main');
     } catch (error) {
+      console.log(error);
       const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
       if (axiosError.response && axiosError.response.data) {
         setError(axiosError.response.data.error); // Accede al mensaje de error
@@ -61,51 +57,37 @@ const Login = () => {
         Welcome to the 2025 edition of the Software Architecture course
       </Typography>
       <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
-      {loginSuccess ? (
-        <div>
-          <Typewriter
-            words={[message]} // Pass your message as an array of strings
-            cursor
-            cursorStyle="|"
-            typeSpeed={50} // Typing speed in ms
-          />
-          <Typography component="p" variant="body1" sx={{ textAlign: 'center', marginTop: 2 }}>
-            Your account was created on {new Date(createdAt).toLocaleDateString()}.
-          </Typography>
-        </div>
-      ) : (
-        <div>
-          <Typography component="h1" variant="h5">
-            Login
-          </Typography>
-          <TextField
+      <div>
+        <Typography component="h1" variant="h5">
+          Login
+        </Typography>
+        <TextField
             margin="normal"
             fullWidth
             label="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-          />
-          <TextField
+        />
+        <TextField
             margin="normal"
             fullWidth
             label="Password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button variant="contained" color="primary" onClick={loginUser}>
-            Login
-          </Button>
-          <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="Login successful" />
-          {error && (
+        />
+        <Button variant="contained" color="primary" onClick={loginUser}>
+          Login
+        </Button>
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="Login successful" />
+        {error && (
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
-          )}
-          <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
-          <Link component="button" variant="body2" onClick={() => navigate('/register')}>
-            Don't have an account? Sing up here.
-          </Link>
-        </div>
-      )}
+        )}
+        <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
+        <Link component="button" variant="body2" onClick={() => navigate('/register')}>
+          Don't have an account? Sing up here.
+        </Link>
+      </div>
     </Container>
   );
 };

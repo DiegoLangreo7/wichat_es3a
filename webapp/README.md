@@ -29,7 +29,7 @@ It executes the production version using the package `serve`. For this command t
 
 ### Unitary tests (`npm test`)
 
-Unitary tests can be found in the same directory where the react components lie. Each react component (for instance, App.ts), will have its own test file (App.test.js).
+Unitary tests can be found in the same directory where the react components lie. Each react component (for instance, App.ts), will have its own test file (App.test.tsx).
 
 Here is an example of the tests for App.ts:
 
@@ -72,7 +72,7 @@ describe('AddUser component', () => {
   });
 ...
 ```
-This would be a test for adding a user in the `AddUser` component. As you can see, the call to the service handling new users is mocked so its returning an OK response. If you check the file `AddUser.test.js` you can see a similar example but returning a negative response.
+This would be a test for adding a user in the `AddUser` component. As you can see, the call to the service handling new users is mocked so its returning an OK response. If you check the file `AddUser.test.tsx` you can see a similar example but returning a negative response.
 
 In order to execute these unitary tests we need to execute `npm test`. The tests are executed using jest. 
 
