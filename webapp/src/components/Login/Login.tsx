@@ -35,6 +35,7 @@ const Login = () => {
       const { createdAt: userCreatedAt } = response.data;
 
       setOpenSnackbar(true);
+      navigate('/main');
     } catch (error) {
       console.log(error);
       const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
