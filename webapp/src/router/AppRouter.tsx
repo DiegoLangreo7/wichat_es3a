@@ -4,8 +4,8 @@ import AddUser from "../components/AddUser/AddUser";
 import Main from "../components/Main/Main";
 import React from "react";
 const router = createBrowserRouter([
-    {
-        path: "/",
+{
+    path: "/",
         element: <Navigate to="/login" replace />,
 },
 {
@@ -16,10 +16,10 @@ const router = createBrowserRouter([
     path: "/register",
         element: <AddUser />,
 },
-    {
-        path: "/main",
-        element: <Main />,
-    },
+{
+    path: "/main",
+        element: <Navigate to="/main" replace />,
+}
 ]);
 
 export default router;
