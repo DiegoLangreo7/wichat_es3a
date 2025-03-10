@@ -20,4 +20,5 @@ ifndef::imagesdir[:imagesdir: ../images]
 |===
 | Technical Debt | Relevance |  Considerations
 | Not implementing automated tests from the beginning | High | It is not a recommended practice and can avoid problems in the future.
+| Overdependence on a framework | High | Over-relying on a framework can limit flexibility and control over your application's development.
 |===
