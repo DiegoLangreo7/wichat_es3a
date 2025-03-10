@@ -37,6 +37,7 @@ const Login = () => {
       setOpenSnackbar(true);
       navigate('/main');
     } catch (error) {
+      console.log(error);
       const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
       if (axiosError.response && axiosError.response.data) {
         setError(axiosError.response.data.error); // Accede al mensaje de error
