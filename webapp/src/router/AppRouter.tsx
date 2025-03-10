@@ -16,10 +16,10 @@ const router = createBrowserRouter([
     path: "/register",
         element: <AddUser />,
 },
-    {
-        path: "/main",
-        element: <Navigate to="/main" replace />,
-    },
+{
+    path: "/main",
+        element: <Main />,
+}
 ]);
 
 export default router;
