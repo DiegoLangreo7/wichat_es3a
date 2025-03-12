@@ -14,7 +14,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3000';
   const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
 
   const loginUser = async () => {
@@ -37,6 +37,7 @@ const Login = () => {
       setOpenSnackbar(true);
       navigate('/main');
     } catch (error) {
+      console.log(error);
       const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
       if (axiosError.response && axiosError.response.data) {
         setError(axiosError.response.data.error); // Accede al mensaje de error
