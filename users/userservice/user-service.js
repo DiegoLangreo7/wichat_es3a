@@ -32,15 +32,16 @@ function validateFormatOfFields(username, password){
   if (password.length < 8){
     throw new Error(`Password must be at least 8 characters long`)
   }
-  if (!password.match(/[A-Z]/g)){
-    throw new Error(`Password must contain at least one lowercase letter`)
+  if (!password.match(/[a-zA-Z]/g)){
+    throw new Error(`Password must contain at least one letter`)
   }
-  if (!password.match(/d/g)){
+  if (!password.match(/\d/g)){
     throw new Error(`Password must contain at least one digit`)
   }
-  if (!password.match(/[!@#$%^&*]/g)){
-    throw new Error(`Password must contain at least one special character`)
+  if (!password.match(/[!@#$%^&*.]/g)){
+    throw new Error(`Password must contain at least one special character form this list: !@#$%^&*.`)
   }
+
 }
 
 app.post('/adduser', async (req, res) => {

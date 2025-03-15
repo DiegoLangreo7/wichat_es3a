@@ -5,7 +5,7 @@ import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/mat
 import {ErrorResponse} from '../ErrorInterface';
 import { useNavigate } from 'react-router-dom';
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3000';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
