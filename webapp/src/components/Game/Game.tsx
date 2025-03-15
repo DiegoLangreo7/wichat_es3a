@@ -5,7 +5,7 @@
 //Eso incluye su traducción a TypeScript
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box} from '@mui/material';
+import {Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box, CircularProgress} from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
@@ -55,10 +55,9 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const handleTimeRemaining = (): string => {
         const remaining = timeLimitFixed - timer;
         const minsR = Math.floor(remaining / 60);
-        const minsRStr = minsR < 10 ? '0' + minsR.toString() : minsR.toString();
         const secsR = remaining % 60;
         const secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
-        return `${minsRStr}:${secsRStr}`;
+        return `${secsRStr}`;
     };
 
     useEffect(() => {
@@ -87,50 +86,33 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                 <NavBar />
             </Box>
 
-            <Box sx={{
-                width: '100%',
-                margin: 4,
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
-                <Question totalQuestions={totalQuestions} themes={themes} />
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    
+                </Box>
 
-                <Typography
-                    component="h2"
-                    sx={{
-                        textAlign: 'center',
-                        color: (timeLimitFixed - timer) <= 60 && timer % 2 === 0 ? 'red' : 'inherit',
-                        fontStyle: 'italic',
-                        fontWeight: timer > 150 && timer % 2 === 0 ? 'bold' : 'inherit',
-                    }}
-                >
-                    {handleTimeRemaining()}
-                </Typography>
-            </Box>
+                <Box display="flex" justifyContent="center" alignItems="center" position="relative" mb={3}>
+                    <CircularProgress variant="determinate" value={(timer / timeLimitFixed) * 100} size={80} />
+                    <Typography 
+                        variant="h6" 
+                        sx={{
+                            position: "absolute",
+                            fontWeight: "bold",
+                            color: 'black',
+                        }}
+                    >
+                        {handleTimeRemaining()}
+                    </Typography>
+                </Box>
+                <Box display="flex" justifyContent="center" mb={2}>
+                    <img src="logo192.png" alt="Imagen relacionada" style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} />
+                </Box>
+                <Question totalQuestions={totalQuestionsFixed} themes={themes} />
 
-
-            <Box sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'flex-end',
-            }}>
-                <Button
-                    sx={{
-                        width: 48,
-                        height: 48,
-                        backgroundColor: '#3b82f6',
-                        color: 'white',
-                        borderRadius: '50%',
-                        '&:hover': {
-                            backgroundColor: 'darkblue',
-                        },
-                    }}
-                >
-                    LLM
-                </Button>
-            </Box>
+                <Box display="flex" justifyContent="center" mt={3}>
+                    <Button variant="contained" color="secondary" size="large">
+                        Pista
+                    </Button>
+                </Box>
         </Box>
 
     );
