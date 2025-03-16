@@ -8,8 +8,6 @@ import cryptoRandomString from 'crypto-random-string';
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
 
-const navigate = useNavigate();
-
 interface GameProps {
     username: string;
     totalQuestions: number;
@@ -44,6 +42,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [selectedAnswer, setSelectedAnswer] = useState(null);
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
