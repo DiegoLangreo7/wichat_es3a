@@ -29,7 +29,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const TRANSITION_ROUND_TIME = 5000;
 
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
-    const [timer, setTimer] = useState<number>(0);
+    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
     const [almacenado, setAlmacenado] = useState<boolean>(false);
@@ -46,22 +46,8 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (timer >= timeLimitFixed) {
-                setFinished(true);
-            } else if (!finished) {
-                setTimer(prevTimer => prevTimer + 1);
-            } else {
-                clearInterval(interval);
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [timer, questionData, imageLoaded]);
-
     const handleTimeRemaining = (): string => {
-        const remaining = timeLimitFixed - timer;
+        const remaining = timer;
         const minsR = Math.floor(remaining / 60);
         const secsR = remaining % 60;
         const secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
@@ -71,35 +57,36 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const handleNextRound = () => {
         if (round < TOTAL_ROUNDS) {
             setRound(prevRound => prevRound + 1);
+            setTimer(timeLimitFixed); // Reiniciar el temporizador
         } else {
             setFinished(true);
         }
     };
 
-    const handleCorrectAnswer = () => {
-        setScore(prevScore => prevScore + 1);
+    const handleAnswer = (isCorrect: boolean) => {
+        if (isCorrect) {
+            setScore(prevScore => prevScore + 1);
+        }
         handleNextRound();
     };
 
     useEffect(() => {
-        if (finished) {
-            navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes } });
-        }
-    }, [finished, navigate, score, username, totalQuestions, timeLimit, themes]);
+        const interval = setInterval(() => {
+            if (timer > 0) {
+                setTimer(prevTimer => prevTimer - 1);
+            } else {
+                handleNextRound();
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [timer]);
 
     useEffect(() => {
-
-    }, [
-        timer,
-        finished,
-        totalQuestionsFixed,
-        timeLimitFixed,
-        almacenado,
-        apiEndpoint,
-        correctQuestions,
-        username,
-        themes,
-    ]);
+        if (finished && round >= TOTAL_ROUNDS) {
+            navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes } });
+        }
+    }, [finished, navigate, score, username, totalQuestions, timeLimit, themes, round]);
 
     return (
         <Box component="main" sx={{
@@ -130,7 +117,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     {handleTimeRemaining()}
                 </Typography>
             </Box>
-            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} onNextRound={handleNextRound} timeLimit={timeLimitFixed} />
+            <Question totalQuestions={totalQuestionsFixed} themes={themes} onAnswer={handleAnswer} />
 
             <Box display="flex" justifyContent="center" mt={3}>
                 <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
