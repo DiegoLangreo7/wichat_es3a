@@ -56,7 +56,8 @@ async function getImagesFromWikidata(category, numImages) {
                     imageUrl: item.image.value,
                     country: item.countryLabel.value
                 }));
-
+            
+            console.log("imagenes de paises");
             return filteredImages;
         }
 
@@ -119,9 +120,8 @@ async function processQuestionsCountry(images,category) {
             category: category,
             imageUrl: image.imageUrl
         };
-
+        console.log(newQuestion);
         await dataService.saveQuestion(newQuestion);
-        console.log("Question saved:", newQuestion);
     }
 
 }
@@ -130,7 +130,7 @@ async function generateQuestionsByCategory(category, numImages) {
     const images = await getImagesFromWikidata(category, numImages);
  
     if(category === 'country'){
-        processQuestionsCountry(images, category);
+       await processQuestionsCountry(images, category);
     }
 }
 
