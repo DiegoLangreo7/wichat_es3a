@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, Button, Box } from '@mui/material';
 import NavBar from "../Main/items/NavBar";
@@ -24,6 +24,30 @@ const EndGame: React.FC = () => {
         navigate('/main'); // Navegar a la ruta del menú principal
     };
 
+    const calculateStats = () => {
+        // Suponiendo que 'score' y 'totalQuestions' son variables ya definidas
+        let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
+        let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
+        let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
+        let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+
+        // Actualizar los valores
+        correctQuestions += score;
+        incorrectQuestions += (totalQuestions - score);
+        gamesplayed += 1;
+        secondsPlayed += timeLimit * totalQuestions;
+
+        // Guardar los valores actualizados en localStorage
+        localStorage.setItem('correctQuestions', correctQuestions.toString());
+        localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
+        localStorage.setItem('gamesplayed', gamesplayed.toString());
+        localStorage.setItem('secondsPlayed', secondsPlayed.toString());
+    };
+
+    useEffect(() => {
+        calculateStats(); // Llamar a calculateStats cuando el componente se monte
+    }, []);
+
     return (
         <Box component="main" sx={{
             height: '100vh', // Ocupa toda la altura de la pantalla
@@ -40,7 +64,7 @@ const EndGame: React.FC = () => {
                 ¡Juego Terminado!
             </Typography>
             <Typography variant="h6" gutterBottom>
-                {username}Usuario, tu puntuación es: {score} / {totalQuestions}
+                {username}, tu puntuación es: {score} / {totalQuestions}
             </Typography>
             <Box mt={4}>
                 <Button variant="contained" color="primary" onClick={handlePlayAgain} sx={{ mr: 2 }}>
