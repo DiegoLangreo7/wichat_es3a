@@ -16,9 +16,11 @@ interface GameProps {
 }
 
 interface Question {
-    questionBody: string;
-    correcta: string;
-    incorrectas: string[];
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    category: string;
+    imageUrl?: string;
 }
 
 const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes }) => {
@@ -38,16 +40,21 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [isPaused, setIsPaused] = useState<boolean>(false); // Nuevo estado para pausar el temporizador
     const [transitionTimer, setTransitionTimer] = useState<number>(0); // Estado para manejar el tiempo de transición
     const [isVisible, setIsVisible] = useState<boolean>(true); // Estado para manejar la visibilidad del tiempo
-
-    const [questionData, setQuestionData] = useState(null);
-    const [imageLoaded, setImageLoaded] = useState(false);
-
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Estado para la pregunta actual
 
     const location = useLocation();
     const navigate = useNavigate();
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
+    const fetchQuestion = async () => {
+        try {
+            const response = await axios.get(`${apiEndpoint}/questions/random`);
+            setCurrentQuestion(response.data);
+        } catch (error) {
+            console.error("Error fetching question:", error);
+        }
+    };
 
     const handleTimeRemaining = (): string => {
         const remaining = isPaused ? transitionTimer : timer;
@@ -69,6 +76,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                         setRound(prevRound => prevRound + 1);
                         setTimer(timeLimitFixed); // Reiniciar el temporizador
                         setIsPaused(false); // Reanudar el temporizador
+                        fetchQuestion(); // Obtener una nueva pregunta
                     } else {
                         setFinished(true);
                     }
@@ -97,11 +105,16 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     };
 
     useEffect(() => {
+        fetchQuestion(); // Obtener la primera pregunta al cargar el componente
+    }, []);
+
+    useEffect(() => {
         if (!isPaused) {
             const interval = setInterval(() => {
                 if (timer > 0) {
                     setTimer(prevTimer => prevTimer - 1);
                 } else {
+                    setIsPaused(true); // Pausar el temporizador
                     handleNextRound();
                 }
             }, 1000);
@@ -145,7 +158,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     </Typography>
                 )}
             </Box>
-            <Question totalQuestions={totalQuestionsFixed} themes={themes} onAnswer={handleAnswer} />
+            <Question question={currentQuestion} onAnswer={handleAnswer} />
     
             <Box display="flex" justifyContent="center" mt={3}>
                 <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
