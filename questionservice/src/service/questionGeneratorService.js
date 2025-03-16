@@ -1,5 +1,5 @@
 const axios = require('axios');
-const dataService = require('./question-data-service');
+const dataService = require('./questionSaverService');
 
 const wikidataCategoriesQueries = {   
     "country": {  

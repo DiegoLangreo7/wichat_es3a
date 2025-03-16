@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Question = require('../models/question-model')
+const Question = require('../model/question')
 
 
 // Connect to MongoDB
@@ -8,6 +8,7 @@ mongoose.connect(mongoUri);
 
 
 module.exports = {
+    
     getNumberQuestionsByCategory: async function(category){
         try{
 

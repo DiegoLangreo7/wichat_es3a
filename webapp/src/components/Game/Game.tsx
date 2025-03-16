@@ -4,6 +4,8 @@
 //Este codigo ha sido modificado para adaptarse a los requerimientos del proyecto
 //Eso incluye su traducción a TypeScript
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import {Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box, CircularProgress} from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
@@ -28,14 +30,26 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     // Si las props numéricas no son válidas se asignan valores por defecto
     const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
     const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
+    const TOTAL_ROUNDS = 10;
+    const TRANSITION_ROUND_TIME = 5000;
 
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
     const [timer, setTimer] = useState<number>(0);
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
     const [almacenado, setAlmacenado] = useState<boolean>(false);
+    const [score, setScore] = useState(0);
+    const [round, setRound] = useState(1);
+
+    const [questionData, setQuestionData] = useState(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+    const location = useLocation();
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
 
 
     useEffect(() => {
@@ -50,7 +64,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [timeLimitFixed, timer, finished]);
+    }, [timer, questionData,   imageLoaded]);
 
     const handleTimeRemaining = (): string => {
         const remaining = timeLimitFixed - timer;
@@ -59,6 +73,8 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
         const secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
         return `${secsRStr}`;
     };
+
+    
 
     useEffect(() => {
 
@@ -103,9 +119,6 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                         {handleTimeRemaining()}
                     </Typography>
                 </Box>
-                <Box display="flex" justifyContent="center" mb={2}>
-                    <img src="logo192.png" alt="Imagen relacionada" style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} />
-                </Box>
                 <Question totalQuestions={totalQuestionsFixed} themes={themes} />
 
                 <Box display="flex" justifyContent="center" mt={3}>
@@ -119,3 +132,5 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 };
 
 export default Game;
+
+

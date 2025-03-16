@@ -8,9 +8,9 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
     const root = ReactDOM.createRoot(rootElement);
     root.render(
-        <React.StrictMode>
+        //<React.StrictMode>
             <App />
-        </React.StrictMode>
+        //</React.StrictMode>
     );
 } else {
     throw new Error("No se pudo encontrar el elemento con el ID 'root'");
