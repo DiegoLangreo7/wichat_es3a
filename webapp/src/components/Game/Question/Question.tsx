@@ -8,7 +8,7 @@ interface QuestionProps {
     themes: { [key: string]: boolean };
     onCorrectAnswer: () => void;
     onNextRound: () => void;
-    timeLimit: number; // Añadir esta línea
+    timeLimit: number;
 }
 
 interface Question {
@@ -206,11 +206,6 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAn
                                 </Grid>
                             ))}
                         </Grid>
-                        <Box display="flex" justifyContent="center" mt={3}>
-                            <Typography variant="h6">
-                                Tiempo restante: {timer} segundos
-                            </Typography>
-                        </Box>
                     </>
                 )
             )}
