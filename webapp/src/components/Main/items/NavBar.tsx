@@ -12,6 +12,7 @@ const NavBar: React.FC = () => {
 
     const handleLogout = () => {
         handleMenuClose(); 
+        localStorage.removeItem("sessionId");
         localStorage.removeItem("user"); 
         navigate("/logout"); 
     };

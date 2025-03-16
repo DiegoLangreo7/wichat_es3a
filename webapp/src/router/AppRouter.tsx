@@ -7,6 +7,7 @@ import Question from "../components/Game/Question/Question";
 import Game from "../components/Game/Game";
 import EndGame from "../components/Game/EndGame";
 
+
 const router = createBrowserRouter([
     {
         path: "/",
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     {
         path: "/endGame",
         element: <EndGame />,
+    },
+    {
+        path: "/logout",
+        element: <Login />,
     }
 ]);
 
