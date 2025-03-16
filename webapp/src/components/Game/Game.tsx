@@ -1,17 +1,14 @@
-//La totalidad de este codigo esta sacado del siguiente repositorio:
-//https://github.com/Arquisoft/wiq_es6b/blob/master/webapp/src/components/Game.js
-//Creditos al equipo correspondiente en su totalidad
-//Este codigo ha sido modificado para adaptarse a los requerimientos del proyecto
-//Eso incluye su traducción a TypeScript
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
-import {Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box, CircularProgress} from '@mui/material';
+import { Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box, CircularProgress } from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
+
+const navigate = useNavigate();
 
 interface GameProps {
     username: string;
@@ -30,7 +27,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     // Si las props numéricas no son válidas se asignan valores por defecto
     const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
     const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
-    const TOTAL_ROUNDS = 10;
+    const TOTAL_ROUNDS = totalQuestionsFixed;
     const TRANSITION_ROUND_TIME = 5000;
 
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
@@ -50,8 +47,6 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-
-
     useEffect(() => {
         const interval = setInterval(() => {
             if (timer >= timeLimitFixed) {
@@ -64,7 +59,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [timer, questionData,   imageLoaded]);
+    }, [timer, questionData, imageLoaded]);
 
     const handleTimeRemaining = (): string => {
         const remaining = timeLimitFixed - timer;
@@ -74,7 +69,19 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
         return `${secsRStr}`;
     };
 
-    
+    const handleNextRound = () => {
+        if (round < TOTAL_ROUNDS) {
+            setRound(prevRound => prevRound + 1);
+        } else {
+            setFinished(true);
+        }
+    };
+
+    useEffect(() => {
+        if (finished) {
+            navigate('/endGame');
+        }
+    }, [finished, navigate]);
 
     useEffect(() => {
 
@@ -104,33 +111,30 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     
-                </Box>
+            </Box>
 
-                <Box display="flex" justifyContent="center" alignItems="center" position="relative" mb={3}>
-                    <CircularProgress variant="determinate" value={(timer / timeLimitFixed) * 100} size={80} />
-                    <Typography 
-                        variant="h6" 
-                        sx={{
-                            position: "absolute",
-                            fontWeight: "bold",
-                            color: 'black',
-                        }}
-                    >
-                        {handleTimeRemaining()}
-                    </Typography>
-                </Box>
-                <Question totalQuestions={totalQuestionsFixed} themes={themes} />
+            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mb={3}>
+                <CircularProgress variant="determinate" value={(timer / timeLimitFixed) * 100} size={80} />
+                <Typography 
+                    variant="h6" 
+                    sx={{
+                        position: "absolute",
+                        fontWeight: "bold",
+                        color: 'black',
+                    }}
+                >
+                    {handleTimeRemaining()}
+                </Typography>
+            </Box>
+            <Question totalQuestions={totalQuestionsFixed} themes={themes} />
 
-                <Box display="flex" justifyContent="center" mt={3}>
-                    <Button variant="contained" color="secondary" size="large">
-                        Pista
-                    </Button>
-                </Box>
+            <Box display="flex" justifyContent="center" mt={3}>
+                <Button variant="contained" color="secondary" size="large" onClick={handleNextRound}>
+                    Siguiente Ronda
+                </Button>
+            </Box>
         </Box>
-
     );
 };
 
 export default Game;
-
-
