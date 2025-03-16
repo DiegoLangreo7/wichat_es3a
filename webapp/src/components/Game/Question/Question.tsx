@@ -3,7 +3,7 @@ import { Container, Typography, Button, Grid, Box, CircularProgress } from '@mui
 
 interface QuestionProps {
     question: Question | null;
-    onAnswer: (isCorrect: boolean) => void;
+    onAnswer: (isCorrect: boolean, selectedAnswer: string) => void;
     isTransitioning: boolean;
 }
 
@@ -17,7 +17,6 @@ interface Question {
 
 const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
-    const [selectedAnswer, setSelectedAnswer] = useState<string>('');
 
     const handleButtonClick = (respuestaSeleccionada: string, index: number): void => {
         if (selectedOption !== null || isTransitioning) return;
@@ -25,13 +24,11 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
         setSelectedOption(index);
 
         const isCorrect = respuestaSeleccionada === question?.correctAnswer;
-        setSelectedAnswer(isCorrect ? 'correct' : 'incorrect');
-        onAnswer(isCorrect);
+        onAnswer(isCorrect, respuestaSeleccionada);
     };
 
     useEffect(() => {
         setSelectedOption(null);
-        setSelectedAnswer('');
     }, [question]);
 
     if (!question) {

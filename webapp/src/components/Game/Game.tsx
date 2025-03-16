@@ -30,8 +30,8 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const TOTAL_ROUNDS = totalQuestionsFixed;
     const TRANSITION_ROUND_TIME = 3; // 3 segundos de pausa antes de la siguiente ronda
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [correctQuestions, setCorrectQuestions] = useState<number>(0);
-    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
     const [almacenado, setAlmacenado] = useState<boolean>(false);
@@ -42,7 +42,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [isVisible, setIsVisible] = useState<boolean>(true); // Estado para manejar la visibilidad del tiempo
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Estado para la pregunta actual
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-
+    
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -100,13 +100,17 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     }, TRANSITION_ROUND_TIME * 1000);
 };
 
-    const handleAnswer = (isCorrect: boolean) => {
-        setIsPaused(true); // Pausar el temporizador
-        if (isCorrect) {
-            setScore(prevScore => prevScore + 1);
-        }
+const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
+    setIsPaused(true); // Pausar el temporizador
+    setSelectedAnswer(selectedAnswer);
+    setIsCorrectAnswer(isCorrect);
+    if (isCorrect) {
+        setScore(prevScore => prevScore + 1);
+    }
+    setTimeout(() => {
         handleNextRound();
-    };
+    }, 2000); // Esperar 2 segundos antes de pasar a la siguiente ronda
+};
 
     useEffect(() => {
         fetchQuestion(); // Obtener la primera pregunta al cargar el componente
