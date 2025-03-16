@@ -7,6 +7,7 @@ interface QuestionProps {
     totalQuestions: number;
     themes: { [key: string]: boolean };
     onCorrectAnswer: () => void; // Añadir esta línea
+    onNextRound: () => void; // Añadir esta línea
 }
 
 interface Question {
@@ -17,7 +18,7 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer }) => {
+const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer, onNextRound }) => {
 
     const [questions, setQuestions] = useState<Question[]>([]);  // Guardar todas las preguntas
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Índice de la pregunta actual
@@ -127,6 +128,7 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAn
                 if (currentQuestionIndex < totalQuestions - 1) {
                     obtenerPreguntas();
                     setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+                    onNextRound(); // Llamar a la función de callback para avanzar a la siguiente ronda
                 } else {
                     setFinished(true);  // Si ya se completaron todas las preguntas, terminar el juego
                 }

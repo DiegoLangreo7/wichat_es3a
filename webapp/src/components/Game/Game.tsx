@@ -130,11 +130,11 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     {handleTimeRemaining()}
                 </Typography>
             </Box>
-            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} />
+            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} onNextRound={handleNextRound} />
 
             <Box display="flex" justifyContent="center" mt={3}>
-                <Button variant="contained" color="secondary" size="large" onClick={handleNextRound}>
-                    Siguiente Ronda
+                <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
+                    Pedir Pista
                 </Button>
             </Box>
         </Box>
