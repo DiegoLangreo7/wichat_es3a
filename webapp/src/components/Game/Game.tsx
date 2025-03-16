@@ -29,7 +29,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
     const TOTAL_ROUNDS = totalQuestionsFixed;
     const TRANSITION_ROUND_TIME = 3; // 3 segundos de pausa antes de la siguiente ronda
-
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
     const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
     const [numberClics, setNumberClics] = useState<number>(0);
@@ -41,6 +41,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [transitionTimer, setTransitionTimer] = useState<number>(0); // Estado para manejar el tiempo de transición
     const [isVisible, setIsVisible] = useState<boolean>(true); // Estado para manejar la visibilidad del tiempo
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Estado para la pregunta actual
+    const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -49,8 +50,9 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
     const fetchQuestion = async () => {
         try {
-            const response = await axios.get(`${apiEndpoint}/questions/random`);
+            const response = await axios.get(`${apiEndpoint}/questions/country`);
             setCurrentQuestion(response.data);
+            setIsLoading(false); // Actualizar el estado a false cuando se carguen las preguntas
         } catch (error) {
             console.error("Error fetching question:", error);
         }
@@ -65,36 +67,38 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     };
 
     const handleNextRound = () => {
-        setTransitionTimer(TRANSITION_ROUND_TIME);
-        const transitionInterval = setInterval(() => {
-            setTransitionTimer(prev => {
-                if (prev > 1) {
-                    return prev - 1;
+    setIsTransitioning(true); // Iniciar la transición
+    setTransitionTimer(TRANSITION_ROUND_TIME);
+    const transitionInterval = setInterval(() => {
+        setTransitionTimer(prev => {
+            if (prev > 1) {
+                return prev - 1;
+            } else {
+                clearInterval(transitionInterval);
+                if (round < TOTAL_ROUNDS) {
+                    setRound(prevRound => prevRound + 1);
+                    setTimer(timeLimitFixed); // Reiniciar el temporizador
+                    setIsPaused(false); // Reanudar el temporizador
+                    fetchQuestion(); // Obtener una nueva pregunta
                 } else {
-                    clearInterval(transitionInterval);
-                    if (round < TOTAL_ROUNDS) {
-                        setRound(prevRound => prevRound + 1);
-                        setTimer(timeLimitFixed); // Reiniciar el temporizador
-                        setIsPaused(false); // Reanudar el temporizador
-                        fetchQuestion(); // Obtener una nueva pregunta
-                    } else {
-                        setFinished(true);
-                    }
-                    return 0;
+                    setFinished(true);
                 }
-            });
-        }, 1000);
+                setIsTransitioning(false); // Finalizar la transición
+                return 0;
+            }
+        });
+    }, 1000);
 
-        // Alternar la visibilidad del tiempo cada 500 ms
-        const visibilityInterval = setInterval(() => {
-            setIsVisible(prev => !prev);
-        }, 500);
+    // Alternar la visibilidad del tiempo cada 500 ms
+    const visibilityInterval = setInterval(() => {
+        setIsVisible(prev => !prev);
+    }, 500);
 
-        setTimeout(() => {
-            clearInterval(visibilityInterval);
-            setIsVisible(true); // Asegurarse de que el tiempo sea visible al final de la transición
-        }, TRANSITION_ROUND_TIME * 1000);
-    };
+    setTimeout(() => {
+        clearInterval(visibilityInterval);
+        setIsVisible(true); // Asegurarse de que el tiempo sea visible al final de la transición
+    }, TRANSITION_ROUND_TIME * 1000);
+};
 
     const handleAnswer = (isCorrect: boolean) => {
         setIsPaused(true); // Pausar el temporizador
@@ -109,7 +113,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     }, []);
 
     useEffect(() => {
-        if (!isPaused) {
+        if (!isPaused && !isLoading) {
             const interval = setInterval(() => {
                 if (timer > 0) {
                     setTimer(prevTimer => prevTimer - 1);
@@ -118,10 +122,10 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     handleNextRound();
                 }
             }, 1000);
-
+    
             return () => clearInterval(interval);
         }
-    }, [timer, isPaused]);
+    }, [timer, isPaused, isLoading]);
 
     useEffect(() => {
         if (finished && round >= TOTAL_ROUNDS) {
@@ -142,29 +146,37 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                 <NavBar />
             </Box>
     
-            {/* Ajustar aquí el margen superior */}
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3}>
-                <CircularProgress variant="determinate" value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100} size={80} />
-                {isVisible && (
-                    <Typography 
-                        variant="h6" 
-                        sx={{
-                            position: "absolute",
-                            fontWeight: "bold",
-                            color: 'black',
-                        }}
-                    >
-                        {handleTimeRemaining()}
-                    </Typography>
-                )}
+            {isLoading ? (
+                <Box display="flex" alignItems="center">
+                <Typography variant="h6" color="textSecondary" sx={{ mr: 2 }}>
+                    Cargando...
+                </Typography>
+                <CircularProgress />
             </Box>
-            <Question question={currentQuestion} onAnswer={handleAnswer} />
-    
-            <Box display="flex" justifyContent="center" mt={3}>
-                <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
-                    Pedir Pista
-                </Button>
-            </Box>
+            ) : (
+                <>
+                    <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3}>
+                        <CircularProgress variant="determinate" value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100} size={80} />
+                        {isVisible && (
+                            <Typography 
+                                variant="h6" 
+                                sx={{
+                                    position: "absolute",
+                                    fontWeight: "bold",
+                                    color: 'black',
+                                }}
+                            >
+                                {handleTimeRemaining()}
+                            </Typography>
+                        )}
+                    </Box>
+                    <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />                    <Box display="flex" justifyContent="center" mt={3}>
+                        <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
+                            Pedir Pista
+                        </Button>
+                    </Box>
+                </>
+            )}
         </Box>
     );
 };

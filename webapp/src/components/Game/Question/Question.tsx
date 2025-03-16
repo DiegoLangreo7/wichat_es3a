@@ -4,6 +4,7 @@ import { Container, Typography, Button, Grid, Box, CircularProgress } from '@mui
 interface QuestionProps {
     question: Question | null;
     onAnswer: (isCorrect: boolean) => void;
+    isTransitioning: boolean;
 }
 
 interface Question {
@@ -14,12 +15,12 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ question, onAnswer }) => {
+const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [selectedAnswer, setSelectedAnswer] = useState<string>('');
 
     const handleButtonClick = (respuestaSeleccionada: string, index: number): void => {
-        if (selectedOption !== null) return;
+        if (selectedOption !== null || isTransitioning) return;
 
         setSelectedOption(index);
 
@@ -34,12 +35,7 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer }) => {
     }, [question]);
 
     if (!question) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress color="primary" />
-                <Typography variant="h5" sx={{ ml: 2 }}>Cargando pregunta...</Typography>
-            </Box>
-        );
+        return <CircularProgress />;
     }
 
     return (
@@ -77,6 +73,7 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer }) => {
                                     : 'primary'
                             }
                             onClick={() => handleButtonClick(respuesta, index)}
+                            disabled={isTransitioning}
                             sx={{
                                 margin: '8px',
                                 textTransform: 'none',
