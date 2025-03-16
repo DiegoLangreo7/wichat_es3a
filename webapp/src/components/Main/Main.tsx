@@ -110,7 +110,7 @@ const Main = () => {
                     📊 Estadísticas
                 </Typography>
                 <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.totalTimePlayed} segundos</Typography>
-                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.totalGames}</Typography>
+                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesplayed}</Typography>
                 <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions}</Typography>
                 <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions}</Typography>
             </Paper>
