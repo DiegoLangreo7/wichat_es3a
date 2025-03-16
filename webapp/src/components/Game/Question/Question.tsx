@@ -6,9 +6,7 @@ import { useLocation } from 'react-router-dom';
 interface QuestionProps {
     totalQuestions: number;
     themes: { [key: string]: boolean };
-    onCorrectAnswer: () => void;
-    onNextRound: () => void;
-    timeLimit: number;
+    onAnswer: (isCorrect: boolean) => void; // Cambiar a onAnswer
 }
 
 interface Question {
@@ -19,26 +17,21 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer, onNextRound, timeLimit }) => {
+const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onAnswer }) => {
 
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [respuestasAleatorias, setRespuestasAleatorias] = useState<string[]>([]);
     const [imageUrl, setImageUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [correctQuestions, setCorrectQuestions] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [timer, setTimer] = useState<number>(timeLimit); // Inicializar con el tiempo límite
     const [themesSelected, setThemesSelected] = useState<{ [key: string]: boolean }>({
         "country": true,
     });
-    const [numberClics, setNumberClics] = useState<number>(0);
-    const [finished, setFinished] = useState<boolean>(false);
     const [selectedAnswer, setSelectedAnswer] = useState<string>('');
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const location = useLocation();
 
-    const pricePerQuestion = 25;
     const delayBeforeNextQuestion = 3000; // 3 segundos de retardo antes de pasar a la siguiente pregunta
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -98,55 +91,20 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAn
         actualizarImagen();
     }, [questions]);
 
-    // Efecto para manejar el temporizador
-    useEffect(() => {
-        if (timer > 0) {
-            const interval = setInterval(() => {
-                setTimer(prevTimer => prevTimer - 1);
-            }, 1000);
-            return () => clearInterval(interval);
-        } else {
-            handleNextRound();
-        }
-    }, [timer]);
-
-    const handleNextRound = () => {
-        setNumberClics(prev => prev + 1);
-        setSelectedOption(null);
-        setSelectedAnswer('');
-        setTimer(timeLimit); // Reiniciar el temporizador
-
-        if (currentQuestionIndex < totalQuestions - 1) {
-            obtenerPreguntas();
-            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-            onNextRound();
-        } else {
-            setFinished(true);
-        }
-    };
-
     const handleButtonClick = async (respuestaSeleccionada: string, index: number): Promise<void> => {
-        if (!finished) {
-            if (selectedOption !== null) return;
+        if (selectedOption !== null) return;
 
-            setSelectedOption(index);
+        setSelectedOption(index);
 
-            if (respuestaSeleccionada === questions[currentQuestionIndex].correctAnswer) {
-                setCorrectQuestions(prev => prev + 1);
-                setSelectedAnswer('correct');
-                onCorrectAnswer();
-            } else {
-                setSelectedAnswer('incorrect');
-            }
+        const isCorrect = respuestaSeleccionada === questions[currentQuestionIndex].correctAnswer;
+        setSelectedAnswer(isCorrect ? 'correct' : 'incorrect');
+        onAnswer(isCorrect);
 
-            if (numberClics === totalQuestions - 1) {
-                setFinished(true);
-            }
-
-            setTimeout(() => {
-                handleNextRound();
-            }, delayBeforeNextQuestion);
-        }
+        setTimeout(() => {
+            setSelectedOption(null);
+            setSelectedAnswer('');
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        }, delayBeforeNextQuestion);
     };
 
     return (
