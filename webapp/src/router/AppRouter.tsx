@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/game",
-        element: <Game totalQuestions={1} themes={{}} username={""} timeLimit={10} />,
+        element: <Game totalQuestions={2} themes={{}} username={""} timeLimit={10} />,
     },
     {
         path: "/endGame",

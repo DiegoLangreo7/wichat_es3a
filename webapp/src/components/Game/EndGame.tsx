@@ -26,20 +26,21 @@ const EndGame: React.FC = () => {
 
     return (
         <Box component="main" sx={{
-                    margin: 4,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-            <Box sx={{ width: '100%' }}>
+            height: '100vh', // Ocupa toda la altura de la pantalla
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+        }}>
+            <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
                 <NavBar />
             </Box>
             <Typography variant="h4" gutterBottom>
                 ¡Juego Terminado!
             </Typography>
             <Typography variant="h6" gutterBottom>
-                {username}Francisco, tu puntuación es: {score} / {totalQuestions}
+                {username}Usuario, tu puntuación es: {score} / {totalQuestions}
             </Typography>
             <Box mt={4}>
                 <Button variant="contained" color="primary" onClick={handlePlayAgain} sx={{ mr: 2 }}>
