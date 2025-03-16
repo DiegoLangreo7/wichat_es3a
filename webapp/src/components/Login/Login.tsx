@@ -1,93 +1,116 @@
-// src/components/Login.js
 import React, { useState } from 'react';
-import axios, {AxiosError} from 'axios';
-import {Container, Typography, TextField, Button, Snackbar, Link} from '@mui/material';
-import {ErrorResponse} from '../ErrorInterface';
-import {useNavigate} from "react-router-dom";
+import axios, { AxiosError } from 'axios';
+import { Container, Typography, TextField, Button, Link, Box } from '@mui/material';
+import { ErrorResponse } from '../ErrorInterface';
+import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [error, setError] = useState({ username: '', password: '', general: '' });
+  const [loading, setLoading] = useState(false);
+  const newSessionId = uuidv4();
+  
 
   const navigate = useNavigate();
-
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
   const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
 
+  const validateFields = () => {
+    let valid = true;
+    const newErrors = { username: '', password: '', general: '' };
+
+    if (!username) {
+      newErrors.username = 'Username is required.';
+      valid = false;
+    }
+    if (!password) {
+      newErrors.password = 'Password is required.';
+      valid = false;
+    }
+
+    setError(newErrors);
+    return valid;
+  };
+
   const loginUser = async () => {
+    if (!validateFields()) return;
+
+    setLoading(true);
+    setError({ username: '', password: '', general: '' });
+
     try {
-      const response = await axios.post(`${apiEndpoint}/login`, { username, password });
-
-      const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
-      const model = "empathy"
-
-      if (apiKey==='None'){
-        setMessage("LLM API key is not set. Cannot contact the LLM.");
-      }
-      else{
-        const message = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey })
-        setMessage(message.data.answer);
-      }
-      // Extract data from the response
-      const { createdAt: userCreatedAt } = response.data;
-
-      setOpenSnackbar(true);
-      navigate('/main');
+        localStorage.setItem('sessionId', newSessionId);
+        localStorage.setItem('username', username);
+        navigate('/main'); 
     } catch (error) {
-      console.log(error);
-      const axiosError = error as AxiosError<ErrorResponse>; // Usa el tipo AxiosError con ErrorResponse
-      if (axiosError.response && axiosError.response.data) {
-        setError(axiosError.response.data.error); // Accede al mensaje de error
-      } else {
-        setError('An unknown error occurred');
-      }
+        const axiosError = error as AxiosError<ErrorResponse>;
+
+        localStorage.removeItem("user");
+
+        setError((prev) => ({
+            ...prev,
+            general: axiosError.response?.data?.error || 'An unknown error occurred.',
+        }));
+    } finally {
+        setLoading(false);
     }
   };
 
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
-      <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
-        Welcome to the 2025 edition of the Software Architecture course
+    <Container component="main" maxWidth="xs" sx={{ marginTop: 6, textAlign: 'center' }}>
+      <Typography component="h1" variant="h5" gutterBottom>
+        Welcome to WICHAT
       </Typography>
-      <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
-      <div>
-        <Typography component="h1" variant="h5">
-          Login
-        </Typography>
+      <Box sx={{ mt: 2 }}>
         <TextField
-            margin="normal"
-            fullWidth
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+          margin="normal"
+          fullWidth
+          label="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          error={!!error.username}
+          helperText={error.username}
         />
         <TextField
-            margin="normal"
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          margin="normal"
+          fullWidth
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={!!error.password}
+          helperText={error.password}
         />
-        <Button variant="contained" color="primary" onClick={loginUser}>
-          Login
-        </Button>
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="Login successful" />
-        {error && (
-            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
+        {error.general && (
+          <Typography color="error" sx={{ mt: 1 }}>
+            {error.general}
+          </Typography>
         )}
-        <Typography component="div" align="center" sx={{ marginTop: 2 }}/>
-        <Link component="button" variant="body2" onClick={() => navigate('/register')}>
-          Don't have an account? Sing up here.
-        </Link>
-      </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={loginUser} 
+            disabled={loading} 
+            sx={{ width: '100%', transition: 'transform 0.2s ease-in-out',
+                  '&:hover': { transform: 'scale(1.05)' },
+                  '&:active': { transform: 'scale(0.95)' } }}>
+            {loading ? 'Loading...' : 'Login'}
+          </Button>
+        </Box>
+      </Box>
+      {message && (
+        <Typography color="primary" sx={{ mt: 2 }}>
+          {message}
+        </Typography>
+      )}
+      <Link component="button" variant="body2" onClick={() => navigate('/register')} sx={{ mt: 2, display: 'block' }}>
+        Don't have an account? Sign up here.
+      </Link>
     </Container>
   );
 };

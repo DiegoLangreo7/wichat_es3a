@@ -34,6 +34,8 @@ const Main = () => {
         navigate("/game");
     };
 
+    const username = localStorage.getItem('username') || 'Jugador';
+
     return (
         <Box component="main"
             sx={{
@@ -52,7 +54,7 @@ const Main = () => {
             {/* 🔹 Botón de jugar */}
             <Box sx={{ textAlign: "center", mt: 12 }}>
                 <Typography variant="h4" sx={{ color: "#1E293B", fontWeight: "bold", mb: 3 }}>
-                    ¿Listo para jugar?
+                    {username}, ¿Listo para jugar?
                 </Typography>
 
                 <Button
