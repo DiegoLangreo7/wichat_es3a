@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, Button, Box } from '@mui/material';
 
 interface EndGameProps {
@@ -7,11 +7,13 @@ interface EndGameProps {
     totalQuestions: number;
     timeLimit: number;
     themes: { [key: string]: boolean };
-    score: number; // Añadir esta línea
+    score: number;
 }
 
-const EndGame: React.FC<EndGameProps> = ({ username, totalQuestions, timeLimit, themes, score }) => {
+const EndGame: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { username, totalQuestions, timeLimit, themes, score } = location.state as EndGameProps;
 
     const handlePlayAgain = () => {
         navigate('/game'); // Navegar a la ruta del juego para volver a jugar
