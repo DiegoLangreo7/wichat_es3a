@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, Button, Snackbar, Grid, List, ListItem, ListItemText, Box, CircularProgress } from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
+
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
@@ -130,7 +131,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     {handleTimeRemaining()}
                 </Typography>
             </Box>
-            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} onNextRound={handleNextRound} />
+            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} onNextRound={handleNextRound} timeLimit={timeLimitFixed} />
 
             <Box display="flex" justifyContent="center" mt={3}>
                 <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
