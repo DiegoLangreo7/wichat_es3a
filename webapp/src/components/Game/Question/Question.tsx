@@ -6,8 +6,9 @@ import { useLocation } from 'react-router-dom';
 interface QuestionProps {
     totalQuestions: number;
     themes: { [key: string]: boolean };
-    onCorrectAnswer: () => void; // Añadir esta línea
-    onNextRound: () => void; // Añadir esta línea
+    onCorrectAnswer: () => void;
+    onNextRound: () => void;
+    timeLimit: number; // Añadir esta línea
 }
 
 interface Question {
@@ -18,22 +19,22 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer, onNextRound }) => {
+const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer, onNextRound, timeLimit }) => {
 
-    const [questions, setQuestions] = useState<Question[]>([]);  // Guardar todas las preguntas
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Índice de la pregunta actual
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [respuestasAleatorias, setRespuestasAleatorias] = useState<string[]>([]);
     const [imageUrl, setImageUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [timer, setTimer] = useState<number>(0);
+    const [timer, setTimer] = useState<number>(timeLimit); // Inicializar con el tiempo límite
     const [themesSelected, setThemesSelected] = useState<{ [key: string]: boolean }>({
         "country": true,
     });
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
-    const [selectedAnswer, setSelectedAnswer] = useState<string>('');  // Respuesta seleccionada
+    const [selectedAnswer, setSelectedAnswer] = useState<string>('');
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const location = useLocation();
 
@@ -88,50 +89,62 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAn
     }
 
     useEffect(() => {
-        console.log("Ejecutando useEffect...");  // <-- Verifica que esto se imprima
+        console.log("Ejecutando useEffect...");
         obtenerPreguntas();
-    }, []); // Este efecto solo se ejecutará una vez al principio
+    }, []);
 
-    // Esta función se asegura de que se actualicen las respuestas cada vez que cambie la pregunta
     useEffect(() => {
-        actualizarRespuestas();  // Actualiza las respuestas cuando cambia la pregunta
+        actualizarRespuestas();
         actualizarImagen();
-    }, [questions]); // Se ejecuta cuando el índice de la pregunta cambia
+    }, [questions]);
 
-    // Función para manejar la respuesta seleccionada
+    // Efecto para manejar el temporizador
+    useEffect(() => {
+        if (timer > 0) {
+            const interval = setInterval(() => {
+                setTimer(prevTimer => prevTimer - 1);
+            }, 1000);
+            return () => clearInterval(interval);
+        } else {
+            handleNextRound();
+        }
+    }, [timer]);
+
+    const handleNextRound = () => {
+        setNumberClics(prev => prev + 1);
+        setSelectedOption(null);
+        setSelectedAnswer('');
+        setTimer(timeLimit); // Reiniciar el temporizador
+
+        if (currentQuestionIndex < totalQuestions - 1) {
+            obtenerPreguntas();
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            onNextRound();
+        } else {
+            setFinished(true);
+        }
+    };
+
     const handleButtonClick = async (respuestaSeleccionada: string, index: number): Promise<void> => {
         if (!finished) {
-            if (selectedOption !== null) return; // Si ya se seleccionó una opción, no hacer nada
+            if (selectedOption !== null) return;
 
-            setSelectedOption(index); // Guardar la opción seleccionada actualmente
+            setSelectedOption(index);
 
             if (respuestaSeleccionada === questions[currentQuestionIndex].correctAnswer) {
                 setCorrectQuestions(prev => prev + 1);
                 setSelectedAnswer('correct');
-                onCorrectAnswer(); // Llamar a la función de callback cuando la respuesta es correcta
+                onCorrectAnswer();
             } else {
                 setSelectedAnswer('incorrect');
             }
 
-            // Si ya llegamos a la última pregunta, acabamos la partida para mostrar el resultado
             if (numberClics === totalQuestions - 1) {
                 setFinished(true);
             }
 
-            // Después de 3 segundos, restablecer la selección y pasar a la siguiente pregunta
-            setTimeout(async () => {
-                setNumberClics(prev => prev + 1);
-                setSelectedOption(null);
-                setSelectedAnswer('');
-
-                // Avanzar a la siguiente pregunta
-                if (currentQuestionIndex < totalQuestions - 1) {
-                    obtenerPreguntas();
-                    setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-                    onNextRound(); // Llamar a la función de callback para avanzar a la siguiente ronda
-                } else {
-                    setFinished(true);  // Si ya se completaron todas las preguntas, terminar el juego
-                }
+            setTimeout(() => {
+                handleNextRound();
             }, delayBeforeNextQuestion);
         }
     };
@@ -193,6 +206,11 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAn
                                 </Grid>
                             ))}
                         </Grid>
+                        <Box display="flex" justifyContent="center" mt={3}>
+                            <Typography variant="h6">
+                                Tiempo restante: {timer} segundos
+                            </Typography>
+                        </Box>
                     </>
                 )
             )}
