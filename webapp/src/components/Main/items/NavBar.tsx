@@ -1,76 +1,95 @@
 import React, { useState, useRef } from "react";
 import { AppBar, Typography, Box, Toolbar, Menu, MenuItem, Button, ClickAwayListener } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const NavBar: React.FC = () => {
-    const [openUserMenu, setOpenUserMenu] = useState(false); // Estado para controlar la visibilidad del menú
-    const buttonRef = useRef<HTMLButtonElement | null>(null);  // Referencia al botón
+    const [openUserMenu, setOpenUserMenu] = useState(false);
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    const navigate = useNavigate(); 
 
-    const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setOpenUserMenu((prev) => !prev);  // Cambiar estado para abrir o cerrar el menú
-    };
+    const handleUserMenu = () => setOpenUserMenu((prev) => !prev);
+    const handleMenuClose = () => setOpenUserMenu(false);
 
-    const handleMenuClose = () => {
-        setOpenUserMenu(false);  // Cerrar el menú
+    const handleLogout = () => {
+        handleMenuClose(); 
+        localStorage.removeItem("user"); 
+        navigate("/logout"); 
     };
 
     return (
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end'}}>
-            <AppBar position="static">
-                <Toolbar sx= {{backgroundColor: "#2F353B"}}>
-                    {/* Botón "Usuario" que abrirá el menú */}
-                    <ClickAwayListener onClickAway={handleMenuClose}>
-                    <Button
-                        ref={buttonRef}  // Vinculamos la referencia
-                        size="large"
-                        color="inherit"
-                        aria-haspopup="true"
-                        onClick={handleUserMenu}  // Abre el menú
-                        data-testid="open-language-menu"
-                    >
-                        Usuario
-                    </Button>
-                        </ClickAwayListener>
-                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                        <Typography variant="h6" component="div" style={{ color: "white" }}>
-                            WI CHAT
-                        </Typography>
-                    </Box>
+        <AppBar position="static" sx={{ backgroundColor: "#1E293B", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
+                
+                <Typography 
+                    variant="h6" 
+                    sx={{ 
+                        color: "white", 
+                        fontWeight: "bold", 
+                        letterSpacing: "1px",
+                        cursor: "pointer",
+                        transition: "color 0.3s ease-in-out",
+                        "&:hover": { color: "#3B82F6" } 
+                    }}
+                >
+                    WI CHAT
+                </Typography>
 
-                    {/* Usamos ClickAwayListener para cerrar el menú al hacer clic fuera */}
-
-                        <Menu
-                            id="language-appbar"
-                            open={openUserMenu}  // Controlamos la apertura con el estado
-                            anchorEl={buttonRef.current}  // Usamos el botón como ancla
-                            onClose={handleMenuClose}  // Cerrar el menú al hacer clic fuera
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'center',
-                            }}
-                            PaperProps={{
-                                sx: {
-                                    marginTop : .5,
-                                    backgroundColor: "#2F353B",  // Color de fondo del menú
-                                    boxShadow: 3,  // Sombra para mejor visibilidad
-                                    borderRadius: 2,  // Bordes redondeados
+                <ClickAwayListener onClickAway={handleMenuClose}>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Button
+                            ref={buttonRef}
+                            onClick={handleUserMenu}
+                            sx={{
+                                color: "white",
+                                fontSize: "1rem",
+                                textTransform: "none",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": { 
+                                    backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                    transform: "scale(1.05)"
                                 },
                             }}
                         >
-                            {/* Opciones dentro del menú */}
-                            <MenuItem onClick={handleMenuClose}  sx= {{color: "#FFFFFF",}}>
+                            Usuario
+                        </Button>
+                        <Menu
+                            open={openUserMenu}
+                            anchorEl={buttonRef.current}
+                            onClose={handleMenuClose}
+                            PaperProps={{
+                                sx: {
+                                    mt: 1,
+                                    backgroundColor: "#1E293B",
+                                    boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
+                                    borderRadius: 2,
+                                    minWidth: 160,
+                                    transition: "opacity 0.2s ease-in-out",
+                                },
+                            }}
+                        >
+                            <MenuItem onClick={handleMenuClose} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
                                 Historial
                             </MenuItem>
-                            <MenuItem onClick={handleMenuClose} sx= {{color: "#FFFFFF",}}>
+                            <MenuItem onClick={handleMenuClose} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
                                 Cuenta
                             </MenuItem>
+                            <MenuItem 
+                                onClick={handleLogout} 
+                                sx={{ 
+                                    color: "#FF4D4D", 
+                                    fontWeight: "bold", 
+                                    "&:hover": { backgroundColor: "#5A1F1F" } 
+                                }}
+                            >
+                                Cerrar sesión
+                            </MenuItem>
                         </Menu>
-                </Toolbar>
-            </AppBar>
-        </Box>
+                    </Box>
+                </ClickAwayListener>
+            </Toolbar>
+        </AppBar>
     );
 };
 

@@ -26,7 +26,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
     const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
     const TOTAL_ROUNDS = totalQuestionsFixed;
-    const TRANSITION_ROUND_TIME = 5000;
+    const TRANSITION_ROUND_TIME = 3000; // 3 segundos de pausa antes de la siguiente ronda
 
     const [correctQuestions, setCorrectQuestions] = useState<number>(0);
     const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
@@ -55,12 +55,14 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     };
 
     const handleNextRound = () => {
-        if (round < TOTAL_ROUNDS) {
-            setRound(prevRound => prevRound + 1);
-            setTimer(timeLimitFixed); // Reiniciar el temporizador
-        } else {
-            setFinished(true);
-        }
+        setTimeout(() => {
+            if (round < TOTAL_ROUNDS) {
+                setRound(prevRound => prevRound + 1);
+                setTimer(timeLimitFixed); // Reiniciar el temporizador
+            } else {
+                setFinished(true);
+            }
+        }, TRANSITION_ROUND_TIME);
     };
 
     const handleAnswer = (isCorrect: boolean) => {

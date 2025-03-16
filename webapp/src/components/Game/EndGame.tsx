@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, Button, Box } from '@mui/material';
+import NavBar from "../Main/items/NavBar";
 
 interface EndGameProps {
     username: string;
@@ -24,12 +25,21 @@ const EndGame: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ textAlign: 'center', mt: 4 }}>
+        <Box component="main" sx={{
+                    margin: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+            <Box sx={{ width: '100%' }}>
+                <NavBar />
+            </Box>
             <Typography variant="h4" gutterBottom>
                 ¡Juego Terminado!
             </Typography>
             <Typography variant="h6" gutterBottom>
-                {username}, tu puntuación es: {score} / {totalQuestions}
+                {username}Francisco, tu puntuación es: {score} / {totalQuestions}
             </Typography>
             <Box mt={4}>
                 <Button variant="contained" color="primary" onClick={handlePlayAgain} sx={{ mr: 2 }}>
@@ -39,7 +49,7 @@ const EndGame: React.FC = () => {
                     Volver al Menú
                 </Button>
             </Box>
-        </Container>
+        </Box>
     );
 };
 
