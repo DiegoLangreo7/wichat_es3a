@@ -20,7 +20,7 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
     const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
 
     const [questions, setQuestions] = useState<Question[]>([]);  // Guardar todas las preguntas
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);  // Índice de la pregunta actual
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Índice de la pregunta actual
     const [respuestasAleatorias, setRespuestasAleatorias] = useState<string[]>([]);
     const [imageUrl, setImageUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
@@ -64,7 +64,7 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
             console.log('response', response.data);
             setQuestions(prevQuestions => [...prevQuestions, response.data]);
         } catch (err: any) {
-            console.error("Error al obtener las preguntas", err);
+            console.log("Error al obtener las preguntas", err);
             setError('Error al obtener las preguntas');
         } finally {
             setIsLoading(false);
@@ -89,7 +89,6 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
     useEffect(() => {
         console.log("Ejecutando useEffect...");  // <-- Verifica que esto se imprima
         obtenerPreguntas();
-        setCurrentQuestionIndex(0);
     }, []); // Este efecto solo se ejecutará una vez al principio
 
     // Esta función se asegura de que se actualicen las respuestas cada vez que cambie la pregunta

@@ -18,10 +18,12 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
     const numberQuestions = await dataService.getNumberQuestionsByCategory(category);
     console.log("Numero de preguntas " + numberQuestions + " category " + category);
     if(numberQuestions < 10){
+      console.log("Generando preguntas");
       await generateService.generateQuestionsByCategory(category,questionsToGenerate);
     }
 
     const question = await dataService.getRandomQuestionByCategory(category);
+    console.log("Pregunta generada: " + question);
 
     if (!question) {
       return res.status(404).json({ message: "There are no more questions available." });
