@@ -3,23 +3,40 @@ import Login from "../components/Login/Login";
 import AddUser from "../components/AddUser/AddUser";
 import Main from "../components/Main/Main";
 import React from "react";
+import Question from "../components/Game/Question/Question";
+import Game from "../components/Game/Game";
+import EndGame from "../components/Game/EndGame";
+
+
 const router = createBrowserRouter([
-{
-    path: "/",
+    {
+        path: "/",
         element: <Navigate to="/login" replace />,
-},
-{
-    path: "/login",
+    },
+    {
+        path: "/login",
         element: <Login />,
-},
-{
-    path: "/register",
+    },
+    {
+        path: "/register",
         element: <AddUser />,
-},
-{
-    path: "/main",
+    },
+    {
+        path: "/main",
         element: <Main />,
-}
+    },
+    {
+        path: "/game",
+        element: <Game totalQuestions={10} themes={{}} username={localStorage.getItem("username") || "usuario"} timeLimit={10} />,
+    },
+    {
+        path: "/endGame",
+        element: <EndGame />,
+    },
+    {
+        path: "/logout",
+        element: <Login />,
+    }
 ]);
 
 export default router;
