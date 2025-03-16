@@ -10,9 +10,9 @@ const Main = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalTimePlayed: 0,
-        totalGames: 0,
-        gamesWon: 0,
-        gamesLost: 0
+        gamesplayed: 0,
+        correctQuestions: 0,
+        incorrectQuestions: 0
     });
 
     // 🔹 Obtener estadísticas del servidor
@@ -28,6 +28,21 @@ const Main = () => {
         };
 
         fetchStats();
+    }, []);
+
+    // 🔹 Obtener estadísticas de preguntas acertadas y falladas del localStorage
+    useEffect(() => {
+        const correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
+        const incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
+        const gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
+        const secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+        setStats(prevStats => ({
+            ...prevStats,
+            correctQuestions: correctQuestions,
+            incorrectQuestions: incorrectQuestions,
+            gamesplayed: gamesplayed,
+            totalTimePlayed: secondsPlayed
+        }));
     }, []);
 
     const handleButtonClick = () => {
@@ -96,8 +111,8 @@ const Main = () => {
                 </Typography>
                 <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.totalTimePlayed} segundos</Typography>
                 <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.totalGames}</Typography>
-                <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Partidas Ganadas:</b> {stats.gamesWon}</Typography>
-                <Typography variant="body1" sx={{ color: "#F44336" }}><b>Partidas Perdidas:</b> {stats.gamesLost}</Typography>
+                <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions}</Typography>
+                <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions}</Typography>
             </Paper>
         </Box>
     );
