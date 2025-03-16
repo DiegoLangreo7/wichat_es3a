@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 interface QuestionProps {
     totalQuestions: number;
     themes: { [key: string]: boolean };
+    onCorrectAnswer: () => void; // Añadir esta línea
 }
 
 interface Question {
@@ -16,8 +17,7 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
-    const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
+const Question: React.FC<QuestionProps> = ({ totalQuestions, themes, onCorrectAnswer }) => {
 
     const [questions, setQuestions] = useState<Question[]>([]);  // Guardar todas las preguntas
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Índice de la pregunta actual
@@ -107,12 +107,13 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
             if (respuestaSeleccionada === questions[currentQuestionIndex].correctAnswer) {
                 setCorrectQuestions(prev => prev + 1);
                 setSelectedAnswer('correct');
+                onCorrectAnswer(); // Llamar a la función de callback cuando la respuesta es correcta
             } else {
                 setSelectedAnswer('incorrect');
             }
 
             // Si ya llegamos a la última pregunta, acabamos la partida para mostrar el resultado
-            if (numberClics === totalQuestionsFixed - 1) {
+            if (numberClics === totalQuestions - 1) {
                 setFinished(true);
             }
 
@@ -123,7 +124,7 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
                 setSelectedAnswer('');
 
                 // Avanzar a la siguiente pregunta
-                if (currentQuestionIndex < totalQuestionsFixed - 1) {
+                if (currentQuestionIndex < totalQuestions - 1) {
                     obtenerPreguntas();
                     setCurrentQuestionIndex(prevIndex => prevIndex + 1);
                 } else {
@@ -196,5 +197,5 @@ const Question: React.FC<QuestionProps> = ({ totalQuestions, themes }) => {
         </Container>
     );
 };
-export default Question;
 
+export default Question;

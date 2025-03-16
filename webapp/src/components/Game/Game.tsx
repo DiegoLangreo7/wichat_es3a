@@ -77,11 +77,16 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
         }
     };
 
+    const handleCorrectAnswer = () => {
+        setScore(prevScore => prevScore + 1);
+        handleNextRound();
+    };
+
     useEffect(() => {
         if (finished) {
-            navigate('/endGame');
+            navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes } });
         }
-    }, [finished, navigate]);
+    }, [finished, navigate, score, username, totalQuestions, timeLimit, themes]);
 
     useEffect(() => {
 
@@ -126,7 +131,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                     {handleTimeRemaining()}
                 </Typography>
             </Box>
-            <Question totalQuestions={totalQuestionsFixed} themes={themes} />
+            <Question totalQuestions={totalQuestionsFixed} themes={themes} onCorrectAnswer={handleCorrectAnswer} />
 
             <Box display="flex" justifyContent="center" mt={3}>
                 <Button variant="contained" color="secondary" size="large" onClick={handleNextRound}>
