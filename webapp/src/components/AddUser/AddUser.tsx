@@ -15,6 +15,7 @@ const AddUser = () => {
 
     const navigate = useNavigate();
 
+
     const validateFields = () => {
         let valid = true;
         const newErrors = { username: '', password: '', general: '' };
@@ -23,8 +24,8 @@ const AddUser = () => {
             newErrors.username = 'Username is required.';
             valid = false;
         }
-        if (password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters long.';
+        if (password.trim()) {
+            newErrors.password = 'Password is required.';
             valid = false;
         }
 
