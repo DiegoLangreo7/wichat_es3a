@@ -38,9 +38,10 @@ const Login = () => {
   const loginUser = async () => {
     try{
       if (!validateFields()) return;
-      const response = await axios.post(`${apiEndpoint}/login`, { username, password });  
       setLoading(true);
-      navigate('/homepage'); 
+      const response = await axios.post(`${apiEndpoint}/login`, { username, password });  
+      localStorage.setItem('token', response.data.token);
+      navigate('/main'); 
     } catch (errors) {
       const error = errors as AxiosError<ErrorResponse>;
       const newErrors = { username: '', password: '', general: '' };

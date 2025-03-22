@@ -15,6 +15,15 @@ const Main = () => {
         incorrectQuestions: 0
     });
 
+    const isAuthenticated = !!localStorage.getItem("token");
+
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+          navigate("/login");
+        }
+      }, [isAuthenticated, navigate]);
+
     // 🔹 Obtener estadísticas del servidor
     useEffect(() => {
         const fetchStats = async () => {
