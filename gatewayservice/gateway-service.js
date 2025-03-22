@@ -41,7 +41,6 @@ app.get('/health', (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    // Forward the login request to the authentication service
     const authResponse = await axios.post(authServiceUrl+'/login', req.body);
     res.json(authResponse.data);
   } catch (error) {
