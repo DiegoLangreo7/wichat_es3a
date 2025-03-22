@@ -41,6 +41,7 @@ const Login = () => {
       setLoading(true);
       const response = await axios.post(`${apiEndpoint}/login`, { username, password });  
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', JSON.stringify(response.data.username));
       navigate('/main'); 
     } catch (errors) {
       const error = errors as AxiosError<ErrorResponse>;

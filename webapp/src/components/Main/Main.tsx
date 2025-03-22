@@ -28,7 +28,7 @@ const Main = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const username = JSON.parse(localStorage.getItem("user") || "{}").username;
+                const username = (localStorage.getItem("username") || "{}");
                 const response = await axios.get(`${apiEndpoint}/stats/${username}`);
                 setStats(response.data);
             } catch (error) {
@@ -58,7 +58,7 @@ const Main = () => {
         navigate("/game");
     };
 
-    const username = localStorage.getItem('username') || 'Jugador';
+    const username = JSON.parse(localStorage.getItem('username')|| 'Jugador');
 
     return (
         <Box component="main"

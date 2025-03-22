@@ -39,6 +39,8 @@ const AddUser = () => {
         setLoading(true);
         try {
             const response = await axios.post(`${apiEndpoint}/adduser`, { username, password });
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('username', JSON.stringify(response.data.username));
             navigate('/main');  // Redirigir a la página principal tras registro exitoso
 							  
         } catch (error) {
