@@ -42,6 +42,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [isVisible, setIsVisible] = useState<boolean>(true); // Estado para manejar la visibilidad del tiempo
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Estado para la pregunta actual
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+    const categories = ["country", "science", "sports", "history", "art", "animals"];
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -50,7 +51,8 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
     const fetchQuestion = async () => {
         try {
-            const response = await axios.get(`${apiEndpoint}/questions/country`);
+            const category = categories[Math.floor(Math.random() * categories.length)];
+            const response = await axios.get(`${apiEndpoint}/questions/${category}`);
             setCurrentQuestion(response.data);
             setIsLoading(false); // Actualizar el estado a false cuando se carguen las preguntas
         } catch (error) {

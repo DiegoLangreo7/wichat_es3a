@@ -16,11 +16,91 @@ const wikidataCategoriesQueries = {
         ORDER BY RAND()
         LIMIT ?limit
         `,
-    }   
+    },
+    "sports": {
+        query: `
+        SELECT ?sport ?sportLabel ?image
+        WHERE {
+            ?sport wdt:P31 wd:Q349.  # Deporte
+            OPTIONAL { ?sport wdt:P18 ?image. }  # Imagen del deporte (opcional)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        ORDER BY RAND()
+        LIMIT ?limit
+        `,
+    },
+    "science": {
+        query: `
+        SELECT ?scientist ?scientistLabel ?image
+        WHERE {
+            ?scientist wdt:P31 wd:Q5.  # Científico
+            OPTIONAL { ?scientist wdt:P18 ?image. }  # Imagen del científico (opcional)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        ORDER BY RAND()
+        LIMIT ?limit
+        `,
+    },
+    "history": {
+        query: `
+        SELECT ?person ?personLabel ?image
+        WHERE {
+            ?person wdt:P31 wd:Q5.  # Persona
+            OPTIONAL { ?person wdt:P18 ?image. }  # Imagen de la persona (opcional)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        ORDER BY RAND()
+        LIMIT ?limit
+        `,
+    },
+    "art": {
+        query: `
+       SELECT ?painting ?paintingLabel ?image
+        WHERE {
+            ?painting wdt:P31 wd:Q3305213.  # Elemento que sea una pintura
+            ?painting wdt:P170 ?artist.  # Relación con el artista
+            ?artist rdfs:label "NOMBRE_DEL_ARTISTA"@es.  # Filtrar por el nombre del artista (ajústalo según sea necesario)
+            
+            OPTIONAL { ?painting wdt:P18 ?image. }  # Imagen de la pintura (opcional)
+            
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        ORDER BY RAND()
+        LIMIT ?limit
+        `,
+    }, 
+    "animals": {
+        query: `
+        SELECT ?animal ?animalLabel ?image
+        WHERE {
+            ?animal wdt:P31 wd:Q729.  # Animal
+            OPTIONAL { ?animal wdt:P18 ?image. }  # Imagen del animal (opcional)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        ORDER BY RAND()
+        LIMIT ?limit
+        `,
+    },
+
 };
 
 const titlesQuestionsCategories = {
-    "country": "¿A qué país pertenece esta imagen?"
+    "country": "¿A qué país pertenece esta imagen?",
+    "sports": "¿Qué deporte se muestra en la imagen?",
+    "science": "¿Quién es la persona en la imagen?",
+    "history": "¿Quién es la persona en la imagen?",
+    "art": "¿Quién es el artista de esta pintura?",
+    "animals": "¿Qué animal se muestra en la imagen?"
 };
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
