@@ -12,12 +12,14 @@ interface EndGameProps {
     timeLimit: number;
     themes: { [key: string]: boolean };
     score: number;
+    correctAnswers: number;
+    totalTimePlayed: number;
 }
 
 const EndGame: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { username, totalQuestions, timeLimit, themes, score } = location.state as EndGameProps;
+    const { username, totalQuestions, timeLimit, themes, score, correctAnswers, totalTimePlayed } = location.state as EndGameProps;
 
     const handlePlayAgain = () => {
         navigate('/game'); // Navegar a la ruta del juego para volver a jugar
@@ -35,10 +37,11 @@ const EndGame: React.FC = () => {
 
             // Actualizar los valores
             const updatedStats = {
-                correctAnswered: currentStats.correctAnswered + score,
-                incorrectAnswered: currentStats.incorrectAnswered + (totalQuestions - score),
+                correctAnswered: currentStats.correctAnswered + correctAnswers,
+                incorrectAnswered: currentStats.incorrectAnswered + (totalQuestions - correctAnswers),
                 gamesPlayed: currentStats.gamesPlayed + 1,
-                timePlayed: currentStats.timePlayed + (timeLimit * totalQuestions),
+                timePlayed: currentStats.timePlayed + totalTimePlayed,
+                puntuation: currentStats.puntuation + score,
             };
 
             // Guardar los valores actualizados en la base de datos
@@ -68,7 +71,10 @@ const EndGame: React.FC = () => {
                 ¡Juego Terminado!
             </Typography>
             <Typography variant="h6" gutterBottom>
-                {username}, tu puntuación es: {score} / {totalQuestions}
+                {username}, tu puntuación es: {score.toFixed(2)} / {totalQuestions * 100}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+                Preguntas acertadas: {correctAnswers}
             </Typography>
             <Box mt={4}>
                 <Button variant="contained" color="primary" onClick={handlePlayAgain} sx={{ mr: 2 }}>

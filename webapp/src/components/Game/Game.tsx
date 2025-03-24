@@ -29,13 +29,18 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
     const TOTAL_ROUNDS = totalQuestionsFixed;
     const TRANSITION_ROUND_TIME = 3; // 3 segundos de pausa antes de la siguiente ronda
+    const BASE_SCORE = 100; // Puntuación base para cada pregunta
+
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
+    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
     const [almacenado, setAlmacenado] = useState<boolean>(false);
-    const [score, setScore] = useState(0);
+    const [score, setScore] = useState(0); // Puntuación total
+    const [totalTimePlayed, setTotalTimePlayed] = useState(0); // Tiempo total jugado
+    const [correctAnswers, setCorrectAnswers] = useState(0); // Número de preguntas acertadas
     const [round, setRound] = useState(1);
     const [isPaused, setIsPaused] = useState<boolean>(false); // Nuevo estado para pausar el temporizador
     const [transitionTimer, setTransitionTimer] = useState<number>(0); // Estado para manejar el tiempo de transición
@@ -67,50 +72,55 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     };
 
     const handleNextRound = () => {
-    setIsTransitioning(true); // Iniciar la transición
-    setTransitionTimer(TRANSITION_ROUND_TIME);
-    const transitionInterval = setInterval(() => {
-        setTransitionTimer(prev => {
-            if (prev > 1) {
-                return prev - 1;
-            } else {
-                clearInterval(transitionInterval);
-                if (round < TOTAL_ROUNDS) {
-                    setRound(prevRound => prevRound + 1);
-                    setTimer(timeLimitFixed); // Reiniciar el temporizador
-                    setIsPaused(false); // Reanudar el temporizador
-                    fetchQuestion(); // Obtener una nueva pregunta
+        setIsTransitioning(true); // Iniciar la transición
+        setTransitionTimer(TRANSITION_ROUND_TIME);
+        const transitionInterval = setInterval(() => {
+            setTransitionTimer(prev => {
+                if (prev > 1) {
+                    return prev - 1;
                 } else {
-                    setFinished(true);
+                    clearInterval(transitionInterval);
+                    if (round < TOTAL_ROUNDS) {
+                        setRound(prevRound => prevRound + 1);
+                        setTimer(timeLimitFixed); // Reiniciar el temporizador
+                        setIsPaused(false); // Reanudar el temporizador
+                        fetchQuestion(); // Obtener una nueva pregunta
+                    } else {
+                        setFinished(true);
+                        navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes, correctAnswers, totalTimePlayed } });
+                    }
+                    setIsTransitioning(false); // Finalizar la transición
+                    return 0;
                 }
-                setIsTransitioning(false); // Finalizar la transición
-                return 0;
-            }
-        });
-    }, 1000);
+            });
+        }, 1000);
 
-    // Alternar la visibilidad del tiempo cada 500 ms
-    const visibilityInterval = setInterval(() => {
-        setIsVisible(prev => !prev);
-    }, 500);
+        // Alternar la visibilidad del tiempo cada 500 ms
+        const visibilityInterval = setInterval(() => {
+            setIsVisible(prev => !prev);
+        }, 500);
 
-    setTimeout(() => {
-        clearInterval(visibilityInterval);
-        setIsVisible(true); // Asegurarse de que el tiempo sea visible al final de la transición
-    }, TRANSITION_ROUND_TIME * 1000);
-};
+        setTimeout(() => {
+            clearInterval(visibilityInterval);
+            setIsVisible(true); // Asegurarse de que el tiempo sea visible al final de la transición
+        }, TRANSITION_ROUND_TIME * 1000);
+    };
 
-const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
-    setIsPaused(true); // Pausar el temporizador
-    setSelectedAnswer(selectedAnswer);
-    setIsCorrectAnswer(isCorrect);
-    if (isCorrect) {
-        setScore(prevScore => prevScore + 1);
-    }
-    setTimeout(() => {
-        handleNextRound();
-    }, 2000); // Esperar 2 segundos antes de pasar a la siguiente ronda
-};
+    const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
+        setIsPaused(true); // Pausar el temporizador
+        setSelectedAnswer(selectedAnswer);
+        setIsCorrectAnswer(isCorrect);
+        const timeTaken = timeLimitFixed - timer;
+        setTotalTimePlayed(prevTime => prevTime + timeTaken);
+        if (isCorrect) {
+            const questionScore = BASE_SCORE - ((timeLimitFixed - timer) / timeLimitFixed) * BASE_SCORE;
+            setScore(prevScore => prevScore + questionScore);
+            setCorrectAnswers(prev => prev + 1);
+        }
+        setTimeout(() => {
+            handleNextRound();
+        }, 2000); // Esperar 2 segundos antes de pasar a la siguiente ronda
+    };
 
     useEffect(() => {
         fetchQuestion(); // Obtener la primera pregunta al cargar el componente
@@ -133,7 +143,7 @@ const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
 
     useEffect(() => {
         if (finished && round >= TOTAL_ROUNDS) {
-            navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes } });
+            navigate('/endGame', { state: { score, username, totalQuestions, timeLimit, themes, correctAnswers, totalTimePlayed } });
         }
     }, [finished, navigate, score, username, totalQuestions, timeLimit, themes, round]);
 
@@ -174,7 +184,8 @@ const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
                             </Typography>
                         )}
                     </Box>
-                    <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />                    <Box display="flex" justifyContent="center" mt={3}>
+                    <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />                    
+                    <Box display="flex" justifyContent="center" mt={3}>
                         <Button variant="contained" color="secondary" size="large" onClick={() => alert('Pista solicitada')}>
                             Pedir Pista
                         </Button>
