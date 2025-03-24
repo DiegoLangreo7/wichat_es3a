@@ -9,26 +9,26 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000
 const Main = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
-        totalTimePlayed: 0,
-        gamesplayed: 0,
-        correctQuestions: 0,
-        incorrectQuestions: 0
+        timePlayed: 0,
+        gamesPlayed: 0,
+        correctAnswered: 0,
+        incorrectAnswered: 0,
+        puntuation: 0
     });
 
     const isAuthenticated = !!localStorage.getItem("token");
 
-
     useEffect(() => {
         if (!isAuthenticated) {
-          navigate("/login");
+            navigate("/login");
         }
-      }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate]);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const username = (localStorage.getItem("username") || "{}");
-                const response = await axios.get(`${apiEndpoint}/stats/${username}`);
+                const username = JSON.parse(localStorage.getItem("username") || "{}");
+                const response = await axios.get(`${apiEndpoint}/ranking/${username}`);
                 setStats(response.data);
             } catch (error) {
                 console.error("Error fetching stats:", error);
@@ -36,21 +36,6 @@ const Main = () => {
         };
 
         fetchStats();
-    }, []);
-
-    // 🔹 Obtener estadísticas de preguntas acertadas y falladas del localStorage
-    useEffect(() => {
-        const correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
-        const incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-        const gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
-        const secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
-        setStats(prevStats => ({
-            ...prevStats,
-            correctQuestions: correctQuestions,
-            incorrectQuestions: incorrectQuestions,
-            gamesplayed: gamesplayed,
-            totalTimePlayed: secondsPlayed
-        }));
     }, []);
 
     const handleButtonClick = () => {
@@ -114,10 +99,11 @@ const Main = () => {
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                     📊 Estadísticas
                 </Typography>
-                <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.totalTimePlayed} segundos</Typography>
-                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesplayed}</Typography>
-                <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions}</Typography>
-                <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions}</Typography>
+                <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.timePlayed} segundos</Typography>
+                <Typography variant="body1"><b>Puntuación:</b> {stats.puntuation}</Typography>
+                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesPlayed}</Typography>
+                <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctAnswered}</Typography>
+                <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectAnswered}</Typography>
             </Paper>
         </Box>
     );

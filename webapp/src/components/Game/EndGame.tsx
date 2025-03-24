@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, Button, Box } from '@mui/material';
+import axios from 'axios';
 import NavBar from "../Main/items/NavBar";
+
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 interface EndGameProps {
     username: string;
@@ -24,24 +27,25 @@ const EndGame: React.FC = () => {
         navigate('/main'); // Navegar a la ruta del menú principal
     };
 
-    const calculateStats = () => {
-        // Suponiendo que 'score' y 'totalQuestions' son variables ya definidas
-        let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
-        let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-        let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
-        let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+    const calculateStats = async () => {
+        try {
+            // Obtener las estadísticas actuales del usuario
+            const response = await axios.get(`${apiEndpoint}/ranking/${username}`);
+            const currentStats = response.data;
 
-        // Actualizar los valores
-        correctQuestions += score;
-        incorrectQuestions += (totalQuestions - score);
-        gamesplayed += 1;
-        secondsPlayed += timeLimit * totalQuestions;
+            // Actualizar los valores
+            const updatedStats = {
+                correctAnswered: currentStats.correctAnswered + score,
+                incorrectAnswered: currentStats.incorrectAnswered + (totalQuestions - score),
+                gamesPlayed: currentStats.gamesPlayed + 1,
+                timePlayed: currentStats.timePlayed + (timeLimit * totalQuestions),
+            };
 
-        // Guardar los valores actualizados en localStorage
-        localStorage.setItem('correctQuestions', correctQuestions.toString());
-        localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
-        localStorage.setItem('gamesplayed', gamesplayed.toString());
-        localStorage.setItem('secondsPlayed', secondsPlayed.toString());
+            // Guardar los valores actualizados en la base de datos
+            await axios.put(`${apiEndpoint}/ranking/${username}`, updatedStats);
+        } catch (error) {
+            console.error('Error updating stats:', error);
+        }
     };
 
     useEffect(() => {
