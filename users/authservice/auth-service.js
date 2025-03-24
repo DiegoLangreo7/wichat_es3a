@@ -25,33 +25,32 @@ function validateRequiredFields(req, requiredFields) {
 
 // Route for user login
 app.post('/login',  [
-  check('username').isLength({ min: 3 }).trim().escape().withMessage('Username must be at least 3 characters long'),
-  check('password').isLength({ min: 8 }).trim().escape().withMessage('Password must be at least 8 characters long')
+  check('username').isLength({ min: 3 }).trim().escape().withMessage('El nombre de usuario debe tener al menos 3 caracteres'),
+  check('password').isLength({ min: 8 }).trim().escape().withMessage('La contraseña debe tener al menos 8 caracteres')
 ],async (req, res) => {
   try {
-    // Check if required fields are present in the request body
+    validateRequiredFields(req, ['username', 'password']);
   
-  validateRequiredFields(req, ['username', 'password']);
-  
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.array().toString()});
-  }
-    let username =req.body.username.toString();
-    let password =req.body.password.toString();
-    // Find the user by username in the database
-    const user = await User.findOne({ username });
-    
-
-    // Check if the user exists and verify the password
-    if (user && await bcrypt.compare(password, user.password)) {
-      // Generate a JWT token
-      const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
-      // Respond with the token and user information
-      res.json({ token: token, username: username, createdAt: user.createdAt });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(400).json({ error: errors.array()});
     }
+      let username =req.body.username.toString();
+      let password =req.body.password.toString();
+      // Find the user by username in the database
+      const user = await User.findOne({ username });
+      
+
+      // Check if the user exists and verify the password
+      if (user && await bcrypt.compare(password, user.password)) {
+        // Generate a JWT token
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
+        // Respond with the token and user information
+        res.json({ token: token, username: username, createdAt: user.createdAt });
+      } else {
+        res.status(401).json({ error: 'Campos incorrectos' });
+      }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
