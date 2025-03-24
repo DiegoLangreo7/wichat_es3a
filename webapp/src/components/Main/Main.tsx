@@ -24,7 +24,6 @@ const Main = () => {
         }
       }, [isAuthenticated, navigate]);
 
-    // 🔹 Obtener estadísticas del servidor
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -58,8 +57,7 @@ const Main = () => {
         navigate("/game");
     };
 
-    const username = JSON.parse(localStorage.getItem('username')|| 'Jugador');
-
+    const username = JSON.parse(localStorage.getItem('username') || '{}');
     return (
         <Box component="main"
             sx={{
@@ -70,12 +68,10 @@ const Main = () => {
                 backgroundColor: "#FFFFFF",
             }}
         >
-            {/* 🔹 NavBar fijo arriba */}
             <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
                 <NavBar />
             </Box>
 
-            {/* 🔹 Botón de jugar */}
             <Box sx={{ textAlign: "center", mt: 12 }}>
                 <Typography variant="h4" sx={{ color: "#1E293B", fontWeight: "bold", mb: 3 }}>
                     {username}, ¿Listo para jugar?

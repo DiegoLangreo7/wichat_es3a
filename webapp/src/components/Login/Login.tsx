@@ -71,7 +71,9 @@ const Login = () => {
         newErrors.general = 'Error al enviar la solicitud';
         setError(newErrors);
       }
-  }
+    } finally {
+      setLoading(false);  
+    }
 };
 
 
