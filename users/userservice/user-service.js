@@ -26,28 +26,42 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 function validateFormatOfFields(username, password){
+  const errors = [];
+
   if(username.length < 3){
-    throw new Error(`Username must be at least 3 characters long`)
+    errors.push(`El nombre de usuario debe tener al menos 3 caracteres`)
   } 
   if (password.length < 8){
-    throw new Error(`Password must be at least 8 characters long`)
+    errors.push(`La contraseña debe tener al menos 8 caracteres`)
   }
-  if (!password.match(/[a-zA-Z]/g)){
-    throw new Error(`Password must contain at least one letter`)
+  else{
+    if (!password.match(/[a-zA-Z]/g)){
+      errors.push(`La contraseña debe contener al menos una letra`)
+    }
+    if (!password.match(/\d/g)){
+      errors.push(`La contraseña debe contener al menos un número`)
+    }
+    if (!password.match(/[!@#$%^&*.]/g)){
+      errors.push(`La contraseña debe contener al menos un caracter especial (!@#$%^&*.)`)
+    }
+    
   }
-  if (!password.match(/\d/g)){
-    throw new Error(`Password must contain at least one digit`)
+  
+  if(errors.length > 0){
+    throw new Error(errors.join('\n'))
   }
-  if (!password.match(/[!@#$%^&*.]/g)){
-    throw new Error(`Password must contain at least one special character form this list: !@#$%^&*.`)
-  }
-
 }
 
 app.post('/adduser', async (req, res) => {
     try {
         // Check if required fields are present in the request body
         validateRequiredFields(req, ['username', 'password']);
+
+        const user = await User.findOne({username: req.body.username});
+
+        if(user){
+          throw new Error(`El usuario ${req.body.username} ya existe`)
+        }
 
         validateFormatOfFields(req.body.username, req.body.password)
 

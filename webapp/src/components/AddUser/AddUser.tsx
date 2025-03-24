@@ -15,16 +15,17 @@ const AddUser = () => {
 
     const navigate = useNavigate();
 
+
     const validateFields = () => {
         let valid = true;
         const newErrors = { username: '', password: '', general: '' };
 
         if (!username.trim()) {
-            newErrors.username = 'Username is required.';
+            newErrors.username = 'Nombre de usuario obligatorio.';
             valid = false;
         }
-        if (password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters long.';
+        if (!password.trim()) {
+            newErrors.password = 'Contraseña obligatoria';
             valid = false;
         }
 
@@ -36,19 +37,17 @@ const AddUser = () => {
         if (!validateFields()) return;
 
         setLoading(true);
-        setError({ username: '', password: '', general: '' });
-
         try {
-            localStorage.setItem('sessionId', newSessionId);
-            localStorage.setItem('username', username);
+            const response = await axios.post(`${apiEndpoint}/adduser`, { username, password });
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('username', JSON.stringify(response.data.username));
             navigate('/main');  // Redirigir a la página principal tras registro exitoso
 							  
         } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            setError((prev) => ({
-                ...prev,
-                general: axiosError.response?.data?.error || 'An unknown error occurred.',
-            }));
+            if (axiosError.response?.status == 400) {
+                setError({ username: '', password: '', general: axiosError.response.data.error });
+            }
 													  
         } finally {
             setLoading(false);
@@ -60,7 +59,7 @@ const AddUser = () => {
 	
 
     return (
-        <Container component="main" maxWidth="xs" sx={{ marginTop: 6, textAlign: 'center' }}>
+        <Container component="main" maxWidth="sm" sx={{ marginTop: 6, textAlign: 'center' }}>
             <Typography component="h1" variant="h5" gutterBottom>
                 Create an account
             </Typography>
@@ -90,10 +89,16 @@ const AddUser = () => {
                     helperText={error.password}
                 />
                 {error.general && (
-                    <Typography color="error" sx={{ mt: 1 }}>
-                        {error.general}
-                    </Typography>
-                )}
+                <Typography color="error" sx={{ mt: 1 }}>
+                    {error.general.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                        {line}
+                        <br />
+                    </React.Fragment>
+                    ))}
+                </Typography>
+)}
+
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                     <Button 
                         variant="contained" 

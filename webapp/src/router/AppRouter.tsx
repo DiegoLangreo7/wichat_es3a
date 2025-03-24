@@ -43,11 +43,6 @@ const router = createBrowserRouter([
         path: "/historic",
         element: <Historic username={localStorage.getItem("username") || "usuario"}/>,
     }
-    ,
-    {
-        path: "/debug",
-        element: <Historic username={"a"} />,
-    }
 ]);
 
 export default router;
