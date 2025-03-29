@@ -81,6 +81,8 @@ services:
     environment:
       VITE_API_URL: http://wichatdeluxe.duckdns.org:8000
       VITE_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+      REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
+
 
   prometheus:
     image: prom/prometheus
