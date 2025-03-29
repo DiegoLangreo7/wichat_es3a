@@ -72,7 +72,7 @@ services:
     build:
       context: ./webapp
       args:
-        LLM_API_KEY: ${LLM_API_KEY}
+        LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
     depends_on:
       - gatewayservice
     ports:
