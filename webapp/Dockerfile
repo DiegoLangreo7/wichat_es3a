@@ -1,20 +1,27 @@
 FROM node:22
 
-COPY . /app
+# Crear directorio de trabajo
 WORKDIR /app
 
-#Install the dependencies
+# Copiar código fuente
+COPY . .
+
+# Instalar dependencias
 RUN npm install
 
-ARG API_URI="http://localhost:8000"
-ARG LLM_API_KEY
-ENV REACT_APP_API_ENDPOINT=$API_URI
-ENV REACT_APP_LLM_API_KEY=$LLM_API_KEY
+# Declarar los argumentos de build
+ARG REACT_APP_API_ENDPOINT
+ARG REACT_APP_LLM_API_KEY
 
-#Create an optimized version of the webapp
+# Exponerlos como variables de entorno para usarlos en el build
+ENV REACT_APP_API_ENDPOINT=${REACT_APP_API_ENDPOINT}
+ENV REACT_APP_LLM_API_KEY=${REACT_APP_LLM_API_KEY}
+
+# Compilar la app con los valores inyectados
 RUN npm run build
+
+# Instalar servidor estático para servir la app
 RUN npm install serve
 
-#Execute npm run prod to run the server
-CMD [ "npm", "run", "prod" ]
-#CMD ["npm", "start"]
+# Comando de arranque
+CMD ["npm", "run", "prod"]
