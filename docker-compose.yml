@@ -23,7 +23,8 @@ services:
       - "8002:8002"
     networks:
       - mynetwork
-    env_file: ./users/authservice/.env
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/userdb
 
   userservice:
     container_name: userservice-wichat_es3a
@@ -36,7 +37,8 @@ services:
       - "8001:8001"
     networks:
       - mynetwork
-    env_file: ./users/userservice/.env
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/userdb
 
   llmservice:
     container_name: llmservice-wichat_es3a
@@ -47,7 +49,8 @@ services:
       - "8003:8003"
     networks:
       - mynetwork
-    env_file: ./llmservice/.env
+    environment:
+      LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
@@ -63,7 +66,10 @@ services:
       - "8000:8000"
     networks:
       - mynetwork
-    env_file: ./gatewayservice/.env
+    environment:
+      AUTH_SERVICE_URL: http://authservice:8002
+      USER_SERVICE_URL: http://userservice:8001
+      LLM_SERVICE_URL: http://llmservice:8003
 
   webapp:
     container_name: webapp-wichat_es3a
@@ -77,7 +83,8 @@ services:
       - gatewayservice
     ports:
       - "3000:3000"
-    env_file: ./webapp/.env
+    environment:
+      VITE_API_URL: http://gatewayservice:8000
 
   prometheus:
     image: prom/prometheus
@@ -103,10 +110,10 @@ services:
       - grafana_data:/var/lib/grafana
       - ./gatewayservice/monitoring/grafana/provisioning:/etc/grafana/provisioning
     environment:
-      - GF_SERVER_HTTP_PORT=9091
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      GF_SERVER_HTTP_PORT: 9091
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     ports:
       - "9091:9091"
     depends_on:
