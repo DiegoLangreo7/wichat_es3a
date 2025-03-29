@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   mongodb:
     container_name: mongodb-wichat_es3a
@@ -21,8 +23,7 @@ services:
       - "8002:8002"
     networks:
       - mynetwork
-    environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+    env_file: ./users/authservice/.env
 
   userservice:
     container_name: userservice-wichat_es3a
@@ -35,8 +36,7 @@ services:
       - "8001:8001"
     networks:
       - mynetwork
-    environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+    env_file: ./users/userservice/.env
 
   llmservice:
     container_name: llmservice-wichat_es3a
@@ -47,6 +47,7 @@ services:
       - "8003:8003"
     networks:
       - mynetwork
+    env_file: ./llmservice/.env
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
@@ -62,16 +63,13 @@ services:
       - "8000:8000"
     networks:
       - mynetwork
-    environment:
-      AUTH_SERVICE_URL: http://authservice:8002
-      USER_SERVICE_URL: http://userservice:8001
-      LLM_SERVICE_URL: http://llmservice:8003
+    env_file: ./gatewayservice/.env
 
   webapp:
     container_name: webapp-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/webapp:latest
     profiles: ["dev", "prod"]
-    build: 
+    build:
       context: ./webapp
       args:
         LLM_API_KEY: ${LLM_API_KEY}
@@ -79,6 +77,7 @@ services:
       - gatewayservice
     ports:
       - "3000:3000"
+    env_file: ./webapp/.env
 
   prometheus:
     image: prom/prometheus
@@ -91,9 +90,9 @@ services:
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
-    depends_on: 
+    depends_on:
       - gatewayservice
-      
+
   grafana:
     image: grafana/grafana
     container_name: grafana-wichat_es3a
@@ -110,14 +109,13 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     ports:
       - "9091:9091"
-    depends_on: 
+    depends_on:
       - prometheus
-
 
 volumes:
   mongodb_data:
-  prometheus_data: 
-  grafana_data: 
+  prometheus_data:
+  grafana_data:
 
 networks:
   mynetwork:
