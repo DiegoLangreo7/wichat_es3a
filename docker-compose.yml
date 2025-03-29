@@ -4,7 +4,7 @@ services:
   mongodb:
     container_name: mongodb-wichat_es3a
     image: mongo
-    profiles: ["dev", "prod"]
+    profiles: ["dev"]
     volumes:
       - mongodb_data:/data/db
     ports:
@@ -17,28 +17,24 @@ services:
     image: ghcr.io/arquisoft/wichat_es3a/authservice:latest
     profiles: ["dev", "prod"]
     build: ./users/authservice
-    depends_on:
-      - mongodb
     ports:
       - "8002:8002"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
 
   userservice:
     container_name: userservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/userservice:latest
     profiles: ["dev", "prod"]
     build: ./users/userservice
-    depends_on:
-      - mongodb
     ports:
       - "8001:8001"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
 
   llmservice:
     container_name: llmservice-wichat_es3a
@@ -58,7 +54,6 @@ services:
     profiles: ["dev", "prod"]
     build: ./gatewayservice
     depends_on:
-      - mongodb
       - userservice
       - authservice
       - llmservice
@@ -84,7 +79,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      VITE_API_URL: http://gatewayservice:8000
+      VITE_API_URL: http://wichatdeluxe.duckdns.org:8000
+      VITE_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
 
   prometheus:
     image: prom/prometheus
