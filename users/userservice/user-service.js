@@ -14,8 +14,6 @@ app.use(express.json());
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
-
-
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {

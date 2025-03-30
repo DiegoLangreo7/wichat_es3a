@@ -1,6 +1,5 @@
 const express = require('express');
 
-
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
 const historicService = require('./historicService');
@@ -9,7 +8,6 @@ const port = 8004;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
-
 
 app.get('/getQuestionsDb/:category', async (req, res) => {
     try{
@@ -30,7 +28,6 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
             return res.status(404).json({ message: "There are no more questions available." });
         }
 
-
         dataService.deleteQuestionById(question._id);
 
         res.json(question);
@@ -41,10 +38,19 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
     }
 });
 
+app.get('/stats/:username', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const statsResponse = await historicService.getHistoricByUser(username);
+        res.json(statsResponse);
+    } catch (error) {
+        console.log("Error en la petición:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
 });
-
-
 
 module.exports = server

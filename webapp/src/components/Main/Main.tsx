@@ -9,8 +9,8 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000
 const Main = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
-        totalTimePlayed: 0,
-        gamesplayed: 0,
+        timePlayed: 0,
+        gamesPlayed: 0,
         correctQuestions: 0,
         incorrectQuestions: 0
     });
@@ -42,13 +42,13 @@ const Main = () => {
     useEffect(() => {
         const correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
         const incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-        const gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
-        const secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+        const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+        const secondsPlayed = parseInt(localStorage.getItem('timePlayed') || '0');
         setStats(prevStats => ({
             ...prevStats,
             correctQuestions: correctQuestions,
             incorrectQuestions: incorrectQuestions,
-            gamesplayed: gamesplayed,
+            gamesPlayed: gamesPlayed,
             totalTimePlayed: secondsPlayed
         }));
     }, []);
@@ -117,8 +117,8 @@ const Main = () => {
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                     📊 Estadísticas
                 </Typography>
-                <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.totalTimePlayed} segundos</Typography>
-                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesplayed}</Typography>
+                <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.timePlayed} segundos</Typography>
+                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesPlayed}</Typography>
                 <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions}</Typography>
                 <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions}</Typography>
             </Paper>

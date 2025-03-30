@@ -1,16 +1,20 @@
 const historicData = require('./historicRepository');
 const Historic = require('../model/historic');
 
-function getHistoricByUser(userId) {
-    return historicData.getHistoricByUser(userId);
+async function getHistoricByUser(username) {
+    let historic = historicData.getHistoricByUser(username);
+    if (!historic) {
+        await historicData.createNewHistoric(username);
+    }
+    return historic;
 }
 
-function saveHistoric(historic) {
-    historicData.saveHistoric(historic);
+async function saveHistoric(historic) {
+    await historicData.saveHistoric(historic);
 }
 
-function addOneGameToHistoric(userId) {
-    let historic = historicData.getHistoricByUser(userId);
+async function addOneGameToHistoric(username) {
+    let historic = historicData.getHistoricByUser(username);
     if (historic) {
         historic.timesPlayed += 1;
         historic.save();
@@ -20,40 +24,49 @@ function addOneGameToHistoric(userId) {
             correctAnswers: 0,
             incorrectAnswers: 0,
             timePlayed: 0,
-            user: userId,
+            user: username,
             gameMode: "normal"
         });
-        historicData.saveHistoric(newHistoric);
+        await historicData.saveHistoric(newHistoric);
     }
 }
 
-function addCorrectAnswerToHistoric(userId) {
-    let historic = historicData.getHistoricByUser(userId);
+async function addCorrectAnswerToHistoric(username) {
+    let historic = historicData.getHistoricByUser(username);
     if (historic) {
         historic.correctAnswers += 1;
         historic.save();
     } else {
-        console.error("No historic found for user:", userId);
+        console.error("No historic found for user:", username);
     }
 }
 
-function addIncorrectAnswerToHistoric(userId) {
-    let historic = historicData.getHistoricByUser(userId);
+async function addIncorrectAnswerToHistoric(username) {
+    let historic = historicData.getHistoricByUser(username);
     if (historic) {
         historic.incorrectAnswers += 1;
         historic.save();
     } else {
-        console.error("No historic found for user:", userId);
+        console.error("No historic found for user:", username);
     }
 }
 
-function addTimePlayedToHistoric(userId, time) {
-    let historic = historicData.getHistoricByUser(userId);
+async function addTimePlayedToHistoric(username, time) {
+    let historic = historicData.getHistoricByUser(username);
     if (historic) {
         historic.timePlayed += time;
         historic.save();
     } else {
-        console.error("No historic found for user:", userId);
+        console.error("No historic found for user:", username);
     }
+}
+
+module.exports = {
+    getHistoricByUser,
+    saveHistoric,
+    addOneGameToHistoric,
+    addCorrectAnswerToHistoric,
+    addIncorrectAnswerToHistoric,
+    addTimePlayedToHistoric
 }
 
