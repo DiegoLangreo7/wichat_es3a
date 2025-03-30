@@ -11,7 +11,6 @@ const AddUser = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState({ username: '', password: '', general: '' });
     const [loading, setLoading] = useState(false);
-    const newSessionId = uuidv4();
 
     const navigate = useNavigate();
 
@@ -41,6 +40,10 @@ const AddUser = () => {
             const response = await axios.post(`${apiEndpoint}/adduser`, { username, password });
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', JSON.stringify(response.data.username));
+            
+            // Crear un nuevo ranking para el usuario
+            await axios.post(`${apiEndpoint}/ranking`, { username });
+            
             navigate('/main');  // Redirigir a la página principal tras registro exitoso
 							  
         } catch (error) {
