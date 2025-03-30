@@ -1,98 +1,147 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
 import axios from 'axios';
 import NavBar from "../Main/items/NavBar";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8001';
+
+interface RoundResult {
+  round: number;
+  correct: boolean;
+  timeTaken: number;
+  roundScore: number;
+}
 
 interface EndGameProps {
-    username: string;
-    totalQuestions: number;
-    timeLimit: number;
-    themes: { [key: string]: boolean };
-    score: number;
+  username: string;
+  totalQuestions: number;
+  timeLimit: number;
+  themes: { [key: string]: boolean };
+  score: number;
+  numCorrect: number;
+  roundResults: RoundResult[];
 }
 
 const EndGame: React.FC = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { username, totalQuestions, timeLimit, themes, score } = location.state as EndGameProps;
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handlePlayAgain = () => {
-        navigate('/game');
+  const {
+    username: rawUsername,
+    totalQuestions,
+    timeLimit,
+    themes,
+    score,
+    numCorrect,
+    roundResults
+  } = location.state as EndGameProps;
+
+  const username = typeof rawUsername === 'string' ? rawUsername.replace(/^"|"$/g, '') : rawUsername;
+
+  const handlePlayAgain = () => {
+    navigate('/game');
+  };
+
+  const handleBackToMenu = () => {
+    navigate('/main');
+  };
+
+  useEffect(() => {
+    const calculateAndSendStats = async () => {
+      let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
+      let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
+      let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
+      let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+
+      const totalTimePlayed = roundResults.reduce((acc: number, round: RoundResult) => acc + round.timeTaken, 0);
+
+      correctQuestions += numCorrect;
+      incorrectQuestions += (totalQuestions - numCorrect);
+      gamesplayed += 1;
+      secondsPlayed += totalTimePlayed;
+
+      localStorage.setItem('correctQuestions', correctQuestions.toString());
+      localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
+      localStorage.setItem('gamesplayed', gamesplayed.toString());
+      localStorage.setItem('secondsPlayed', secondsPlayed.toString());
+
+      try {
+        await axios.post(`${apiEndpoint}/stats`, {
+          username: username,
+          correctAnswered: numCorrect,
+          incorrectAnswered: totalQuestions - numCorrect,
+          gamesPlayed: 1,
+          timePlayed: totalTimePlayed,
+          puntuation: score
+        });
+      } catch (error) {
+        console.error("Error registrando resultados:", error);
+      }
     };
 
-    const handleBackToMenu = () => {
-        navigate('/main');
-    };
+    calculateAndSendStats();
+  }, [roundResults, numCorrect, score, totalQuestions, username]);
 
-    useEffect(() => {
-        const calculateAndSendStats = async () => {
-            // Obtener estadísticas anteriores del localStorage
-            let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
-            let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-            let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
-            let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
-
-            // Actualizar los valores
-            correctQuestions += score;
-            incorrectQuestions += (totalQuestions - score);
-            gamesplayed += 1;
-            secondsPlayed += timeLimit * totalQuestions;
-
-            // Guardar de nuevo en localStorage por si quieres conservarlos ahí también
-            localStorage.setItem('correctQuestions', correctQuestions.toString());
-            localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
-            localStorage.setItem('gamesplayed', gamesplayed.toString());
-            localStorage.setItem('secondsPlayed', secondsPlayed.toString());
-
-            // Enviar los datos al backend
-            try {
-                await axios.post(`${apiEndpoint}/registerResults`, {
-                    username,
-                    correctAnswered: score,
-                    incorrectAnswered: totalQuestions - score,
-                    gamesPlayed: 1,
-                    timePlayed: timeLimit * totalQuestions,
-                    puntuation: score
-                });
-            } catch (error) {
-                console.error("Error registrando resultados:", error);
-            }
-        };
-
-        calculateAndSendStats();
-    }, []);
-
-    return (
-        <Box component="main" sx={{
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
-        }}>
-            <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
-                <NavBar />
-            </Box>
-            <Typography variant="h4" gutterBottom>
-                ¡Juego Terminado!
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-                {username}, tu puntuación es: {score} / {totalQuestions}
-            </Typography>
-            <Box mt={4}>
-                <Button variant="contained" color="primary" onClick={handlePlayAgain} sx={{ mr: 2 }}>
-                    Volver a Jugar
-                </Button>
-                <Button variant="contained" color="secondary" onClick={handleBackToMenu}>
-                    Volver al Menú
-                </Button>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box
+      component="main"
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'relative',
+        padding: '20px'
+      }}
+    >
+      <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
+        <NavBar />
+      </Box>
+      <Typography variant="h4" gutterBottom sx={{ mt: 8 }}>
+        ¡Juego Terminado!
+      </Typography>
+      <Typography variant="h6" gutterBottom>
+        {username}, tu puntaje total es: {score} puntos.
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Respuestas correctas: {numCorrect} / {totalQuestions}
+      </Typography>
+      <Paper sx={{ width: '90%', maxWidth: 600, mt: 3, p: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          Resumen de la partida
+        </Typography>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Ronda</strong></TableCell>
+              <TableCell><strong>Resultado</strong></TableCell>
+              <TableCell><strong>Tiempo (s)</strong></TableCell>
+              <TableCell><strong>Puntos</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {roundResults.map((round) => (
+              <TableRow key={round.round}>
+                <TableCell>Ronda {round.round}</TableCell>
+                <TableCell>{round.correct ? 'Acertada' : 'Fallada'}</TableCell>
+                <TableCell>{round.timeTaken}</TableCell>
+                <TableCell>{round.roundScore}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+      <Box mt={4} sx={{ display: 'flex', gap: 2 }}>
+        <Button variant="contained" color="primary" onClick={handlePlayAgain}>
+          Volver a Jugar
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleBackToMenu}>
+          Volver al Menú
+        </Button>
+      </Box>
+    </Box>
+  );
 };
 
 export default EndGame;
