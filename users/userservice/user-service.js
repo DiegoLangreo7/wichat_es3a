@@ -2,12 +2,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./user-model')
+const User = require('./user-model');
+const Ranking = require('./ranking-model');
 
 const app = express();
 const port = 8001;
 
-// Middleware to parse JSON in request body
 app.use(express.json());
 
 // Connect to MongoDB
@@ -15,16 +15,14 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
 
-
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
-    for (const field of requiredFields) {
-      if (!(field in req.body)) {
-        throw new Error(`Missing required field: ${field}`);
-      }
+  for (const field of requiredFields) {
+    if (!(field in req.body)) {
+      throw new Error(`Missing required field: ${field}`);
     }
+  }
 }
-
 function validateFormatOfFields(username, password){
   const errors = [];
 
@@ -78,6 +76,38 @@ app.post('/adduser', async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message }); 
     }});
+
+// Endpoint para registrar resultados
+app.post('/registerResults', async (req, res) => {
+  try {
+    validateRequiredFields(req, ['username', 'correctAnswered', 'incorrectAnswered', 'gamesPlayed', 'timePlayed', 'puntuation']);
+
+    const existingRanking = await Ranking.findOne({ username: req.body.username });
+
+    if (existingRanking) {
+      existingRanking.correctAnswered += req.body.correctAnswered;
+      existingRanking.incorrectAnswered += req.body.incorrectAnswered;
+      existingRanking.gamesPlayed += req.body.gamesPlayed;
+      existingRanking.timePlayed += req.body.timePlayed;
+      existingRanking.puntuation += req.body.puntuation;
+      await existingRanking.save();
+      res.json(existingRanking);
+    } else {
+      const newRanking = new Ranking({
+        username: req.body.username,
+        correctAnswered: req.body.correctAnswered,
+        incorrectAnswered: req.body.incorrectAnswered,
+        gamesPlayed: req.body.gamesPlayed,
+        timePlayed: req.body.timePlayed,
+        puntuation: req.body.puntuation
+      });
+      await newRanking.save();
+      res.json(newRanking);
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);

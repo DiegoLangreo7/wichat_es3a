@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, Button, Box } from '@mui/material';
+import axios from 'axios';
 import NavBar from "../Main/items/NavBar";
+
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 interface EndGameProps {
     username: string;
@@ -17,40 +20,54 @@ const EndGame: React.FC = () => {
     const { username, totalQuestions, timeLimit, themes, score } = location.state as EndGameProps;
 
     const handlePlayAgain = () => {
-        navigate('/game'); // Navegar a la ruta del juego para volver a jugar
+        navigate('/game');
     };
 
     const handleBackToMenu = () => {
-        navigate('/main'); // Navegar a la ruta del menú principal
-    };
-
-    const calculateStats = () => {
-        // Suponiendo que 'score' y 'totalQuestions' son variables ya definidas
-        let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
-        let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-        let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
-        let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
-
-        // Actualizar los valores
-        correctQuestions += score;
-        incorrectQuestions += (totalQuestions - score);
-        gamesplayed += 1;
-        secondsPlayed += timeLimit * totalQuestions;
-
-        // Guardar los valores actualizados en localStorage
-        localStorage.setItem('correctQuestions', correctQuestions.toString());
-        localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
-        localStorage.setItem('gamesplayed', gamesplayed.toString());
-        localStorage.setItem('secondsPlayed', secondsPlayed.toString());
+        navigate('/main');
     };
 
     useEffect(() => {
-        calculateStats(); // Llamar a calculateStats cuando el componente se monte
+        const calculateAndSendStats = async () => {
+            // Obtener estadísticas anteriores del localStorage
+            let correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
+            let incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
+            let gamesplayed = parseInt(localStorage.getItem('gamesplayed') || '0');
+            let secondsPlayed = parseInt(localStorage.getItem('secondsPlayed') || '0');
+
+            // Actualizar los valores
+            correctQuestions += score;
+            incorrectQuestions += (totalQuestions - score);
+            gamesplayed += 1;
+            secondsPlayed += timeLimit * totalQuestions;
+
+            // Guardar de nuevo en localStorage por si quieres conservarlos ahí también
+            localStorage.setItem('correctQuestions', correctQuestions.toString());
+            localStorage.setItem('incorrectQuestions', incorrectQuestions.toString());
+            localStorage.setItem('gamesplayed', gamesplayed.toString());
+            localStorage.setItem('secondsPlayed', secondsPlayed.toString());
+
+            // Enviar los datos al backend
+            try {
+                await axios.post(`${apiEndpoint}/registerResults`, {
+                    username,
+                    correctAnswered: score,
+                    incorrectAnswered: totalQuestions - score,
+                    gamesPlayed: 1,
+                    timePlayed: timeLimit * totalQuestions,
+                    puntuation: score
+                });
+            } catch (error) {
+                console.error("Error registrando resultados:", error);
+            }
+        };
+
+        calculateAndSendStats();
     }, []);
 
     return (
         <Box component="main" sx={{
-            height: '100vh', // Ocupa toda la altura de la pantalla
+            height: '100vh',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
