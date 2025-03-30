@@ -7,41 +7,22 @@ interface HistoricProps {
     username: string;
 }
 
-interface Question {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    answer: string;
-    imageUrl?: string;
-    time: number;
+interface HistoricStats {
+    totalTimePlayed: number;
+    gamesPlayed: number;
+    correctQuestions: number;
+    incorrectQuestions: number;
+    gameMode: string;
 }
 
 const Historic: React.FC<HistoricProps> = ({username}) => {
-    const [stats, setStats] = useState({
+    const [stats, setStats] = useState<HistoricStats>({
         totalTimePlayed: 0,
-        gamesplayed: 0,
+        gamesPlayed: 0,
         correctQuestions: 0,
-        incorrectQuestions: 0
+        incorrectQuestions: 0,
+        gameMode: "Normal"
     });
-    const [questions, setQuestions] = useState<Question[]>([{
-        question: "Estás bien?",
-        options: ["Sí", "No", "He estado mejor", "Adiós"],
-        correctAnswer: "No",
-        answer: "He estado mejor",
-        time: 5
-    },{
-        question: "Estás bien?",
-        options: ["Sí", "No", "He estado mejor", "Adiós"],
-        correctAnswer: "No",
-        answer: "He estado mejor",
-        time: 5
-    },{
-        question: "Estás bien?",
-        options: ["Sí", "No", "He estado mejor", "Adiós"],
-        correctAnswer: "No",
-        answer: "He estado mejor",
-        time: 5
-    }]);
  return (<><NavBar/>
     <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" position="relative" mt={2} mb={3}>
         {/* 🔹 Sección de estadísticas */}
@@ -56,14 +37,12 @@ const Historic: React.FC<HistoricProps> = ({username}) => {
             <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                 📊 Estadísticas de {username}
             </Typography>
-            <Typography variant="body1"><b>Tiempo Jugado:</b>{stats.totalTimePlayed} segundos</Typography>
-            <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesplayed}</Typography>
-            <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b>{stats.correctQuestions} </Typography>
+            <Typography variant="body1"><b>Modo de Juego:</b> {stats.gameMode}</Typography>
+            <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.totalTimePlayed} segundos</Typography>
+            <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesPlayed}</Typography>
+            <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions} </Typography>
             <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions} </Typography>
         </Paper>
-        {questions.map((q, index) => (
-            <QuestionStat question={q}/>
-        ))}
     </Box>
      </>
  );

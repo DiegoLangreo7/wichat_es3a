@@ -17,7 +17,6 @@ const Main = () => {
 
     const isAuthenticated = !!localStorage.getItem("token");
 
-
     useEffect(() => {
         if (!isAuthenticated) {
           navigate("/login");

@@ -4,6 +4,7 @@ const historicSchema = new mongoose.Schema({
     timesPlayed: Number,
     correctAnswers: Number,
     incorrectAnswers: Number,
+    timePlayed: Number,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     gameMode: String
 });

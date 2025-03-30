@@ -45,7 +45,8 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [clueOpen, setClueOpen] = useState<boolean>(true);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
+    const [timer, setTimer] = useState<number>(timeLimitFixed); // Inicializar con el tiempo límite
     const [numberClics, setNumberClics] = useState<number>(0);
     const [finished, setFinished] = useState<boolean>(false);
     const [almacenado, setAlmacenado] = useState<boolean>(false);
@@ -216,7 +217,8 @@ const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
                             </Typography>
                         )}
                     </Box>
-                    <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />                    <Box display="flex" justifyContent="center" mt={3}>
+                    <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+                        <Box display="flex" justifyContent="center" mt={3}>
                         <Button variant="contained" color="secondary" size="large" onClick={() => setClueOpen(!clueOpen)}>
                             Pedir Pista
                         </Button>
