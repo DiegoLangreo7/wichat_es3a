@@ -9,7 +9,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError] = useState({ username: '', password: '', general: '' });
+  const [error, setError] = useState<{ username: string; password: string; general: string }>({ username: '', password: '', general: '' });
   const [loading, setLoading] = useState(false);
   const newSessionId = uuidv4();
   
@@ -23,11 +23,11 @@ const Login = () => {
     const newErrors = { username: '', password: '', general: '' };
 
     if (!username) {
-      newErrors.username = 'Username is required.';
+      newErrors.username = 'Nombre de usuario obligatorio.';
       valid = false;
     }
     if (!password) {
-      newErrors.password = 'Password is required.';
+      newErrors.password = 'Contraseña obligatoria.';
       valid = false;
     }
 
@@ -36,28 +36,46 @@ const Login = () => {
   };
 
   const loginUser = async () => {
-    if (!validateFields()) return;
+    try{
+      if (!validateFields()) return;
+      setLoading(true);
+      const response = await axios.post(`${apiEndpoint}/login`, { username, password });  
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', JSON.stringify(response.data.username));
+      navigate('/main'); 
+    } catch (errors) {
+      const error = errors as AxiosError<ErrorResponse>;
+      const newErrors = { username: '', password: '', general: '' };
 
-    setLoading(true);
-    setError({ username: '', password: '', general: '' });
-
-    try {
-        localStorage.setItem('sessionId', newSessionId);
-        localStorage.setItem('username', username);
-        navigate('/main'); 
-    } catch (error) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-
-        localStorage.removeItem("user");
-
-        setError((prev) => ({
-            ...prev,
-            general: axiosError.response?.data?.error || 'An unknown error occurred.',
-        }));
+      if (error.response) {
+        // El servidor respondió con un código de estado fuera del rango 2xx
+        if (error.response.status === 400) {
+          const errorData = error.response.data.error;
+          if (Array.isArray(errorData)){
+            newErrors.general = errorData.map((e) => e.msg).join(' ');
+          } else{
+            newErrors.general = errorData || 'Error desconocido';
+          }
+          setError(newErrors);
+        } else if (error.response.status === 401) {
+          newErrors.general = 'Usuario o contraseña incorrectos';
+          setError(newErrors);
+        } else {
+          newErrors.general = 'Error desconocido en el servidor';
+          setError(newErrors);
+        }
+      } else if (error.request) {
+        newErrors.general = 'No se recibió respuesta del servidor';
+        setError(newErrors);
+      } else {
+        newErrors.general = 'Error al enviar la solicitud';
+        setError(newErrors);
+      }
     } finally {
-        setLoading(false);
+      setLoading(false);  
     }
-  };
+};
+
 
 
   return (
