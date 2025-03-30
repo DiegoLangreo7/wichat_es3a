@@ -35,14 +35,13 @@ const Historic: React.FC<HistoricProps> = ({username}) => {
         correctAnswer: "No",
         answer: "He estado mejor",
         time: 5
-    },
-        {
-            question: "Estás bien?",
-            options: ["Sí", "No", "He estado mejor", "Adiós"],
-            correctAnswer: "No",
-            answer: "He estado mejor",
-            time: 5
-        }]);
+    },{
+        question: "Estás bien?",
+        options: ["Sí", "No", "He estado mejor", "Adiós"],
+        correctAnswer: "No",
+        answer: "He estado mejor",
+        time: 5
+    }]);
  return (<><NavBar/>
     <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" position="relative" mt={2} mb={3}>
         {/* 🔹 Sección de estadísticas */}
