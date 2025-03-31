@@ -6,6 +6,7 @@
     "@types/mongoose": "^5.11.97",
     "axios": "^1.8.2",
     "axios-mock-adapter": "^2.1.0",
+    "cors": "^2.8.5",
     "framer-motion": "^12.5.0",
     "list": "^2.0.19",
     "mongoose": "^8.12.1",
