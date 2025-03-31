@@ -22,16 +22,6 @@ app.use(express.json());
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
-app.get('/stats/:username', async (req, res) => {
-    try {
-        const username = req.params.username;
-        const statsResponse = await axios.get(`${questionServiceUrl}/stats/${username}`);
-        res.json(statsResponse.data);
-    } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
-    }
-});
-
 app.get('/questions/:category', async (req, res) => {
     try{
         console.log("Category: " + req.params.category);
@@ -61,6 +51,16 @@ app.post('/adduser', async (req, res) => {
     try {
         // Forward the add user request to the user service
         const userResponse = await axios.post(userServiceUrl+'/adduser', req.body);
+        res.json(userResponse.data);
+    } catch (error) {
+        res.status(error.response.status).json({ error: error.response.data.error });
+    }
+});
+
+app.post('/stats/:username', async (req, res) => {
+    try {
+        // Forward the add user request to the user service
+        const userResponse = await axios.post(userServiceUrl+'/stats/:username', req.body);
         res.json(userResponse.data);
     } catch (error) {
         res.status(error.response.status).json({ error: error.response.data.error });
