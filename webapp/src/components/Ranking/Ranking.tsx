@@ -76,13 +76,22 @@ const Ranking: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {top3.map((entry, index) => (
-              <TableRow key={entry.username} sx={{ backgroundColor: "#FFFFFF" }}>
-                <TableCell>{getMedalEmoji(index)} {index + 1}</TableCell>
-                <TableCell>{entry.username}</TableCell>
-                <TableCell>{entry.puntuation}</TableCell>
-              </TableRow>
-            ))}
+            {top3.map((entry, index) => {
+              const isCurrentUser = entry.username === username;
+              return (
+                <TableRow
+                  key={entry.username}
+                  sx={{
+                    backgroundColor: isCurrentUser ? "#E3F2FD" : "#FFFFFF",
+                    fontWeight: isCurrentUser ? "bold" : "normal"
+                  }}
+                >
+                  <TableCell>{getMedalEmoji(index)} {index + 1}</TableCell>
+                  <TableCell>{entry.username}</TableCell>
+                  <TableCell>{entry.puntuation}</TableCell>
+                </TableRow>
+              );
+            })}
             {contextAroundUser.length > 0 && (
               <>
                 <TableRow>
