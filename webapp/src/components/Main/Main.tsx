@@ -4,7 +4,7 @@ import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8001';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 const Main = () => {
     const navigate = useNavigate();
