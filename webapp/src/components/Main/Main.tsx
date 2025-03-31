@@ -47,9 +47,17 @@ const Main = () => {
         fetchStats();
     }, []);
 
+    // Inicia el juego con las configuraciones pasadas por parámetro.
     const handleButtonClick = () => {
-        navigate("/game");
-    };
+        navigate("/game", {
+            state: {
+                username: username,
+                totalQuestions: 1,
+                timeLimit: 10,
+                themes: { geografía: true, historia: false }
+            }
+        });
+    };    
 
     // Recuperar el username de localStorage y parsearlo para eliminar las comillas adicionales
     const storedUsername = localStorage.getItem('username');

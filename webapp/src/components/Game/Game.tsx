@@ -16,13 +16,6 @@ import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
 import SendIcon from '@mui/icons-material/Send';
 
-interface GameProps {
-  username: string;
-  totalQuestions: number;
-  timeLimit: number;
-  themes: { [key: string]: boolean };
-}
-
 interface Question {
   question: string;
   options: string[];
@@ -38,22 +31,31 @@ interface RoundResult {
   roundScore: number;
 }
 
-const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes }) => {
-  // Valores por defecto
+const Game: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Obtener los parámetros desde la navegación
+  const {
+    username = "Usuario",
+    totalQuestions = 10,
+    timeLimit = 180,
+    themes = {}
+  } = location.state || {};
+
   const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
   const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
   const TOTAL_ROUNDS = totalQuestionsFixed;
-  const TRANSITION_ROUND_TIME = 3; // 3 segundos de pausa antes de la siguiente ronda
+  const TRANSITION_ROUND_TIME = 3;
 
-  // Estados del juego
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [clueOpen, setClueOpen] = useState<boolean>(true);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
   const [timer, setTimer] = useState<number>(timeLimitFixed);
   const [finished, setFinished] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);          // Puntaje total (por tiempo)
-  const [numCorrect, setNumCorrect] = useState<number>(0);  // Número de respuestas correctas
+  const [score, setScore] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0);
   const [round, setRound] = useState<number>(1);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [transitionTimer, setTransitionTimer] = useState<number>(0);
@@ -65,7 +67,6 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
   const [guessed, setGuessed] = useState<boolean>(false);
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
 
-  const navigate = useNavigate();
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
   const fetchQuestion = async () => {
@@ -87,12 +88,9 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     return `${secsRStr}`;
   };
 
-  // Modificamos handleNextRound para recibir el parámetro answeredCorrectly
   const handleNextRound = (answeredCorrectly: boolean) => {
-    // Capturamos el valor actual del temporizador para calcular el tiempo empleado en esta ronda
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
-    // Si respondió correctamente, se calcula el puntaje de la ronda; si falla, es 0
     const roundScore = answeredCorrectly ? Math.round((currentTimer / timeLimitFixed) * 100) : 0;
 
     if (answeredCorrectly) {
@@ -100,7 +98,6 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     }
     setScore(prev => prev + roundScore);
 
-    // Usamos el número de ronda basado en la longitud del array de resultados + 1
     const roundNumber = roundResults.length + 1;
     const roundResult: RoundResult = {
       round: roundNumber,
@@ -143,13 +140,11 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     }, TRANSITION_ROUND_TIME * 1000);
   };
 
-  // En handleAnswer capturamos el resultado y lo pasamos a handleNextRound luego de 2 segundos
   const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
     setIsPaused(true);
     setSelectedAnswer(selectedAnswer);
     setIsCorrectAnswer(isCorrect);
     setGuessed(true);
-    // Guardamos el resultado en una variable local
     const answeredCorrectly = isCorrect;
     setTimeout(() => {
       handleNextRound(answeredCorrectly);
@@ -167,7 +162,6 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
           setTimer(prev => prev - 1);
         } else {
           setIsPaused(true);
-          // Si se agota el tiempo, consideramos la respuesta como incorrecta
           handleNextRound(false);
         }
       }, 1000);
@@ -177,27 +171,25 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
 
   useEffect(() => {
     if (finished && round >= TOTAL_ROUNDS) {
-      // Se pasa la información al EndGame, incluyendo score y numCorrect
-      navigate('/endGame', { state: { score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults } });
+      navigate('/endGame', {
+        state: {
+          score,
+          numCorrect,
+          username,
+          totalQuestions,
+          timeLimit,
+          themes,
+          roundResults
+        }
+      });
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  interface Message {
-    text: string;
-    sender: 'user' | 'system';
-  }
-
   const handleSendMessage = (): void => {
     if (newMessage.trim() !== "") {
-      setMessages(prev => [
-        ...prev,
-        { text: newMessage, sender: 'user' }
-      ]);
+      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
       setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          { text: 'Esta es tu pista de ayuda.', sender: 'system' }
-        ]);
+        setMessages(prev => [...prev, { text: 'Esta es tu pista de ayuda.', sender: 'system' }]);
       }, 1000);
       setNewMessage("");
     }
@@ -252,9 +244,7 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
             </Box>
           </Box>
           {clueOpen ? (
-            <Box>
-              {/* Elementos adicionales para la pista */}
-            </Box>
+            <Box>{/* Puedes añadir contenido adicional aquí */}</Box>
           ) : (
             <Box
               sx={{
