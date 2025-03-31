@@ -16,6 +16,10 @@ const NavBar: React.FC = () => {
         navigate("/historic");
     };
 
+    const handleRanking = () => {
+        navigate("/ranking");
+    };
+
     const handleMain = () => {
         navigate("/main");
     };
@@ -27,27 +31,44 @@ const NavBar: React.FC = () => {
         navigate("/logout"); 
     };
 
-    // @ts-ignore
     return (
         <AppBar position="static" sx={{ backgroundColor: "#1E293B", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
-                
-                <Typography
-                    variant="h6"
-                    onClick={handleMain}
-                    sx={{ 
-                        color: "white", 
-                        fontWeight: "bold", 
-                        letterSpacing: "1px",
-                        cursor: "pointer",
-                        transition: "color 0.3s ease-in-out",
-                        height: "100%",
-                        "&:hover": { color: "#3B82F6" } 
-                    }}
-                >
-                    WI CHAT
-                </Typography>
-
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Typography
+                        variant="h6"
+                        onClick={handleMain}
+                        sx={{ 
+                            color: "white", 
+                            fontWeight: "bold", 
+                            letterSpacing: "1px",
+                            cursor: "pointer",
+                            transition: "color 0.3s ease-in-out",
+                            "&:hover": { color: "#3B82F6" } 
+                        }}
+                    >
+                        WI CHAT
+                    </Typography>
+    
+                    <Button
+                        onClick={handleRanking}
+                        sx={{
+                            color: "white",
+                            fontSize: "1rem",
+                            textTransform: "none",
+                            padding: "6px 12px",
+                            borderRadius: "8px",
+                            transition: "all 0.3s ease-in-out",
+                            "&:hover": { 
+                                backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                transform: "scale(1.05)"
+                            },
+                        }}
+                    >
+                        Ranking Global
+                    </Button>
+                </Box>
+    
                 <ClickAwayListener onClickAway={handleMenuClose}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Button
@@ -105,6 +126,6 @@ const NavBar: React.FC = () => {
             </Toolbar>
         </AppBar>
     );
-};
+}    
 
 export default NavBar;
