@@ -2,7 +2,6 @@ const express = require('express');
 
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
-const historicService = require('./historicService');
 const app = express();
 const port = 8004;
 
@@ -33,17 +32,6 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
         res.json(question);
 
     }catch (error) {
-        console.log("Error en la petición:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.get('/stats/:username', async (req, res) => {
-    try {
-        const username = req.params.username;
-        const statsResponse = await historicService.getHistoricByUser(username);
-        res.json(statsResponse);
-    } catch (error) {
         console.log("Error en la petición:", error);
         res.status(500).json({ error: error.message });
     }
