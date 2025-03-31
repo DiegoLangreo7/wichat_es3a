@@ -91,13 +91,21 @@ const Game: React.FC = () => {
   const handleNextRound = (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
-    const roundScore = answeredCorrectly ? Math.round((currentTimer / timeLimitFixed) * 100) : 0;
-
+  
+    // Definir multiplicador según el timeLimit
+    let multiplier = 1;
+    if (timeLimitFixed === 20) multiplier = 1.5;
+    else if (timeLimitFixed === 10) multiplier = 2;
+  
+    // Calcular puntuación con bonus
+    const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    const roundScore = Math.round(baseScore * multiplier);
+  
     if (answeredCorrectly) {
       setNumCorrect(prev => prev + 1);
     }
     setScore(prev => prev + roundScore);
-
+  
     const roundNumber = roundResults.length + 1;
     const roundResult: RoundResult = {
       round: roundNumber,
@@ -105,32 +113,32 @@ const Game: React.FC = () => {
       timeTaken: roundTimeTaken,
       roundScore: roundScore
     };
-    console.log(`Ronda ${roundNumber}: answeredCorrectly=${answeredCorrectly}, timeTaken=${roundTimeTaken}, roundScore=${roundScore}`);
+  
+    console.log(`Ronda ${roundNumber}: correcto=${answeredCorrectly}, tiempo=${roundTimeTaken}, scoreBase=${Math.round(baseScore)}, bonus=${multiplier}x, final=${roundScore}`);
+  
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
-
+  
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
+  
     const transitionInterval = setInterval(() => {
       setTransitionTimer(prev => {
-        if (prev > 1) {
-          return prev - 1;
+        if (prev > 1) return prev - 1;
+        clearInterval(transitionInterval);
+        if (round < TOTAL_ROUNDS) {
+          setRound(prev => prev + 1);
+          setTimer(timeLimitFixed);
+          setIsPaused(false);
+          fetchQuestion();
         } else {
-          clearInterval(transitionInterval);
-          if (round < TOTAL_ROUNDS) {
-            setRound(prev => prev + 1);
-            setTimer(timeLimitFixed);
-            setIsPaused(false);
-            fetchQuestion();
-          } else {
-            setFinished(true);
-          }
-          setIsTransitioning(false);
-          return 0;
+          setFinished(true);
         }
+        setIsTransitioning(false);
+        return 0;
       });
     }, 1000);
-
+  
     const visibilityInterval = setInterval(() => {
       setIsVisible(prev => !prev);
     }, 500);
@@ -139,6 +147,7 @@ const Game: React.FC = () => {
       setIsVisible(true);
     }, TRANSITION_ROUND_TIME * 1000);
   };
+  
 
   const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
     setIsPaused(true);

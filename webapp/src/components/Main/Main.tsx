@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, Paper } from "@mui/material";
+import { Box, Button, Typography, Paper, Slider } from "@mui/material";
 import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,6 +16,9 @@ const Main = () => {
         puntuation: 0
     });
 
+    const [difficulty, setDifficulty] = useState<number>(1); 
+    
+
     const isAuthenticated = !!localStorage.getItem("token");
 
     useEffect(() => {
@@ -26,7 +29,6 @@ const Main = () => {
 
     useEffect(() => {
         const fetchStats = async () => {
-            // Se asume que el username se guarda en formato JSON en localStorage
             const storedUsername = localStorage.getItem("username");
             const username = storedUsername ? JSON.parse(storedUsername) : "";
             try {
@@ -35,7 +37,6 @@ const Main = () => {
             } catch (error) {
                 console.error("Error fetching stats, intentando crear ranking:", error);
                 try {
-                    // Si no existe un ranking, se crea en la base de datos
                     const createResponse = await axios.post(`${apiEndpoint}/stats`, { username });
                     setStats(createResponse.data);
                 } catch (createError) {
@@ -47,21 +48,26 @@ const Main = () => {
         fetchStats();
     }, []);
 
-    // Inicia el juego con las configuraciones pasadas por parámetro.
+    const storedUsername = localStorage.getItem('username');
+    const username = storedUsername ? JSON.parse(storedUsername) : "Jugador";
+
+    const difficultyMap: Record<number, { label: string; time: number; color: string }> = {
+        0: { label: "Fácil", time: 30, color: "#4CAF50" },
+        1: { label: "Medio", time: 20, color: "#FFA726" },
+        2: { label: "Difícil", time: 10, color: "#EF5350" },
+    };
+
     const handleButtonClick = () => {
+        const selected = difficultyMap[difficulty];
         navigate("/game", {
             state: {
-                username: username,
-                totalQuestions: 1,
-                timeLimit: 10,
+                username,
+                totalQuestions: 10,
+                timeLimit: selected.time,
                 themes: { geografía: true, historia: false }
             }
         });
-    };    
-
-    // Recuperar el username de localStorage y parsearlo para eliminar las comillas adicionales
-    const storedUsername = localStorage.getItem('username');
-    const username = storedUsername ? JSON.parse(storedUsername) : "Jugador";
+    };
 
     return (
         <Box component="main"
@@ -81,6 +87,28 @@ const Main = () => {
                 <Typography variant="h4" sx={{ color: "#1E293B", fontWeight: "bold", mb: 3 }}>
                     {username}, ¿Listo para jugar?
                 </Typography>
+
+                {/* Selector de dificultad */}
+                <Box sx={{ width: 250, mx: "auto", mb: 3 }}>
+                    <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color }}>
+                        Dificultad: {difficultyMap[difficulty].label}
+                    </Typography>
+                    <Slider
+                        value={difficulty}
+                        min={0}
+                        max={2}
+                        step={1}
+                        marks={[
+                            { value: 0, label: "Fácil" },
+                            { value: 1, label: "Medio" },
+                            { value: 2, label: "Difícil" },
+                        ]}
+                        onChange={(_, newValue) => setDifficulty(newValue as number)}
+                        sx={{
+                            color: difficultyMap[difficulty].color
+                        }}
+                    />
+                </Box>
 
                 <Button
                     onClick={handleButtonClick}
@@ -106,7 +134,6 @@ const Main = () => {
                 </Button>
             </Box>
 
-            {/* Sección de estadísticas */}
             <Paper elevation={3} sx={{
                 mt: 4,
                 padding: "20px",
