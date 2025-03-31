@@ -52,7 +52,7 @@ const Main = () => {
     };
 
     // Recuperar el username de localStorage y parsearlo para eliminar las comillas adicionales
-    const storedUsername = localStorage.getItem("username");
+    const storedUsername = localStorage.getItem('username');
     const username = storedUsername ? JSON.parse(storedUsername) : "Jugador";
 
     return (
