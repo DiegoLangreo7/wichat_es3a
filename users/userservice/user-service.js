@@ -125,6 +125,17 @@ app.post('/stats', async (req, res) => {
   }
 });
 
+// Endpoint para obtener todos los rankings ordenados por puntuation
+app.get('/getStats', async (req, res) => {
+  try {
+    const rankings = await Ranking.find().sort({ puntuation: -1 });
+    res.json(rankings);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el ranking' });
+  }
+});
+
+
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });

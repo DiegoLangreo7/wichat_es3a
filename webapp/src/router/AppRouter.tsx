@@ -4,6 +4,7 @@ import AddUser from "../components/AddUser/AddUser";
 import Main from "../components/Main/Main";
 import Game from "../components/Game/Game";
 import EndGame from "../components/Game/EndGame";
+import Ranking from "../components/Ranking/Ranking";
 import Historic from "../components/Historic/Historic";
 
 
@@ -40,6 +41,11 @@ const router = createBrowserRouter([
     {
         path: "/historic",
         element: <Historic username={localStorage.getItem("username") || "usuario"}/>,
+    }
+    ,
+    {
+        path: "/ranking",
+        element: <Ranking />,
     }
 ]);
 
