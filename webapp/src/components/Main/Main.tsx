@@ -4,60 +4,56 @@ import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"; 
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8001';
 
 const Main = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         timePlayed: 0,
         gamesPlayed: 0,
-        correctQuestions: 0,
-        incorrectQuestions: 0
+        correctAnswered: 0,
+        incorrectAnswered: 0,
+        puntuation: 0
     });
 
     const isAuthenticated = !!localStorage.getItem("token");
 
     useEffect(() => {
         if (!isAuthenticated) {
-          navigate("/login");
+            navigate("/login");
         }
-      }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate]);
 
-    // 🔹 Obtener estadísticas del servidor
     useEffect(() => {
         const fetchStats = async () => {
+            // Se asume que el username se guarda en formato JSON en localStorage
+            const storedUsername = localStorage.getItem("username");
+            const username = storedUsername ? JSON.parse(storedUsername) : "";
             try {
-                const username = (localStorage.getItem("username") || "{}");
                 const response = await axios.get(`${apiEndpoint}/stats/${username}`);
                 setStats(response.data);
             } catch (error) {
-                console.error("Error fetching stats:", error);
+                console.error("Error fetching stats, intentando crear ranking:", error);
+                try {
+                    // Si no existe un ranking, se crea en la base de datos
+                    const createResponse = await axios.post(`${apiEndpoint}/stats`, { username });
+                    setStats(createResponse.data);
+                } catch (createError) {
+                    console.error("Error creando ranking:", createError);
+                }
             }
         };
 
         fetchStats();
     }, []);
 
-    // 🔹 Obtener estadísticas de preguntas acertadas y falladas del localStorage
-    useEffect(() => {
-        const correctQuestions = parseInt(localStorage.getItem('correctQuestions') || '0');
-        const incorrectQuestions = parseInt(localStorage.getItem('incorrectQuestions') || '0');
-        const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
-        const secondsPlayed = parseInt(localStorage.getItem('timePlayed') || '0');
-        setStats(prevStats => ({
-            ...prevStats,
-            correctQuestions: correctQuestions,
-            incorrectQuestions: incorrectQuestions,
-            gamesPlayed: gamesPlayed,
-            totalTimePlayed: secondsPlayed
-        }));
-    }, []);
-
     const handleButtonClick = () => {
         navigate("/game");
     };
 
-    const username = JSON.parse(localStorage.getItem('username')|| 'Jugador');
+    // Recuperar el username de localStorage y parsearlo para eliminar las comillas adicionales
+    const storedUsername = localStorage.getItem("username");
+    const username = storedUsername ? JSON.parse(storedUsername) : "Jugador";
 
     return (
         <Box component="main"
@@ -69,12 +65,10 @@ const Main = () => {
                 backgroundColor: "#FFFFFF",
             }}
         >
-            {/* 🔹 NavBar fijo arriba */}
             <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
                 <NavBar />
             </Box>
 
-            {/* 🔹 Botón de jugar */}
             <Box sx={{ textAlign: "center", mt: 12 }}>
                 <Typography variant="h4" sx={{ color: "#1E293B", fontWeight: "bold", mb: 3 }}>
                     {username}, ¿Listo para jugar?
@@ -104,7 +98,7 @@ const Main = () => {
                 </Button>
             </Box>
 
-            {/* 🔹 Sección de estadísticas */}
+            {/* Sección de estadísticas */}
             <Paper elevation={3} sx={{
                 mt: 4,
                 padding: "20px",
@@ -117,10 +111,21 @@ const Main = () => {
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                     📊 Estadísticas
                 </Typography>
-                <Typography variant="body1"><b>Tiempo Jugado:</b> {stats.timePlayed} segundos</Typography>
-                <Typography variant="body1"><b>Partidas Jugadas:</b> {stats.gamesPlayed}</Typography>
-                <Typography variant="body1" sx={{ color: "#4CAF50" }}><b>Preguntas acertadas:</b> {stats.correctQuestions}</Typography>
-                <Typography variant="body1" sx={{ color: "#F44336" }}><b>Preguntas falladas:</b> {stats.incorrectQuestions}</Typography>
+                <Typography variant="body1">
+                    <b>Tiempo Jugado:</b> {stats.timePlayed} segundos
+                </Typography>
+                <Typography variant="body1">
+                    <b>Partidas Jugadas:</b> {stats.gamesPlayed}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Puntuacion total:</b> {stats.puntuation}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "#4CAF50" }}>
+                    <b>Preguntas acertadas:</b> {stats.correctAnswered}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "#F44336" }}>
+                    <b>Preguntas falladas:</b> {stats.incorrectAnswered}
+                </Typography>
             </Paper>
         </Box>
     );
