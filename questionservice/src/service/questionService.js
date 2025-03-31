@@ -2,7 +2,6 @@ const express = require('express');
 
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
-const historicService = require('./historicService');
 const app = express();
 const port = 8004;
 
