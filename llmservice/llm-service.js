@@ -62,7 +62,7 @@ app.post('/game-hint', async (req, res) => {
     
     const { question, solution, userMessage = '¿Me puedes dar una pista?' } = req.body;
     
-    const apiKey = process.env.LLM_API_KEY;
+    const apiKey = "AIzaSyCuaY0maosmIEIAadFa6IQtVUwlNMbIE7M";
     console.log("API Key length:", apiKey ? apiKey.length : 'undefined');
     
     if (!apiKey) {
@@ -97,7 +97,6 @@ app.post('/game-hint', async (req, res) => {
 
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
-  console.log(`API key configured: ${process.env.LLM_API_KEY ? 'Yes' : 'No'}`);
 });
 
 module.exports = server;
