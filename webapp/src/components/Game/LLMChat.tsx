@@ -6,9 +6,10 @@ import axios from 'axios';
 interface LLMChatProps {
   question: string;
   solution: string;
+  onClueUsed: () => void; // Nuevo prop para notificar que se usó una pista
 }
 
-const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
+const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => {
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
@@ -16,6 +17,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
   ]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [clueUsed, setClueUsed] = useState<boolean>(false); // Para rastrear si ya se usó una pista
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
@@ -24,7 +26,13 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
       setNewMessage(""); // Limpiar el input inmediatamente
       setIsLoading(true);
       
+      if (!clueUsed) {
+        setClueUsed(true);
+        onClueUsed(); // Envia el aviso a game para multar la puntuación
+      }
+      
       try {
+        // Uso del endpoint game-hint
         const response = await axios.post(`${apiEndpoint}/game-hint`, {
           question: question,
           solution: solution,
@@ -51,7 +59,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
     }
   };
 
-  // Manejar envío al presionar Enter
+  // Manejar envío al presionar Enter ;D
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -79,7 +87,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
           flexGrow: 1, 
           overflowY: 'auto', 
           mb: 2,
-          minHeight: 180,  
+          minHeight: 180,
           display: 'flex',
           flexDirection: 'column'
         }}

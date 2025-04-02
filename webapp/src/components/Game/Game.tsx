@@ -8,7 +8,9 @@ import {
   Box,
   CircularProgress,
   TextField,
-  IconButton
+  IconButton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
@@ -66,6 +68,8 @@ const Game: React.FC = () => {
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
   const [guessed, setGuessed] = useState<boolean>(false);
   const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
+  const [clueUsed, setClueUsed] = useState<boolean>(false); // Nuevo estado para rastrear si se usó una pista
+  const [showScoreAlert, setShowScoreAlert] = useState<boolean>(false); // Para mostrar alerta cuando se usa una pista
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -103,6 +107,12 @@ const Game: React.FC = () => {
     setClueOpen(!clueOpen);
   };
 
+  // Función para manejar cuando se usa una pista
+  const handleClueUsed = () => {
+    setClueUsed(true);
+    setShowScoreAlert(true);
+  };
+
   const handleNextRound = (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
@@ -111,7 +121,14 @@ const Game: React.FC = () => {
     if (timeLimitFixed === 20) multiplier = 1.5;
     else if (timeLimitFixed === 10) multiplier = 2;
 
-    const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    // Calculamos la puntuación base
+    let baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    
+    // Si se usó una pista, reducimos la puntuación a la mitad
+    if (clueUsed) {
+      baseScore = baseScore / 2;
+    }
+    
     const roundScore = Math.round(baseScore * multiplier);
 
     if (answeredCorrectly) {
@@ -129,6 +146,8 @@ const Game: React.FC = () => {
 
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
+    // Reiniciamos el estado de clueUsed para la siguiente ronda
+    setClueUsed(false);
 
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
@@ -259,7 +278,7 @@ const Game: React.FC = () => {
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
-                    color: 'black',
+                    color: clueUsed ? 'orange' : 'black', // Cambiamos el color si se usó una pista
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -289,10 +308,27 @@ const Game: React.FC = () => {
             <LLMChat
               question={currentQuestion?.question || ""}
               solution={currentQuestion?.correctAnswer || ""}
+              onClueUsed={handleClueUsed}
             />
           )}
         </Box>
       )}
+      
+      {/* Alerta que aparece cuando se usa una pista */}
+      <Snackbar 
+        open={showScoreAlert} 
+        autoHideDuration={3000} 
+        onClose={() => setShowScoreAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setShowScoreAlert(false)} 
+          severity="warning" 
+          sx={{ width: '100%' }}
+        >
+          Multa por uso de IA: puntuación de esta ronda reducida a la mitad.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
