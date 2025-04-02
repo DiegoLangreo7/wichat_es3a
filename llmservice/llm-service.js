@@ -71,14 +71,22 @@ app.post('/game-hint', async (req, res) => {
     
     // Build a specific prompt for giving hints without revealing the answer
     const prompt = `
-    Estoy jugando un juego de preguntas y necesito una pista para esta pregunta: "${question}"
-    
-    La respuesta correcta es "${solution}". 
-    
-    El usuario pregunta: "${userMessage}"
-    
-    Genera una pista sutil que ayude a pensar en la respuesta correcta, pero sin revelarla directamente.
-    Tu respuesta debe ser concisa y no más de dos frases.
+    Contexto:
+    - Pregunta original: "${question}"
+    - Respuesta correcta: "${solution}"
+    - El usuario ha preguntado: "${userMessage}"
+
+    Instrucciones para tu respuesta:
+    1. OBJETIVO: Dar una pista que ayude al usuario respondiendo a la pregunta que ha realizado "${userMessage}" para adivinar la respuesta correcta ("${solution}")
+    2. RESTRICCIONES:
+      - Si te preguntan directamente con una de las opciones para ver si es la correcta, NO puedes confirmar ni negar que sea la respuesta correcta
+      - NO puedes mencionar la palabra "${solution}" directamente
+      - NO puedes revelar la respuesta completa
+    3. REQUISITOS:
+      - La pista debe ser útil pero no obvia
+    4. FORMATO:
+      - Breve (1-2 oraciones)
+      - Natural (como una conversación)
     `;
     
     const answer = await sendQuestionToGemini(prompt, apiKey);
