@@ -5,7 +5,8 @@ const promBundle = require('express-prom-bundle');
 //libraries required for OpenAPI-Swagger
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
-const YAML = require('yaml')
+const YAML = require('yaml');
+const { normalize } = require('path');
 
 const app = express();
 const port = 8000;
@@ -102,11 +103,63 @@ app.post('/adduser', async (req, res) => {
 
 app.post('/askllm', async (req, res) => {
     try {
-        // Forward the add user request to the user service
-        const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
-        res.json(llmResponse.data);
+      const { solution, question, userQuestion, language } = req.body;
+      console.log(req.body);
+      const MAX_ATTEMPTS = 10;
+      const FALLBACK_ANSWER = "idk";
+      const MODEL = "gemini";
+      
+      let answer = FALLBACK_ANSWER;
+      let attempts = 0;
+
+      const generatePrompt = () => {
+        return `Contexto:
+                - Pregunta original: "${question}"
+                - Respuesta correcta: "${solution}"
+                - El usuario ha preguntado: "${userQuestion}"
+
+                Instrucciones para tu respuesta:
+                1. OBJETIVO: Dar una pista que ayude al usuario a adivinar la respuesta correcta ("${solution}")
+                2. RESTRICCIONES:
+                  - NO puedes mencionar la palabra "${solution}" directamente
+                  - NO puedes revelar la respuesta completa
+                3. REQUISITOS:
+                  - La pista debe ser útil pero no obvia
+                  - Debe responder en ${language}
+                4. FORMATO:
+                  - Breve (1-2 oraciones)
+                  - Natural (como una conversación)
+                `;
+      };
+      
+      const normalizedSolutionArray = solution.split(/[\s\-_.]+/);
+
+      while (attempts < MAX_ATTEMPTS && answer === FALLBACK_ANSWER){
+        const prompt = generatePrompt();
+        const response = await axios.post(`${llmServiceUrl}/ask`, {
+          prompt: prompt,
+          model: MODEL
+        });
+        if (!normalizedSolutionArray.some(word => normalizedAnswer.includes(word))) {
+          answer = response;
+          break;
+        }
+        attempts++;
+      }
+
+      if (answer === FALLBACK_ANSWER) {
+        const fallbackPrompt = `Responde brevemente en ${getLanguage(language)} que no sabes la respuesta.`;
+        const fallbackResponse = await axios.post(`${llmServiceUrl}/ask`, {
+            question: fallbackPrompt,
+            model: MODEL
+        });
+        answer = fallbackResponse.data;
+      }
+
+      res.json({ answer });
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        console.error("Error in LLM processing:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 

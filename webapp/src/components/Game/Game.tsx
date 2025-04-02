@@ -63,10 +63,6 @@ const Game: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
-    { text: "Hazme una pregunta", sender: 'system' }
-  ]);
-  const [newMessage, setNewMessage] = useState<string>("");
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
   const [guessed, setGuessed] = useState<boolean>(false);
   const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
@@ -227,16 +223,6 @@ const Game: React.FC = () => {
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  const handleSendMessage = (): void => {
-    if (newMessage.trim() !== "") {
-      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
-      setTimeout(() => {
-        setMessages(prev => [...prev, { text: 'Esta es tu pista de ayuda.', sender: 'system' }]);
-      }, 1000);
-      setNewMessage("");
-    }
-  };
-
   
 
   return (
@@ -302,10 +288,8 @@ const Game: React.FC = () => {
           </Box>
           {clueOpen && (
             <LLMChat
-              messages={messages}
-              newMessage={newMessage}
-              setNewMessage={setNewMessage}
-              handleSendMessage={handleSendMessage}
+              question={currentQuestion?.question || ""}
+              solution={currentQuestion?.correctAnswer || ""}
             />
           )}
         </Box>

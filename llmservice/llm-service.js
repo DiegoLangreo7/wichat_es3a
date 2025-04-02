@@ -1,5 +1,6 @@
 const axios = require('axios');
 const express = require('express');
+require('dotenv').config();
 
 const app = express();
 const port = 8003;
@@ -71,11 +72,12 @@ async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
 app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model']);
+    validateRequiredFields(req, ['prompt', 'model']);
 
-    const { question, model } = req.body;
+    const { author, message } = req.body;
     //load the api key from an environment variable
     const apiKey = process.env.LLM_API_KEY;
+    console.log("API Key: " + apiKey);
     if (!apiKey) {
       return res.status(400).json({ error: 'API key is missing.' });
     }

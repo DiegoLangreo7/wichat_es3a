@@ -1,15 +1,45 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Box, TextField, IconButton, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import axios from 'axios';
+
+
 
 interface LLMChatProps {
-  messages: { text: string; sender: 'user' | 'system' }[];
-  newMessage: string;
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
-  handleSendMessage: () => void;
+  question: string;
+  solution: string;
 }
 
-const LLMChat: React.FC<LLMChatProps> = ({ messages, newMessage, setNewMessage, handleSendMessage }) => {
+
+const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
+
+  const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
+
+  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
+    { text: "Hazme una pregunta", sender: 'system' }
+  ]);
+  const [newMessage, setNewMessage] = useState<string>("");
+
+  const handleSendMessage = async () => {
+    if (newMessage.trim() !== "") {
+      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
+      console.log("Mensaje enviado:", newMessage);
+      try {
+        const response = await axios.post(`${apiEndpoint}/askllm`, {
+          solution: solution,
+          question: question,
+          message: newMessage,
+          language: "español"
+        });
+        setMessages(prev => [...prev, { text: response.data, sender: 'system' }]);
+        setNewMessage(""); // Limpiar el input después de enviar
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    }
+  };
+
   return (
     <Box
       sx={{
