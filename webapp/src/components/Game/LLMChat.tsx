@@ -17,7 +17,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution }) => {
 
 
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
-    { text: "Hazme una pregunta", sender: 'system' }
+    { text: "Pregunta una pista a su IA de confianza a cambio del 50% de su puntuación", sender: 'system' }
   ]);
   const [newMessage, setNewMessage] = useState<string>("");
 

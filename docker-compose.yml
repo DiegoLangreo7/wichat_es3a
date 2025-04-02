@@ -39,14 +39,16 @@ services:
       MONGODB_URI: mongodb://mongodb:27017/userdb
 
   llmservice:
-    container_name: llmservice-wichat_es3a
-    image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
-    profiles: ["dev", "prod"]
-    build: ./llmservice
-    ports:
-      - "8003:8003"
-    networks:
-      - mynetwork
+  container_name: llmservice-wichat_es3a
+  image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
+  profiles: ["dev", "prod"]
+  build: ./llmservice
+  ports:
+    - "8003:8003"
+  networks:
+    - mynetwork
+  environment:
+    LLM_API_KEY: ${LLM_API_KEY}  
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a

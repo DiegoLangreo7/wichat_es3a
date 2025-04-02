@@ -273,8 +273,7 @@ const Game: React.FC = () => {
               )}
             </Box>
             {currentQuestion && (
-              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
-            )}
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            )}
             <Box display="flex" justifyContent="center" mt={3}>
               <Button 
                 variant="contained" 
