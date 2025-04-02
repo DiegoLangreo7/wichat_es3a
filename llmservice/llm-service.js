@@ -53,11 +53,6 @@ async function sendQuestionToGemini(question, apiKey) {
   }
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
 // Game hint endpoint - needed for the LLMChat component
 app.post('/game-hint', async (req, res) => {
   try {
@@ -82,7 +77,7 @@ app.post('/game-hint', async (req, res) => {
     
     El usuario pregunta: "${userMessage}"
     
-    Por favor, dame una pista sutil que ayude a pensar en la respuesta correcta, pero sin revelarla directamente.
+    Genera una pista sutil que ayude a pensar en la respuesta correcta, pero sin revelarla directamente.
     Tu respuesta debe ser concisa y no más de dos frases.
     `;
     
