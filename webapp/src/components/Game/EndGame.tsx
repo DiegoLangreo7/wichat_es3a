@@ -4,7 +4,7 @@ import { Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBo
 import axios from 'axios';
 import NavBar from "../Main/items/NavBar";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8001';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 interface RoundResult {
   round: number;

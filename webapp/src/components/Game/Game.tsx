@@ -14,14 +14,9 @@ import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
+import LLMChat from './LLMChat';  // Importamos el componente LLMChat
 import SendIcon from '@mui/icons-material/Send';
-
-interface GameProps {
-  username: string;
-  totalQuestions: number;
-  timeLimit: number;
-  themes: { [key: string]: boolean };
-}
+import PauseIcon from '@mui/icons-material/Pause'; // Importamos el icono de pausa
 
 interface Question {
   question: string;
@@ -38,22 +33,30 @@ interface RoundResult {
   roundScore: number;
 }
 
-const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes }) => {
-  // Valores por defecto
+const Game: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const {
+    username = "Usuario",
+    totalQuestions = 10,
+    timeLimit = 180,
+    themes = {}
+  } = location.state || {};
+
   const totalQuestionsFixed = isNaN(totalQuestions) ? 10 : totalQuestions;
   const timeLimitFixed = isNaN(timeLimit) || timeLimit <= 0 ? 180 : timeLimit;
   const TOTAL_ROUNDS = totalQuestionsFixed;
-  const TRANSITION_ROUND_TIME = 3; // 3 segundos de pausa antes de la siguiente ronda
+  const TRANSITION_ROUND_TIME = 3;
 
-  // Estados del juego
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [clueOpen, setClueOpen] = useState<boolean>(true);
+  const [clueOpen, setClueOpen] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
   const [timer, setTimer] = useState<number>(timeLimitFixed);
   const [finished, setFinished] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);          // Puntaje total (por tiempo)
-  const [numCorrect, setNumCorrect] = useState<number>(0);  // Número de respuestas correctas
+  const [score, setScore] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0);
   const [round, setRound] = useState<number>(1);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [transitionTimer, setTransitionTimer] = useState<number>(0);
@@ -62,19 +65,20 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [guessed, setGuessed] = useState<boolean>(false);
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+  const [guessed, setGuessed] = useState<boolean>(false);
+  const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
 
-  const navigate = useNavigate();
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
   const fetchQuestion = async () => {
     try {
       const response = await axios.get(`${apiEndpoint}/questions/country`);
       setCurrentQuestion(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching question:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,20 +91,36 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     return `${secsRStr}`;
   };
 
-  // Modificamos handleNextRound para recibir el parámetro answeredCorrectly
+  const handleClueToggle = () => {
+    // Si estamos abriendo el chat de pistas, pausamos el temporizador
+    if (!clueOpen) {
+      setIsPaused(true);
+    } 
+    // Si estamos cerrando el chat de pistas y no estábamos en transición, reanudamos el temporizador
+    else if (!isTransitioning && !guessed) {
+      setIsPaused(false);
+    }
+    
+    // Alternamos el estado del chat de pistas
+    setClueOpen(!clueOpen);
+  };
+
   const handleNextRound = (answeredCorrectly: boolean) => {
-    // Capturamos el valor actual del temporizador para calcular el tiempo empleado en esta ronda
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
-    // Si respondió correctamente, se calcula el puntaje de la ronda; si falla, es 0
-    const roundScore = answeredCorrectly ? Math.round((currentTimer / timeLimitFixed) * 100) : 0;
+
+    let multiplier = 1;
+    if (timeLimitFixed === 20) multiplier = 1.5;
+    else if (timeLimitFixed === 10) multiplier = 2;
+
+    const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    const roundScore = Math.round(baseScore * multiplier);
 
     if (answeredCorrectly) {
       setNumCorrect(prev => prev + 1);
     }
     setScore(prev => prev + roundScore);
 
-    // Usamos el número de ronda basado en la longitud del array de resultados + 1
     const roundNumber = roundResults.length + 1;
     const roundResult: RoundResult = {
       round: roundNumber,
@@ -108,29 +128,27 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
       timeTaken: roundTimeTaken,
       roundScore: roundScore
     };
-    console.log(`Ronda ${roundNumber}: answeredCorrectly=${answeredCorrectly}, timeTaken=${roundTimeTaken}, roundScore=${roundScore}`);
+
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
 
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
+
     const transitionInterval = setInterval(() => {
       setTransitionTimer(prev => {
-        if (prev > 1) {
-          return prev - 1;
+        if (prev > 1) return prev - 1;
+        clearInterval(transitionInterval);
+        if (round < TOTAL_ROUNDS) {
+          setRound(prev => prev + 1);
+          setTimer(timeLimitFixed);
+          setIsPaused(false);
+          fetchQuestion();
         } else {
-          clearInterval(transitionInterval);
-          if (round < TOTAL_ROUNDS) {
-            setRound(prev => prev + 1);
-            setTimer(timeLimitFixed);
-            setIsPaused(false);
-            fetchQuestion();
-          } else {
-            setFinished(true);
-          }
-          setIsTransitioning(false);
-          return 0;
+          setFinished(true);
         }
+        setIsTransitioning(false);
+        return 0;
       });
     }, 1000);
 
@@ -143,13 +161,11 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     }, TRANSITION_ROUND_TIME * 1000);
   };
 
-  // En handleAnswer capturamos el resultado y lo pasamos a handleNextRound luego de 2 segundos
   const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
     setIsPaused(true);
     setSelectedAnswer(selectedAnswer);
     setIsCorrectAnswer(isCorrect);
     setGuessed(true);
-    // Guardamos el resultado en una variable local
     const answeredCorrectly = isCorrect;
     setTimeout(() => {
       handleNextRound(answeredCorrectly);
@@ -160,44 +176,60 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     fetchQuestion();
   }, []);
 
+  // Efecto para manejar la intermitencia del icono de pausa
   useEffect(() => {
-    if (!isPaused && !isLoading) {
+    let pauseIconInterval: NodeJS.Timeout;
+    
+    if (isPaused && clueOpen && !isTransitioning) {
+      pauseIconInterval = setInterval(() => {
+        setIsPauseIconVisible(prev => !prev);
+      }, 500);
+    }
+    
+    return () => {
+      if (pauseIconInterval) clearInterval(pauseIconInterval);
+    };
+  }, [isPaused, clueOpen, isTransitioning]);
+
+  useEffect(() => {
+    // Solo decrementamos el temporizador si:
+    // 1. No está pausado
+    // 2. No estamos cargando
+    // 3. El chat de pistas NO está abierto
+    if (!isPaused && !isLoading && !clueOpen) {
       const interval = setInterval(() => {
         if (timer > 0) {
           setTimer(prev => prev - 1);
         } else {
           setIsPaused(true);
-          // Si se agota el tiempo, consideramos la respuesta como incorrecta
           handleNextRound(false);
         }
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer, isPaused, isLoading]);
+  }, [timer, isPaused, isLoading, clueOpen]); // Agregamos clueOpen como dependencia
 
   useEffect(() => {
     if (finished && round >= TOTAL_ROUNDS) {
-      // Se pasa la información al EndGame, incluyendo score y numCorrect
-      navigate('/endGame', { state: { score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults } });
+      navigate('/endGame', {
+        state: {
+          score,
+          numCorrect,
+          username,
+          totalQuestions,
+          timeLimit,
+          themes,
+          roundResults
+        }
+      });
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  interface Message {
-    text: string;
-    sender: 'user' | 'system';
-  }
-
   const handleSendMessage = (): void => {
     if (newMessage.trim() !== "") {
-      setMessages(prev => [
-        ...prev,
-        { text: newMessage, sender: 'user' }
-      ]);
+      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
       setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          { text: 'Esta es tu pista de ayuda.', sender: 'system' }
-        ]);
+        setMessages(prev => [...prev, { text: 'Esta es tu pista de ayuda.', sender: 'system' }]);
       }, 1000);
       setNewMessage("");
     }
@@ -232,79 +264,45 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
                 size={80}
               />
               {isVisible && (
-                <Typography 
-                  variant="h6" 
+                <Typography
+                  variant="h6"
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
                     color: 'black',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                   }}
                 >
-                  {handleTimeRemaining()}
+                  {(isPaused && clueOpen && !isTransitioning) ? 
+                    (isPauseIconVisible ? <PauseIcon fontSize="medium" /> : null) : 
+                    handleTimeRemaining()}
                 </Typography>
               )}
             </Box>
-            <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+            {currentQuestion && (
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+            )}
             <Box display="flex" justifyContent="center" mt={3}>
-              <Button variant="contained" color="secondary" size="large" onClick={() => setClueOpen(!clueOpen)}>
-                Pedir Pista
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="large" 
+                onClick={handleClueToggle}
+              >
+                {clueOpen ? "Cerrar Pista" : "Pedir Pista"}
               </Button>
             </Box>
           </Box>
-          {clueOpen ? (
-            <Box>
-              {/* Elementos adicionales para la pista */}
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                mt: 3,
-                maxHeight: 300,
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: 'white',
-                borderRadius: 2,
-                boxShadow: 3,
-                p: 2,
-                width: '100%',
-                margin: 2
-              }}
-            >
-              <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
-                {messages.map((message, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        bgcolor: message.sender === 'user' ? 'blue.200' : 'gray.300',
-                        color: 'black',
-                        p: 1,
-                        borderRadius: 1,
-                      }}
-                    >
-                      {message.text}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-              <Box display="flex">
-                <TextField
-                  fullWidth
-                  placeholder="Escribe tu mensaje..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                />
-                <IconButton color="primary" onClick={handleSendMessage}>
-                  <SendIcon />
-                </IconButton>
-              </Box>
-            </Box>
+          {clueOpen && (
+            <LLMChat
+              messages={messages}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleSendMessage={handleSendMessage}
+            />
           )}
         </Box>
       )}

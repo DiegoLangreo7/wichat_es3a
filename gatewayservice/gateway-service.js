@@ -2,10 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const promBundle = require('express-prom-bundle');
-//libraries required for OpenAPI-Swagger
 const swaggerUi = require('swagger-ui-express');
-const fs = require("fs")
-const YAML = require('yaml')
+const fs = require("fs");
+const YAML = require('yaml');
 
 const app = express();
 const port = 8000;
@@ -18,84 +17,107 @@ const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost
 app.use(cors());
 app.use(express.json());
 
-//Prometheus configuration
-const metricsMiddleware = promBundle({includeMethod: true});
+const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
 
+// Endpoint: Obtener estadísticas de un usuario
 app.get('/stats/:username', async (req, res) => {
     try {
         const username = req.params.username;
-        const statsResponse = await axios.get(`${questionServiceUrl}/stats/${username}`);
+        const statsResponse = await axios.get(`${userServiceUrl}/stats/${username}`);
         res.json(statsResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
+    }
+});
+
+// Endpoint: Actualizar estadísticas de un usuario
+app.post('/stats', async (req, res) => {
+    try {
+        const statsResponse = await axios.post(`${userServiceUrl}/stats`, req.body);
+        res.json(statsResponse.data);
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
+    }
+});
+
+// Endpoint: Obtener ranking completo
+app.get('/getStats', async (req, res) => {
+    try {
+        const response = await axios.get(`${userServiceUrl}/getStats`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
 app.get('/questions/:category', async (req, res) => {
-    try{
-        console.log("Category: " + req.params.category);
+    try {
         const category = req.params.category;
-        const questionResponse = await axios.get(questionServiceUrl+`/getQuestionsDb/${category}`);
+        const questionResponse = await axios.get(`${questionServiceUrl}/getQuestionsDb/${category}`);
         res.json(questionResponse.data);
-    }catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.json({ status: 'OK' });
 });
 
 app.post('/login', async (req, res) => {
     try {
-        const authResponse = await axios.post(authServiceUrl+'/login', req.body);
+        const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
         res.json(authResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
 app.post('/adduser', async (req, res) => {
     try {
-        // Forward the add user request to the user service
-        const userResponse = await axios.post(userServiceUrl+'/adduser', req.body);
+        const userResponse = await axios.post(`${userServiceUrl}/adduser`, req.body);
         res.json(userResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
 app.post('/askllm', async (req, res) => {
     try {
-        // Forward the add user request to the user service
-        const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
+        const llmResponse = await axios.post(`${llmServiceUrl}/ask`, req.body);
         res.json(llmResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
-// Read the OpenAPI YAML file synchronously
-openapiPath='./openapi.yaml'
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK' });
+});
+
+// Swagger config
+const openapiPath = './openapi.yaml';
 if (fs.existsSync(openapiPath)) {
     const file = fs.readFileSync(openapiPath, 'utf8');
-
-    // Parse the YAML content into a JavaScript object representing the Swagger document
     const swaggerDocument = YAML.parse(file);
-
-    // Serve the Swagger UI documentation at the '/api-doc' endpoint
-    // This middleware serves the Swagger UI files and sets up the Swagger UI page
-    // It takes the parsed Swagger document as input
     app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 } else {
-    console.log("Not configuring OpenAPI. Configuration file not present.")
+    console.log("Not configuring OpenAPI. Configuration file not present.");
 }
 
-// Start the gateway service
 const server = app.listen(port, () => {
     console.log(`Gateway Service listening at http://localhost:${port}`);
 });
 
-module.exports = server
+module.exports = server;
