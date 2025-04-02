@@ -2,22 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Container,
   Typography,
   Button,
   Box,
   CircularProgress,
-  TextField,
-  IconButton,
   Snackbar,
   Alert
 } from '@mui/material';
-import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
 import LLMChat from './LLMChat';  // Importamos el componente LLMChat
-import SendIcon from '@mui/icons-material/Send';
 import PauseIcon from '@mui/icons-material/Pause'; // Importamos el icono de pausa
 
 interface Question {
@@ -28,11 +23,13 @@ interface Question {
   imageUrl?: string;
 }
 
+// Actualizada la interfaz para incluir si se usó pista
 interface RoundResult {
   round: number;
   correct: boolean;
   timeTaken: number;
   roundScore: number;
+  usedClue?: boolean; // Nueva propiedad opcional para rastrear si se usó pista
 }
 
 const Game: React.FC = () => {
@@ -86,7 +83,6 @@ const Game: React.FC = () => {
 
   const handleTimeRemaining = (): string => {
     const remaining = isPaused ? transitionTimer : timer;
-    const minsR = Math.floor(remaining / 60);
     const secsR = remaining % 60;
     let secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
     secsRStr = secsRStr !== '00' ? secsRStr : '  ';
@@ -137,11 +133,13 @@ const Game: React.FC = () => {
     setScore(prev => prev + roundScore);
 
     const roundNumber = roundResults.length + 1;
+    // Actualizado para incluir si se usó pista
     const roundResult: RoundResult = {
       round: roundNumber,
       correct: answeredCorrectly,
       timeTaken: roundTimeTaken,
-      roundScore: roundScore
+      roundScore: roundScore,
+      usedClue: clueUsed // Guardamos si se usó una pista en esta ronda
     };
 
     setRoundResults(prev => [...prev, roundResult]);
