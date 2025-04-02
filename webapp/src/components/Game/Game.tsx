@@ -8,7 +8,9 @@ import {
   Box,
   CircularProgress,
   TextField,
-  IconButton
+  IconButton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
@@ -63,11 +65,11 @@ const Game: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([]);
-  const [newMessage, setNewMessage] = useState<string>("");
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
   const [guessed, setGuessed] = useState<boolean>(false);
   const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
+  const [clueUsed, setClueUsed] = useState<boolean>(false); // Nuevo estado para rastrear si se usó una pista
+  const [showScoreAlert, setShowScoreAlert] = useState<boolean>(false); // Para mostrar alerta cuando se usa una pista
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -105,6 +107,12 @@ const Game: React.FC = () => {
     setClueOpen(!clueOpen);
   };
 
+  // Función para manejar cuando se usa una pista
+  const handleClueUsed = () => {
+    setClueUsed(true);
+    setShowScoreAlert(true);
+  };
+
   const handleNextRound = (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
@@ -113,7 +121,14 @@ const Game: React.FC = () => {
     if (timeLimitFixed === 20) multiplier = 1.5;
     else if (timeLimitFixed === 10) multiplier = 2;
 
-    const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    // Calculamos la puntuación base
+    let baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    
+    // Si se usó una pista, reducimos la puntuación a la mitad
+    if (clueUsed) {
+      baseScore = baseScore / 2;
+    }
+    
     const roundScore = Math.round(baseScore * multiplier);
 
     if (answeredCorrectly) {
@@ -131,6 +146,8 @@ const Game: React.FC = () => {
 
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
+    // Reiniciamos el estado de clueUsed para la siguiente ronda
+    setClueUsed(false);
 
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
@@ -225,15 +242,7 @@ const Game: React.FC = () => {
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  const handleSendMessage = (): void => {
-    if (newMessage.trim() !== "") {
-      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
-      setTimeout(() => {
-        setMessages(prev => [...prev, { text: 'Esta es tu pista de ayuda.', sender: 'system' }]);
-      }, 1000);
-      setNewMessage("");
-    }
-  };
+  
 
   return (
     <Box component="main" sx={{
@@ -269,7 +278,7 @@ const Game: React.FC = () => {
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
-                    color: 'black',
+                    color: clueUsed ? 'orange' : 'black', // Cambiamos el color si se usó una pista
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -283,8 +292,7 @@ const Game: React.FC = () => {
               )}
             </Box>
             {currentQuestion && (
-              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
-            )}
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            )}
             <Box display="flex" justifyContent="center" mt={3}>
               <Button 
                 variant="contained" 
@@ -298,14 +306,29 @@ const Game: React.FC = () => {
           </Box>
           {clueOpen && (
             <LLMChat
-              messages={messages}
-              newMessage={newMessage}
-              setNewMessage={setNewMessage}
-              handleSendMessage={handleSendMessage}
+              question={currentQuestion?.question || ""}
+              solution={currentQuestion?.correctAnswer || ""}
+              onClueUsed={handleClueUsed}
             />
           )}
         </Box>
       )}
+      
+      {/* Alerta que aparece cuando se usa una pista */}
+      <Snackbar 
+        open={showScoreAlert} 
+        autoHideDuration={3000} 
+        onClose={() => setShowScoreAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setShowScoreAlert(false)} 
+          severity="warning" 
+          sx={{ width: '100%' }}
+        >
+          Multa por uso de IA: puntuación de esta ronda reducida a la mitad.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
