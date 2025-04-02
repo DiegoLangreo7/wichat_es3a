@@ -60,10 +60,14 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([]);
+  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
+    { text: "Hazme una pregunta", sender: 'system' }
+  ]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [guessed, setGuessed] = useState<boolean>(false);
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
 
   const navigate = useNavigate();
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -187,21 +191,28 @@ const Game: React.FC<GameProps> = ({ username, totalQuestions, timeLimit, themes
     sender: 'user' | 'system';
   }
 
-  const handleSendMessage = (): void => {
+  const handleSendMessage = async (): Promise<void> => {
     if (newMessage.trim() !== "") {
-      setMessages(prev => [
-        ...prev,
-        { text: newMessage, sender: 'user' }
-      ]);
-      setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          { text: 'Esta es tu pista de ayuda.', sender: 'system' }
-        ]);
-      }, 1000);
+      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
+      setLoading(true);
+      try {
+        const response = await axios.post(`${apiEndpoint}/askllm`, {
+          user: username,
+          question: newMessage,
+          languange: "es"
+        });
+        setMessages(prev => [...prev, { text: response.data.answer, sender: 'system' }]);
+      } catch (error) {
+        console.error("Error enviando mensaje:", error);
+        setMessages(prev => [...prev, { text: 'Error obteniendo respuesta.', sender: 'system' }]);
+      } finally {
+        setLoading(false);
+      }
       setNewMessage("");
     }
   };
+
+  
 
   return (
     <Box component="main" sx={{

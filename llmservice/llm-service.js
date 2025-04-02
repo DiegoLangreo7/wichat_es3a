@@ -71,9 +71,14 @@ async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
 app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model', 'apiKey']);
+    validateRequiredFields(req, ['question', 'model']);
 
-    const { question, model, apiKey } = req.body;
+    const { question, model } = req.body;
+    //load the api key from an environment variable
+    const apiKey = process.env.LLM_API_KEY;
+    if (!apiKey) {
+      return res.status(400).json({ error: 'API key is missing.' });
+    }
     const answer = await sendQuestionToLLM(question, apiKey, model);
     res.json({ answer });
 
@@ -87,5 +92,3 @@ const server = app.listen(port, () => {
 });
 
 module.exports = server
-
-
