@@ -16,6 +16,7 @@ import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
 import LLMChat from './LLMChat';  // Importamos el componente LLMChat
 import SendIcon from '@mui/icons-material/Send';
+import PauseIcon from '@mui/icons-material/Pause'; // Importamos el icono de pausa
 
 interface Question {
   question: string;
@@ -66,6 +67,7 @@ const Game: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
   const [guessed, setGuessed] = useState<boolean>(false);
+  const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -87,6 +89,20 @@ const Game: React.FC = () => {
     let secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
     secsRStr = secsRStr !== '00' ? secsRStr : '  ';
     return `${secsRStr}`;
+  };
+
+  const handleClueToggle = () => {
+    // Si estamos abriendo el chat de pistas, pausamos el temporizador
+    if (!clueOpen) {
+      setIsPaused(true);
+    } 
+    // Si estamos cerrando el chat de pistas y no estábamos en transición, reanudamos el temporizador
+    else if (!isTransitioning && !guessed) {
+      setIsPaused(false);
+    }
+    
+    // Alternamos el estado del chat de pistas
+    setClueOpen(!clueOpen);
   };
 
   const handleNextRound = (answeredCorrectly: boolean) => {
@@ -160,8 +176,27 @@ const Game: React.FC = () => {
     fetchQuestion();
   }, []);
 
+  // Efecto para manejar la intermitencia del icono de pausa
   useEffect(() => {
-    if (!isPaused && !isLoading) {
+    let pauseIconInterval: NodeJS.Timeout;
+    
+    if (isPaused && clueOpen && !isTransitioning) {
+      pauseIconInterval = setInterval(() => {
+        setIsPauseIconVisible(prev => !prev);
+      }, 500);
+    }
+    
+    return () => {
+      if (pauseIconInterval) clearInterval(pauseIconInterval);
+    };
+  }, [isPaused, clueOpen, isTransitioning]);
+
+  useEffect(() => {
+    // Solo decrementamos el temporizador si:
+    // 1. No está pausado
+    // 2. No estamos cargando
+    // 3. El chat de pistas NO está abierto
+    if (!isPaused && !isLoading && !clueOpen) {
       const interval = setInterval(() => {
         if (timer > 0) {
           setTimer(prev => prev - 1);
@@ -172,7 +207,7 @@ const Game: React.FC = () => {
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer, isPaused, isLoading]);
+  }, [timer, isPaused, isLoading, clueOpen]); // Agregamos clueOpen como dependencia
 
   useEffect(() => {
     if (finished && round >= TOTAL_ROUNDS) {
@@ -235,9 +270,15 @@ const Game: React.FC = () => {
                     position: "absolute",
                     fontWeight: "bold",
                     color: 'black',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                   }}
                 >
-                  {handleTimeRemaining()}
+                  {(isPaused && clueOpen && !isTransitioning) ? 
+                    (isPauseIconVisible ? <PauseIcon fontSize="medium" /> : null) : 
+                    handleTimeRemaining()}
                 </Typography>
               )}
             </Box>
@@ -245,8 +286,13 @@ const Game: React.FC = () => {
               <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
             )}
             <Box display="flex" justifyContent="center" mt={3}>
-              <Button variant="contained" color="secondary" size="large" onClick={() => setClueOpen(!clueOpen)}>
-                Pedir Pista
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="large" 
+                onClick={handleClueToggle}
+              >
+                {clueOpen ? "Cerrar Pista" : "Pedir Pista"}
               </Button>
             </Box>
           </Box>
