@@ -14,6 +14,7 @@ import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
+import LLMChat from './LLMChat';  // Importamos el componente LLMChat
 import SendIcon from '@mui/icons-material/Send';
 
 interface Question {
@@ -35,7 +36,6 @@ const Game: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Obtener los parámetros desde la navegación
   const {
     username = "Usuario",
     totalQuestions = 10,
@@ -49,7 +49,7 @@ const Game: React.FC = () => {
   const TRANSITION_ROUND_TIME = 3;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [clueOpen, setClueOpen] = useState<boolean>(true);
+  const [clueOpen, setClueOpen] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
   const [timer, setTimer] = useState<number>(timeLimitFixed);
@@ -64,8 +64,8 @@ const Game: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [guessed, setGuessed] = useState<boolean>(false);
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+  const [guessed, setGuessed] = useState<boolean>(false);
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -73,9 +73,10 @@ const Game: React.FC = () => {
     try {
       const response = await axios.get(`${apiEndpoint}/questions/country`);
       setCurrentQuestion(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching question:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -91,21 +92,19 @@ const Game: React.FC = () => {
   const handleNextRound = (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
-  
-    // Definir multiplicador según el timeLimit
+
     let multiplier = 1;
     if (timeLimitFixed === 20) multiplier = 1.5;
     else if (timeLimitFixed === 10) multiplier = 2;
-  
-    // Calcular puntuación con bonus
+
     const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
     const roundScore = Math.round(baseScore * multiplier);
-  
+
     if (answeredCorrectly) {
       setNumCorrect(prev => prev + 1);
     }
     setScore(prev => prev + roundScore);
-  
+
     const roundNumber = roundResults.length + 1;
     const roundResult: RoundResult = {
       round: roundNumber,
@@ -113,15 +112,13 @@ const Game: React.FC = () => {
       timeTaken: roundTimeTaken,
       roundScore: roundScore
     };
-  
-    console.log(`Ronda ${roundNumber}: correcto=${answeredCorrectly}, tiempo=${roundTimeTaken}, scoreBase=${Math.round(baseScore)}, bonus=${multiplier}x, final=${roundScore}`);
-  
+
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
-  
+
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
-  
+
     const transitionInterval = setInterval(() => {
       setTransitionTimer(prev => {
         if (prev > 1) return prev - 1;
@@ -138,7 +135,7 @@ const Game: React.FC = () => {
         return 0;
       });
     }, 1000);
-  
+
     const visibilityInterval = setInterval(() => {
       setIsVisible(prev => !prev);
     }, 500);
@@ -147,7 +144,6 @@ const Game: React.FC = () => {
       setIsVisible(true);
     }, TRANSITION_ROUND_TIME * 1000);
   };
-  
 
   const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
     setIsPaused(true);
@@ -233,8 +229,8 @@ const Game: React.FC = () => {
                 size={80}
               />
               {isVisible && (
-                <Typography 
-                  variant="h6" 
+                <Typography
+                  variant="h6"
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
@@ -245,65 +241,22 @@ const Game: React.FC = () => {
                 </Typography>
               )}
             </Box>
-            <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+            {currentQuestion && (
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+            )}
             <Box display="flex" justifyContent="center" mt={3}>
               <Button variant="contained" color="secondary" size="large" onClick={() => setClueOpen(!clueOpen)}>
                 Pedir Pista
               </Button>
             </Box>
           </Box>
-          {clueOpen ? (
-            <Box>{/* Puedes añadir contenido adicional aquí */}</Box>
-          ) : (
-            <Box
-              sx={{
-                mt: 3,
-                maxHeight: 300,
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: 'white',
-                borderRadius: 2,
-                boxShadow: 3,
-                p: 2,
-                width: '100%',
-                margin: 2
-              }}
-            >
-              <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
-                {messages.map((message, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        bgcolor: message.sender === 'user' ? 'blue.200' : 'gray.300',
-                        color: 'black',
-                        p: 1,
-                        borderRadius: 1,
-                      }}
-                    >
-                      {message.text}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-              <Box display="flex">
-                <TextField
-                  fullWidth
-                  placeholder="Escribe tu mensaje..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                />
-                <IconButton color="primary" onClick={handleSendMessage}>
-                  <SendIcon />
-                </IconButton>
-              </Box>
-            </Box>
+          {clueOpen && (
+            <LLMChat
+              messages={messages}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleSendMessage={handleSendMessage}
+            />
           )}
         </Box>
       )}
