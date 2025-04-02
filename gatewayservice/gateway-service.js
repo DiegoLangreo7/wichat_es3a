@@ -3,7 +3,7 @@ const axios = require('axios');
 const cors = require('cors');
 const promBundle = require('express-prom-bundle');
 //libraries required for OpenAPI-Swagger
-const swaggerUi = require('swagger-ui-express'); 
+const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
 
@@ -18,33 +18,71 @@ const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost
 app.use(cors());
 app.use(express.json());
 
-//Prometheus configuration
-const metricsMiddleware = promBundle({includeMethod: true});
+const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
 
-app.get('/questions/:category', async (req, res) => {
-  try{
-      console.log("Category: " + req.params.category);
-      const category = req.params.category;
-      const questionResponse = await axios.get(questionServiceUrl+`/getQuestionsDb/${category}`);
-      res.json(questionResponse.data);
-  }catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+// Endpoint: Obtener estadísticas de un usuario
+app.get('/stats/:username', async (req, res) => {
+  try {
+      const username = req.params.username;
+      const statsResponse = await axios.get(`${userServiceUrl}/stats/${username}`);
+      res.json(statsResponse.data);
+  } catch (error) {
+      res.status(error?.response?.status || 500).json({
+          error: error?.response?.data?.error || error.message || 'Error interno'
+      });
   }
+});
+
+// Endpoint: Actualizar estadísticas de un usuario
+app.post('/stats', async (req, res) => {
+  try {
+      const statsResponse = await axios.post(`${userServiceUrl}/stats`, req.body);
+      res.json(statsResponse.data);
+  } catch (error) {
+      res.status(error?.response?.status || 500).json({
+          error: error?.response?.data?.error || error.message || 'Error interno'
+      });
+  }
+});
+
+// Endpoint: Obtener ranking completo
+app.get('/getStats', async (req, res) => {
+  try {
+      const response = await axios.get(`${userServiceUrl}/getStats`);
+      res.json(response.data);
+  } catch (error) {
+      res.status(error?.response?.status || 500).json({
+          error: error?.response?.data?.error || error.message || 'Error interno'
+      });
+  }
+});
+
+app.get('/questions/:category', async (req, res) => {
+    try{
+        console.log("Category: " + req.params.category);
+        const category = req.params.category;
+        const questionResponse = await axios.get(questionServiceUrl+`/getQuestionsDb/${category}`);
+        res.json(questionResponse.data);
+    }catch (error) {
+        res.status(error.response.status).json({ error: error.response.data.error });
+    }
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK' });
+    res.json({ status: 'OK' });
 });
 
 
 app.post('/login', async (req, res) => {
   try {
-    const authResponse = await axios.post(authServiceUrl+'/login', req.body);
-    res.json(authResponse.data);
+      const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
+      res.json(authResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error?.response?.status || 500).json({
+          error: error?.response?.data?.error || error.message || 'Error interno'
+      });
   }
 });
  
@@ -52,73 +90,48 @@ app.post('/login', async (req, res) => {
 
 app.post('/adduser', async (req, res) => {
   try {
-    // Forward the add user request to the user service
-    const userResponse = await axios.post(userServiceUrl+'/adduser', req.body);
-    res.json(userResponse.data);
+      const userResponse = await axios.post(`${userServiceUrl}/adduser`, req.body);
+      res.json(userResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error?.response?.status || 500).json({
+          error: error?.response?.data?.error || error.message || 'Error interno'
+      });
   }
 });
 
 
 app.post('/askllm', async (req, res) => {
-  try {
-    const { solution, userQuestion, language } = req.body;
-    console.log("Solution: " + solution);
-    console.log("User question: " + userQuestion);
-    let model = "gemini";
-    let attempts = 0;
-    let answer = "idk";
-
-    while (attempts < 10) {
-      let question = "Un usuario debe adivinar " + solution + ". Para ello pregunta: " + userQuestion + ". ¿Qué le responderías? De forma corta y concisa. NO PUEDES DECIR DE NINGUNA FORMA " + solution + ". Debes responder en " + getLanguage(language) + ".";
-      let llmResponse = await axios.post(llmServiceUrl+'/ask', { question, model });
-
-      const normalizedAnswer = llmResponse.data.answer.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");;
-      const normalizedSolution = solution.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      const solutionWords = normalizedSolution.split(/[\s-]+/);
-
-      if (!solutionWords.some(word => normalizedAnswer.includes(word))) {
-        answer = llmResponse;
-        break;
-      }
-
-      attempts += 1;
+    try {
+        // Forward the add user request to the user service
+        const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
+        res.json(llmResponse.data);
+    } catch (error) {
+        res.status(error.response.status).json({ error: error.response.data.error });
     }
-
-    if (answer === "idk") {
-      let fallbackQuestion = "Responde brevemente en " + getLanguage(language) + " que no sabes la respuesta.";
-      let fallbackResponse = await axios.post(llmServiceUrl+'/ask', { question: fallbackQuestion, model });
-      answer = fallbackResponse;
-    }
-
-    res.json(answer.data);
-  } catch (error) {
-    const status = error.response?.status || 500; 
-    const message = error.response?.data?.error || error.message || "Unknown error"; 
-    res.status(status).json({ error: message });  }
 });
 
 
-// Read the OpenAPI YAML file synchronously
-openapiPath='./openapi.yaml'
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK' });
+});
+
+// Swagger config
+const openapiPath = './openapi.yaml';
 if (fs.existsSync(openapiPath)) {
-  const file = fs.readFileSync(openapiPath, 'utf8');
+    const file = fs.readFileSync(openapiPath, 'utf8');
 
-  // Parse the YAML content into a JavaScript object representing the Swagger document
-  const swaggerDocument = YAML.parse(file);
+    // Parse the YAML content into a JavaScript object representing the Swagger document
+    const swaggerDocument = YAML.parse(file);
 
-  // Serve the Swagger UI documentation at the '/api-doc' endpoint
-  // This middleware serves the Swagger UI files and sets up the Swagger UI page
-  // It takes the parsed Swagger document as input
-  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    // Serve the Swagger UI documentation at the '/api-doc' endpoint
+    // This middleware serves the Swagger UI files and sets up the Swagger UI page
+    // It takes the parsed Swagger document as input
+    app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 } else {
-  console.log("Not configuring OpenAPI. Configuration file not present.")
+    console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
 
-// Start the gateway service
 const server = app.listen(port, () => {
   console.log(`Gateway Service listening at http://localhost:${port}`);
 });
