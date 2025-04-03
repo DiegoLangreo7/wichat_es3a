@@ -5,6 +5,7 @@ interface QuestionProps {
     question: Question | null;
     onAnswer: (isCorrect: boolean, selectedAnswer: string) => void;
     isTransitioning: boolean;
+    disabled: boolean;
 }
 
 interface Question {
@@ -15,11 +16,13 @@ interface Question {
     imageUrl?: string;
 }
 
-const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning }) => {
+const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning, disabled }) => {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
     const handleButtonClick = (respuestaSeleccionada: string, index: number): void => {
         if (selectedOption !== null || isTransitioning) return;
+        
+        if (disabled) return;
 
         setSelectedOption(index);
 
@@ -69,7 +72,7 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
                                         : 'primary'
                             }
                             onClick={() => handleButtonClick(respuesta, index)}
-                            disabled={false}
+                            disabled={disabled} // Solo deshabilitamos cuando el chat está abierto
                             sx={{
                                 margin: '8px',
                                 textTransform: 'none',
