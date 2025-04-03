@@ -3,6 +3,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 let mongoserver;
 let userservice;
 let authservice;
+let questionservice;
 let llmservice;
 let gatewayservice;
 
@@ -14,6 +15,7 @@ async function startServer() {
     userservice = await require("../../users/userservice/user-service");
     authservice = await require("../../users/authservice/auth-service");
     llmservice = await require("../../llmservice/llm-service");
+    questionservice = await require("../../questionservice/src/service/questionService");
     gatewayservice = await require("../../gatewayservice/gateway-service");
 }
 
