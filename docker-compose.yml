@@ -42,7 +42,7 @@ services:
     container_name: questionservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
     profiles: ["dev", "prod"]
-    build: ./questions/questionservice
+    build: ./questionservice
     depends_on:
       - mongodb
     ports:
