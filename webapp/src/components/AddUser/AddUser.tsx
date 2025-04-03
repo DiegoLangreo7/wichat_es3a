@@ -41,9 +41,6 @@ const AddUser = () => {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', JSON.stringify(response.data.username));
             
-            // Crear un nuevo ranking para el usuario
-            await axios.post(`${apiEndpoint}/ranking`, { username });
-            
             navigate('/main');  // Redirigir a la página principal tras registro exitoso
 							  
         } catch (error) {

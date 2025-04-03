@@ -37,17 +37,6 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
     }
 });
 
-app.get('/stats/:username', async (req, res) => {
-    try {
-        const username = req.params.username;
-        const statsResponse = await historicService.getHistoricByUser(username);
-        res.json(statsResponse);
-    } catch (error) {
-        console.log("Error en la petición:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
 });
