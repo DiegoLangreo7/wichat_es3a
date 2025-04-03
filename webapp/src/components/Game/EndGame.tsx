@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import { Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, Paper, Tooltip } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import axios from 'axios';
 import NavBar from "../Main/items/NavBar";
 
@@ -11,6 +12,7 @@ interface RoundResult {
   correct: boolean;
   timeTaken: number;
   roundScore: number;
+  usedClue?: boolean; // Nueva propiedad para rastrear si se usó pista
 }
 
 interface EndGameProps {
@@ -83,6 +85,9 @@ const EndGame: React.FC = () => {
     calculateAndSendStats();
   }, [roundResults, numCorrect, score, totalQuestions, username]);
 
+  // Verificar si al menos una ronda tiene penalización
+  const hasPenalizedRounds = roundResults.some(round => round.usedClue);
+
   return (
     <Box
       component="main"
@@ -108,9 +113,35 @@ const EndGame: React.FC = () => {
         Respuestas correctas: {numCorrect} / {totalQuestions}
       </Typography>
       <Paper sx={{ width: '90%', maxWidth: 600, mt: 3, p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Resumen de la partida
-        </Typography>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h6">
+            Resumen de la partida
+          </Typography>
+          
+          {/* Leyenda de penalización */}
+          {hasPenalizedRounds && (
+            <Box display="flex" alignItems="center">
+              <Box 
+                component="span" 
+                sx={{ 
+                  display: 'inline-block', 
+                  width: '16px', 
+                  height: '16px', 
+                  bgcolor: 'warning.main', 
+                  mr: 1,
+                  borderRadius: '2px'
+                }} 
+              />
+              <Typography variant="body2" color="text.secondary">
+                Puntuación con penalización del 50% por uso de IA
+              </Typography>
+              <Tooltip title="Cuando se utiliza el chat de pistas, la puntuación de esa ronda se reduce a la mitad" arrow>
+                <InfoIcon fontSize="small" sx={{ ml: 0.5, color: 'text.secondary', cursor: 'help' }} />
+              </Tooltip>
+            </Box>
+          )}
+        </Box>
+        
         <Table>
           <TableHead>
             <TableRow>
@@ -126,7 +157,19 @@ const EndGame: React.FC = () => {
                 <TableCell>Ronda {round.round}</TableCell>
                 <TableCell>{round.correct ? 'Acertada' : 'Fallada'}</TableCell>
                 <TableCell>{round.timeTaken}</TableCell>
-                <TableCell>{round.roundScore}</TableCell>
+                <TableCell 
+                  sx={{ 
+                    color: round.usedClue ? 'warning.main' : 'inherit',
+                    fontWeight: round.usedClue ? 'bold' : 'inherit'
+                  }}
+                >
+                  {round.roundScore}
+                  {round.usedClue && (
+                    <Tooltip title="Puntuación reducida al 50% por uso de IA" arrow>
+                      <InfoIcon fontSize="small" sx={{ ml: 0.5, color: 'warning.main', cursor: 'help' }} />
+                    </Tooltip>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

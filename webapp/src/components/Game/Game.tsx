@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Container,
   Typography,
   Button,
   Box,
   CircularProgress,
-  TextField,
-  IconButton
+  Snackbar,
+  Alert
 } from '@mui/material';
-import cryptoRandomString from 'crypto-random-string';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
-import SendIcon from '@mui/icons-material/Send';
+import LLMChat from './LLMChat';  // Importamos el componente LLMChat
+import PauseIcon from '@mui/icons-material/Pause'; // Importamos el icono de pausa
 
 interface Question {
   question: string;
@@ -24,18 +23,19 @@ interface Question {
   imageUrl?: string;
 }
 
+// Actualizada la interfaz para incluir si se usó pista
 interface RoundResult {
   round: number;
   correct: boolean;
   timeTaken: number;
   roundScore: number;
+  usedClue?: boolean; // Nueva propiedad opcional para rastrear si se usó pista
 }
 
 const Game: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Obtener los parámetros desde la navegación
   const {
     username = "Usuario",
     totalQuestions = 10,
@@ -49,7 +49,7 @@ const Game: React.FC = () => {
   const TRANSITION_ROUND_TIME = 3;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [clueOpen, setClueOpen] = useState<boolean>(true);
+  const [clueOpen, setClueOpen] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
   const [timer, setTimer] = useState<number>(timeLimitFixed);
@@ -62,10 +62,11 @@ const Game: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([]);
-  const [newMessage, setNewMessage] = useState<string>("");
-  const [guessed, setGuessed] = useState<boolean>(false);
   const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+  const [guessed, setGuessed] = useState<boolean>(false);
+  const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
+  const [clueUsed, setClueUsed] = useState<boolean>(false); // Nuevo estado para rastrear si se usó una pista
+  const [showScoreAlert, setShowScoreAlert] = useState<boolean>(false); // Para mostrar alerta cuando se usa una pista
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -73,55 +74,82 @@ const Game: React.FC = () => {
     try {
       const response = await axios.get(`${apiEndpoint}/questions/country`);
       setCurrentQuestion(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching question:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleTimeRemaining = (): string => {
     const remaining = isPaused ? transitionTimer : timer;
-    const minsR = Math.floor(remaining / 60);
     const secsR = remaining % 60;
     let secsRStr = secsR < 10 ? '0' + secsR.toString() : secsR.toString();
     secsRStr = secsRStr !== '00' ? secsRStr : '  ';
     return `${secsRStr}`;
   };
 
+  const handleClueToggle = () => {
+    // Si estamos abriendo el chat de pistas, pausamos el temporizador
+    if (!clueOpen) {
+      setIsPaused(true);
+    } 
+    // Si estamos cerrando el chat de pistas y no estábamos en transición, reanudamos el temporizador
+    else if (!isTransitioning && !guessed) {
+      setIsPaused(false);
+    }
+    
+    // Alternamos el estado del chat de pistas
+    setClueOpen(!clueOpen);
+  };
+
+  // Función para manejar cuando se usa una pista
+  const handleClueUsed = () => {
+    setClueUsed(true);
+    setShowScoreAlert(true);
+  };
+
   const handleNextRound = (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
-  
-    // Definir multiplicador según el timeLimit
+
     let multiplier = 1;
     if (timeLimitFixed === 20) multiplier = 1.5;
     else if (timeLimitFixed === 10) multiplier = 2;
-  
-    // Calcular puntuación con bonus
-    const baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+
+    // Calculamos la puntuación base
+    let baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
+    
+    // Si se usó una pista, reducimos la puntuación a la mitad
+    if (clueUsed) {
+      baseScore = baseScore / 2;
+    }
+    
     const roundScore = Math.round(baseScore * multiplier);
-  
+
     if (answeredCorrectly) {
       setNumCorrect(prev => prev + 1);
     }
     setScore(prev => prev + roundScore);
-  
+
     const roundNumber = roundResults.length + 1;
+    // Actualizado para incluir si se usó pista
     const roundResult: RoundResult = {
       round: roundNumber,
       correct: answeredCorrectly,
       timeTaken: roundTimeTaken,
-      roundScore: roundScore
+      roundScore: roundScore,
+      usedClue: clueUsed // Guardamos si se usó una pista en esta ronda
     };
-  
-    console.log(`Ronda ${roundNumber}: correcto=${answeredCorrectly}, tiempo=${roundTimeTaken}, scoreBase=${Math.round(baseScore)}, bonus=${multiplier}x, final=${roundScore}`);
-  
+
     setRoundResults(prev => [...prev, roundResult]);
     setGuessed(false);
-  
+    // Reiniciamos el estado de clueUsed para la siguiente ronda
+    setClueUsed(false);
+
     setIsTransitioning(true);
     setTransitionTimer(TRANSITION_ROUND_TIME);
-  
+
     const transitionInterval = setInterval(() => {
       setTransitionTimer(prev => {
         if (prev > 1) return prev - 1;
@@ -138,7 +166,7 @@ const Game: React.FC = () => {
         return 0;
       });
     }, 1000);
-  
+
     const visibilityInterval = setInterval(() => {
       setIsVisible(prev => !prev);
     }, 500);
@@ -147,7 +175,6 @@ const Game: React.FC = () => {
       setIsVisible(true);
     }, TRANSITION_ROUND_TIME * 1000);
   };
-  
 
   const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
     setIsPaused(true);
@@ -164,8 +191,27 @@ const Game: React.FC = () => {
     fetchQuestion();
   }, []);
 
+  // Efecto para manejar la intermitencia del icono de pausa
   useEffect(() => {
-    if (!isPaused && !isLoading) {
+    let pauseIconInterval: NodeJS.Timeout;
+    
+    if (isPaused && clueOpen && !isTransitioning) {
+      pauseIconInterval = setInterval(() => {
+        setIsPauseIconVisible(prev => !prev);
+      }, 500);
+    }
+    
+    return () => {
+      if (pauseIconInterval) clearInterval(pauseIconInterval);
+    };
+  }, [isPaused, clueOpen, isTransitioning]);
+
+  useEffect(() => {
+    // Solo decrementamos el temporizador si:
+    // 1. No está pausado
+    // 2. No estamos cargando
+    // 3. El chat de pistas NO está abierto
+    if (!isPaused && !isLoading && !clueOpen) {
       const interval = setInterval(() => {
         if (timer > 0) {
           setTimer(prev => prev - 1);
@@ -176,7 +222,7 @@ const Game: React.FC = () => {
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer, isPaused, isLoading]);
+  }, [timer, isPaused, isLoading, clueOpen]); // Agregamos clueOpen como dependencia
 
   useEffect(() => {
     if (finished && round >= TOTAL_ROUNDS) {
@@ -194,15 +240,7 @@ const Game: React.FC = () => {
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  const handleSendMessage = (): void => {
-    if (newMessage.trim() !== "") {
-      setMessages(prev => [...prev, { text: newMessage, sender: 'user' }]);
-      setTimeout(() => {
-        setMessages(prev => [...prev, { text: 'Esta es tu pista de ayuda.', sender: 'system' }]);
-      }, 1000);
-      setNewMessage("");
-    }
-  };
+  
 
   return (
     <Box component="main" sx={{
@@ -241,93 +279,62 @@ const Game: React.FC = () => {
                 sx={{ color: '#F7B801'}}
               />
               {isVisible && (
-                <Typography 
-                  variant="h6" 
+                <Typography
+                  variant="h6"
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
-                    color: '#F7FFF7',
+                    color: clueUsed ? 'orange' : '#F7FFF7', // Cambiamos el color si se usó una pista
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                   }}
                 >
-                  {handleTimeRemaining()}
+                  {(isPaused && clueOpen && !isTransitioning) ? 
+                    (isPauseIconVisible ? <PauseIcon fontSize="medium" /> : null) : 
+                    handleTimeRemaining()}
                 </Typography>
               )}
             </Box>
-            <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning}/>
-
+{currentQuestion && (
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            )}
             <Box display="flex" justifyContent="center" mt={3}>
-              <Button variant="contained"  size="large" onClick={() => setClueOpen(!clueOpen)} sx = {{backgroundColor:'#EDC9FF', color: '#202A25'}}>
-                Pedir Pista
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="large" 
+                onClick={handleClueToggle}
+              >
+                {clueOpen ? "Cerrar Pista" : "Pedir Pista"}
               </Button>
             </Box>
           </Box>
-          {clueOpen ? (
-            <Box></Box>
-          ) : (
-              <Box sx={{
-                width: '40%', // Ancho fijo para la columna de chat
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: '#202A25',
-                borderRadius: 2,
-                boxShadow: 3,
-                margin: 1,
-                height: 'calc(100% - 16px)', // Altura completa menos los márgenes
-                minHeight: '0' // Importante para que flex funcione correctamente
-              }}>
-              <Box sx={{ flexGrow: 1, overflowY: 'auto'}}>
-                {messages.map((message, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start'
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        bgcolor: message.sender === 'user' ? 'blue.200' : 'gray.300',
-                        color: '#F7FFF7',
-                        p: 1,
-                        borderRadius: 1,
-                      }}
-                    >
-                      {message.text}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-              <Box display="flex">
-                <TextField
-                    placeholder="Escribe tu mensaje..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    sx={{
-                      m: 1,
-                      '& .MuiInputBase-input': {
-                        color: '#F7FFF7', // Color del texto ingresado
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#F7FFF7', // Color del placeholder
-                      },
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: '#F7FFF7', // Color del borde
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#F7FFF7', // Color del borde al hover
-                        },
-                      },
-                    }}
-                />
-                <IconButton  onClick={handleSendMessage} sx = {{color: '#F7B801'}}>
-                  <SendIcon />
-                </IconButton>
-              </Box>
-            </Box>
+          {clueOpen && (
+            <LLMChat
+              question={currentQuestion?.question || ""}
+              solution={currentQuestion?.correctAnswer || ""}
+              onClueUsed={handleClueUsed}
+            />
           )}
         </Box>
       )}
+      
+      {/* Alerta que aparece cuando se usa una pista */}
+      <Snackbar 
+        open={showScoreAlert} 
+        autoHideDuration={3000} 
+        onClose={() => setShowScoreAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setShowScoreAlert(false)} 
+          severity="warning" 
+          sx={{ width: '100%' }}
+        >
+          Multa por uso de IA: puntuación de esta ronda reducida a la mitad.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
