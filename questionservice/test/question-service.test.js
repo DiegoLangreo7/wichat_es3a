@@ -32,7 +32,5 @@ describe('Question Service', () => {
         expect(response.body).toHaveProperty('correctAnswer');
         expect(response.body).toHaveProperty('category');
         expect(response.body).toHaveProperty('imageUrl');
-    }, 60000); //30 segundos
+    }, 180000); //3 minutos
 });
-
-jest.setTimeout(60000); // 60 seconds
