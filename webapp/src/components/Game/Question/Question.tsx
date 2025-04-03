@@ -36,14 +36,14 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
     }
 
     return (
-        <Container maxWidth="lg">
-            <Box display="flex" justifyContent="center" mb={2}>
+        <Container maxWidth="lg" >
+            <Box display="flex" justifyContent="center" sx={{ mb: 2}}>
                 {question.imageUrl && (
                     <img 
                         src={question.imageUrl} 
                         alt="Imagen" 
                         style={{ 
-                            width: '40%',        
+                            width: '350px',
                             aspectRatio: '3/2',  
                             borderRadius: '8px', 
                             objectFit: 'cover',   
@@ -52,7 +52,7 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
                     />
                 )}
             </Box>
-            <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>
+            <Typography component="h1" variant="h5" sx={{ textAlign: 'center', color: '#F7FFF7' }}>
                 {question.question}
             </Typography>
             <Grid container spacing={2} justifyContent="center">
@@ -68,12 +68,35 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
                                     isTransitioning ? respuesta === question.correctAnswer ? 'success' : 'primary'
                                         : 'primary'
                             }
+                            disabled={isTransitioning && !(respuesta === question.correctAnswer || index === selectedOption)}
                             onClick={() => handleButtonClick(respuesta, index)}
-                            disabled={false}
                             sx={{
                                 margin: '8px',
                                 textTransform: 'none',
-                                width: '100%'
+                                width: '100%',
+                                // Estilos base que se aplicarán siempre
+                                '&.MuiButton-contained': {
+                                    backgroundColor: '#F7B801',
+                                    color: '#202A25'
+                                },
+                                // Sobreescribir colores para los diferentes estados
+                                '&.MuiButton-containedPrimary': {
+                                    backgroundColor: '#F7B801',
+                                    color: '#202A25'
+                                },
+                                '&.MuiButton-containedSuccess': {
+                                    backgroundColor: '#4CAF50', // Verde para éxito
+                                    color: 'white'
+                                },
+                                '&.MuiButton-containedError': {
+                                    backgroundColor: '#F44336', // Rojo para error
+                                    color: 'white'
+                                },
+                                // Estilo para estado disabled
+                                '&.Mui-disabled': {
+                                    backgroundColor: '#e0e0e0',
+                                    color: '#9e9e9e'
+                                }
                             }}
                         >
                             {respuesta}

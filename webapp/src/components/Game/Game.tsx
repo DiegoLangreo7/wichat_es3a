@@ -212,6 +212,7 @@ const Game: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
+      backgroundColor: '#202A25',
     }}>
       <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
         <NavBar />
@@ -224,13 +225,20 @@ const Game: React.FC = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Box display='flex' flexDirection='row' p={2} bgcolor='gray.100' borderRadius={2} boxShadow={3}>
-          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center">
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3}>
+        <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3}  sx={{
+          transform: 'scale(0.80)',
+          transformOrigin: 'center',
+          backgroundColor: '#5f4bb6'
+        }}>
+          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" sx={{
+
+          }}>
+            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
               <CircularProgress
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
                 size={80}
+                sx={{ color: '#F7B801'}}
               />
               {isVisible && (
                 <Typography 
@@ -238,51 +246,48 @@ const Game: React.FC = () => {
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
-                    color: 'black',
+                    color: '#F7FFF7',
                   }}
                 >
                   {handleTimeRemaining()}
                 </Typography>
               )}
             </Box>
-            <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} />
+            <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning}/>
+
             <Box display="flex" justifyContent="center" mt={3}>
-              <Button variant="contained" color="secondary" size="large" onClick={() => setClueOpen(!clueOpen)}>
+              <Button variant="contained"  size="large" onClick={() => setClueOpen(!clueOpen)} sx = {{backgroundColor:'#EDC9FF', color: '#202A25'}}>
                 Pedir Pista
               </Button>
             </Box>
           </Box>
           {clueOpen ? (
-            <Box>{/* Puedes añadir contenido adicional aquí */}</Box>
+            <Box></Box>
           ) : (
-            <Box
-              sx={{
-                mt: 3,
-                maxHeight: 300,
+              <Box sx={{
+                width: '40%', // Ancho fijo para la columna de chat
                 display: 'flex',
                 flexDirection: 'column',
-                bgcolor: 'white',
+                bgcolor: '#202A25',
                 borderRadius: 2,
                 boxShadow: 3,
-                p: 2,
-                width: '100%',
-                margin: 2
-              }}
-            >
-              <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
+                margin: 1,
+                height: 'calc(100% - 16px)', // Altura completa menos los márgenes
+                minHeight: '0' // Importante para que flex funcione correctamente
+              }}>
+              <Box sx={{ flexGrow: 1, overflowY: 'auto'}}>
                 {messages.map((message, index) => (
                   <Box
                     key={index}
                     sx={{
                       display: 'flex',
-                      justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                      mb: 1,
+                      justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start'
                     }}
                   >
                     <Typography
                       sx={{
                         bgcolor: message.sender === 'user' ? 'blue.200' : 'gray.300',
-                        color: 'black',
+                        color: '#F7FFF7',
                         p: 1,
                         borderRadius: 1,
                       }}
@@ -294,12 +299,28 @@ const Game: React.FC = () => {
               </Box>
               <Box display="flex">
                 <TextField
-                  fullWidth
-                  placeholder="Escribe tu mensaje..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Escribe tu mensaje..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    sx={{
+                      m: 1,
+                      '& .MuiInputBase-input': {
+                        color: '#F7FFF7', // Color del texto ingresado
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#F7FFF7', // Color del placeholder
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: '#F7FFF7', // Color del borde
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#F7FFF7', // Color del borde al hover
+                        },
+                      },
+                    }}
                 />
-                <IconButton color="primary" onClick={handleSendMessage}>
+                <IconButton  onClick={handleSendMessage} sx = {{color: '#F7B801'}}>
                   <SendIcon />
                 </IconButton>
               </Box>
