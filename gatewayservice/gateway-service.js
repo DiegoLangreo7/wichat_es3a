@@ -99,13 +99,14 @@ app.post('/adduser', async (req, res) => {
 // Endpoint para pedir pistas al LLM para el juego
 app.post('/game-hint', async (req, res) => {
     try {
-        const { question, solution, userMessage } = req.body;
+        const { question, solution, options, userMessage } = req.body;
         console.log("Request to game-hint:", req.body);
         
         // Reenviar la solicitud directamente al servicio LLM
         const response = await axios.post(`${llmServiceUrl}/game-hint`, {
             question,
             solution,
+            options,
             userMessage
         });
         
