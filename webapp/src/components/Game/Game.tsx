@@ -271,7 +271,7 @@ const Game: React.FC = () => {
           <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" sx={{
 
           }}>
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
+            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={2} mb={3} >
               <CircularProgress
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
