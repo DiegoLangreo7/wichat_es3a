@@ -86,7 +86,7 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
-
+      
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest

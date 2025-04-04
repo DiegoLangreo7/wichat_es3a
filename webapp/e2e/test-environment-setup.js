@@ -3,6 +3,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 let mongoserver;
 let userservice;
 let authservice;
+let questionservice;
 let llmservice;
 let questionservice;
 let gatewayservice;
