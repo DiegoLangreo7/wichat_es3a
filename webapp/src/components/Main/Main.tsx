@@ -76,7 +76,7 @@ const Main = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                backgroundColor: "#FFFFFF",
+                backgroundColor: "#202A25",
             }}
         >
             <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
@@ -84,12 +84,12 @@ const Main = () => {
             </Box>
 
             <Box sx={{ textAlign: "center", mt: 12 }}>
-                <Typography variant="h4" sx={{ color: "#1E293B", fontWeight: "bold", mb: 3 }}>
+                <Typography variant="h4" sx={{ color: '#F7FFF7', fontWeight: "bold", mb: 3 }}>
                     {username}, ¿Listo para jugar?
                 </Typography>
 
                 {/* Selector de dificultad */}
-                <Box sx={{ width: 250, mx: "auto", mb: 3 }}>
+                <Box sx={{ width: 250, mx: "auto", mb: 3 , backgroundColor : '#F7FFF7', borderRadius: "10px", padding: 5}}>
                     <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color }}>
                         Dificultad: {difficultyMap[difficulty].label}
                     </Typography>
@@ -113,7 +113,7 @@ const Main = () => {
                 <Button
                     onClick={handleButtonClick}
                     sx={{
-                        backgroundColor: "#1976D2",
+                        backgroundColor: "#5f4bb6",
                         color: "white",
                         fontSize: "1.5rem",
                         fontWeight: "bold",
@@ -122,7 +122,7 @@ const Main = () => {
                         boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
                         transition: "all 0.3s ease-in-out",
                         "&:hover": {
-                            backgroundColor: "#1565C0",
+                            backgroundColor: "#EDC9FF",
                             transform: "scale(1.05)",
                         },
                         "&:active": {
@@ -141,7 +141,7 @@ const Main = () => {
                 width: "80%",
                 maxWidth: "400px",
                 borderRadius: "10px",
-                backgroundColor: "#F4F4F4"
+                backgroundColor: "#F7FFF7"
             }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                     📊 Estadísticas

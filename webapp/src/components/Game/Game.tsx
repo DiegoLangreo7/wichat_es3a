@@ -250,6 +250,7 @@ const Game: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
+      backgroundColor: '#202A25',
     }}>
       <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
         <NavBar />
@@ -262,13 +263,20 @@ const Game: React.FC = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Box display='flex' flexDirection='row' p={2} bgcolor='gray.100' borderRadius={2} boxShadow={3}>
-          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center">
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3}>
+        <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3}  sx={{
+          transform: 'scale(0.80)',
+          transformOrigin: 'center',
+          backgroundColor: '#5f4bb6'
+        }}>
+          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" sx={{
+
+          }}>
+            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
               <CircularProgress
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
                 size={80}
+                sx={{ color: '#F7B801'}}
               />
               {isVisible && (
                 <Typography
@@ -276,7 +284,7 @@ const Game: React.FC = () => {
                   sx={{
                     position: "absolute",
                     fontWeight: "bold",
-                    color: clueUsed ? 'orange' : 'black', // Cambiamos el color si se usó una pista
+                    color: clueUsed ? 'orange' : '#F7FFF7', // Cambiamos el color si se usó una pista
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -289,7 +297,7 @@ const Game: React.FC = () => {
                 </Typography>
               )}
             </Box>
-            {currentQuestion && (
+{currentQuestion && (
               <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            )}
             <Box display="flex" justifyContent="center" mt={3}>
               <Button 

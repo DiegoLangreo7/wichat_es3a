@@ -36,7 +36,7 @@ const NavBar: React.FC = () => {
     };
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: "#1E293B", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
+        <AppBar position="static" sx={{ backgroundColor: "#5f4bb6", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Typography
@@ -48,7 +48,7 @@ const NavBar: React.FC = () => {
                             letterSpacing: "1px",
                             cursor: "pointer",
                             transition: "color 0.3s ease-in-out",
-                            "&:hover": { color: "#3B82F6" } 
+                            "&:hover": { color: "#202A25" }
                         }}
                     >
                         WI CHAT
@@ -64,7 +64,7 @@ const NavBar: React.FC = () => {
                             borderRadius: "8px",
                             transition: "all 0.3s ease-in-out",
                             "&:hover": { 
-                                backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                backgroundColor: "#5f4bb6",
                                 transform: "scale(1.05)"
                             },
                         }}
@@ -104,7 +104,7 @@ const NavBar: React.FC = () => {
                                 borderRadius: "8px",
                                 transition: "all 0.3s ease-in-out",
                                 "&:hover": { 
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                    backgroundColor: "#5f4bb6",
                                     transform: "scale(1.05)"
                                 },
                             }}
@@ -118,7 +118,7 @@ const NavBar: React.FC = () => {
                             PaperProps={{
                                 sx: {
                                     mt: 1,
-                                    backgroundColor: "#1E293B",
+                                    backgroundColor: "#5f4bb6",
                                     boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
                                     borderRadius: 2,
                                     minWidth: 160,
@@ -126,10 +126,10 @@ const NavBar: React.FC = () => {
                                 },
                             }}
                         >
-                            <MenuItem onClick={handleHistoric} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
+                            <MenuItem onClick={handleHistoric} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                 Historial
                             </MenuItem>
-                            <MenuItem onClick={handleMenuClose} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
+                            <MenuItem onClick={handleMenuClose} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                 Cuenta
                             </MenuItem>
                             <MenuItem 
