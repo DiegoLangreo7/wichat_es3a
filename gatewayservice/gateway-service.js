@@ -21,6 +21,20 @@ app.use(express.json());
 const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
 
+// NO BORREIS ESTO QUE ES PARA LOS TESTS DE ACEPTACION GRACIAS BESUS DANI
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK' });
+});
+
+app.post('/login', async (req, res) => {
+    try {
+        const authResponse = await axios.post(authServiceUrl+'/login', req.body);
+        res.json(authResponse.data);
+    } catch (error) {
+        res.status(error.response.status).json({ error: error.response.data.error });
+    }
+});
+
 // Endpoint: Obtener estadísticas de un usuario
 app.get('/stats/:username', async (req, res) => {
   try {

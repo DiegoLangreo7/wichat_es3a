@@ -11,10 +11,8 @@ defineFeature(feature, test => {
     beforeAll(async () => {
         browser = process.env.GITHUB_ACTIONS
             ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-            : await puppeteer.launch({ headless: false, slowMo: 100 });
+            : await puppeteer.launch({ headless: false, slowMo: 50 });
         page = await browser.newPage();
-        //Way of setting up the timeout
-        setDefaultOptions({ timeout: 10000 })
 
         await page
             .goto("http://localhost:3000", {
@@ -42,7 +40,7 @@ defineFeature(feature, test => {
 
         then('The main page should be displayed', async () => {
             await expect(page).toMatchElement("div", { text: "pablo, ¿Listo para jugar?" });
-            await expect(page).toClick("button", { text: "Usuario" });
+            await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
     })
