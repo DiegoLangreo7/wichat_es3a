@@ -5,6 +5,7 @@ let userservice;
 let authservice;
 let questionservice;
 let llmservice;
+let questionservice;
 let gatewayservice;
 
 async function startServer() {
