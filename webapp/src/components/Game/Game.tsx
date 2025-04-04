@@ -257,10 +257,10 @@ const Game: React.FC = () => {
       </Box>
       {isLoading ? (
         <Box display="flex" alignItems="center">
-          <Typography variant="h6" color="textSecondary" sx={{ mr: 2 }}>
+          <Typography variant="h6" sx={{ mr: 2, color: '#F7FFF7' }}>
             Cargando...
           </Typography>
-          <CircularProgress />
+          <CircularProgress sx = {{ color: '#F7B801'}}/>
         </Box>
       ) : (
         <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3}  sx={{
@@ -305,6 +305,7 @@ const Game: React.FC = () => {
                 color="secondary" 
                 size="large" 
                 onClick={handleClueToggle}
+                sx = {{ color: '#202A25', backgroundColor: '#EDC9FF'}}
               >
                 {clueOpen ? "Cerrar Pista" : "Pedir Pista"}
               </Button>
