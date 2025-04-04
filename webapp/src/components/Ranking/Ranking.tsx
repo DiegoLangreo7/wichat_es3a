@@ -34,10 +34,18 @@ const Ranking: React.FC = () => {
 
   const userIndex = ranking.findIndex((entry) => entry.username === username);
 
+  // Los 3 primeros del ranking
   const top3 = ranking.slice(0, 3);
+  
+  // Definir inicio y fin del contexto alrededor del usuario
   const contextStart = Math.max(userIndex - 2, 3);
   const contextEnd = Math.min(userIndex + 3, ranking.length);
-  const contextAroundUser = userIndex >= 3 ? ranking.slice(contextStart, contextEnd) : [];
+  
+  // Solo mostrar el contexto si el usuario no está en el top 3 y si hay un gap entre el contexto y el top 3
+  const showContext = userIndex >= 3;
+  const showDivider = contextStart > 3; // Solo mostrar los puntos suspensivos si hay un salto
+  
+  const contextAroundUser = showContext ? ranking.slice(contextStart, contextEnd) : [];
 
   const getMedalEmoji = (position: number) => {
     if (position === 0) return "🥇";
@@ -76,6 +84,7 @@ const Ranking: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* Top 3 */}
             {top3.map((entry, index) => {
               const isCurrentUser = entry.username === username;
               return (
@@ -92,30 +101,34 @@ const Ranking: React.FC = () => {
                 </TableRow>
               );
             })}
-            {contextAroundUser.length > 0 && (
-              <>
-                <TableRow>
-                  <TableCell colSpan={3} align="center">...</TableCell>
-                </TableRow>
-                {contextAroundUser.map((entry, index) => {
-                  const globalIndex = contextStart + index;
-                  const isCurrentUser = entry.username === username;
-                  return (
-                    <TableRow
-                      key={entry.username}
-                      sx={{
-                        backgroundColor: isCurrentUser ? "#E3F2FD" : "#FFFFFF",
-                        fontWeight: isCurrentUser ? "bold" : "normal",
-                      }}
-                    >
-                      <TableCell>{globalIndex + 1}</TableCell>
-                      <TableCell>{entry.username}</TableCell>
-                      <TableCell>{entry.puntuation}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </>
+            
+            {/* Separador (solo si hay un salto) */}
+            {showContext && showDivider && (
+              <TableRow>
+                <TableCell colSpan={3} align="center">...</TableCell>
+              </TableRow>
             )}
+            
+            {/* Contexto alrededor del usuario */}
+            {contextAroundUser.map((entry, index) => {
+              const globalIndex = contextStart + index;
+              const isCurrentUser = entry.username === username;
+              return (
+                <TableRow
+                  key={entry.username}
+                  sx={{
+                    backgroundColor: isCurrentUser ? "#E3F2FD" : "#FFFFFF",
+                    fontWeight: isCurrentUser ? "bold" : "normal",
+                  }}
+                >
+                  <TableCell>{globalIndex + 1}</TableCell>
+                  <TableCell>{entry.username}</TableCell>
+                  <TableCell>{entry.puntuation}</TableCell>
+                </TableRow>
+              );
+            })}
+            
+            {/* Caso especial: solo hay un elemento en el ranking y es el usuario */}
             {ranking.length === 1 && (
               <TableRow sx={{ backgroundColor: "#E3F2FD" }}>
                 <TableCell>1</TableCell>
