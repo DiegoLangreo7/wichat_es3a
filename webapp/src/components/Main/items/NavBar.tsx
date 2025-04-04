@@ -31,6 +31,10 @@ const NavBar: React.FC = () => {
         navigate("/logout"); 
     };
 
+    const handleApi = () => {
+        navigate("/api");
+    };
+
     return (
         <AppBar position="static" sx={{ backgroundColor: "#5f4bb6", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
@@ -66,6 +70,24 @@ const NavBar: React.FC = () => {
                         }}
                     >
                         Ranking Global
+                    </Button>
+
+                    <Button
+                        onClick={handleApi}
+                        sx={{
+                            color: "white",
+                            fontSize: "1rem",
+                            textTransform: "none",
+                            padding: "6px 12px",
+                            borderRadius: "8px",
+                            transition: "all 0.3s ease-in-out",
+                            "&:hover": { 
+                                backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                transform: "scale(1.05)"
+                            },
+                        }}
+                    >
+                        API Platform
                     </Button>
                 </Box>
     

@@ -37,6 +37,16 @@ app.get('/getQuestionsDb/:category', async (req, res) => {
     }
 });
 
+app.get('/getDBQuestions', async (req, res) => {
+    try {
+        const questions = await dataService.getAllQuestions();
+        res.json(questions);
+    } catch (error) {
+        console.log("Error en la petición:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
 });

@@ -61,6 +61,20 @@ module.exports = {
             console.error("Error fetching random question:", error);
             throw new Error(error.message);
         }
+    },
+    
+    /**
+     * Gets all questions from the database.
+     * @returns {Promise<Array>} - A promise that resolves to an array of all questions
+     */
+    getAllQuestions: async function() {
+        try {
+            const questions = await Question.find({}, { __v: 0 });
+            return questions;
+        } catch (error) {
+            console.error('Error getting all questions:', error);
+            throw new Error(error.message);
+        }
     }
     
 };

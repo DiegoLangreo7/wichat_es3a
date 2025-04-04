@@ -38,19 +38,33 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/userdb
 
+  questionservice:
+    container_name: questionservice-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
+    profiles: ["dev", "prod"]
+    build: ./questionservice
+    depends_on:
+      - mongodb
+    ports:
+      - "8004:8004"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/questiondb
+
   llmservice:
-  container_name: llmservice-wichat_es3a
-  image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
-  profiles: ["dev", "prod"]
-  build: ./llmservice
-  env_file:
-    - .env
-  ports:
-    - "8003:8003"
-  networks:
-    - mynetwork
-  environment:
-    LLM_API_KEY: ${LLM_API_KEY}  
+    container_name: llmservice-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
+    profiles: ["dev", "prod"]
+    build: ./llmservice
+    env_file:
+      - .env
+    ports:
+      - "8003:8003"
+    networks:
+      - mynetwork
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY}
 
   questionservice:
     container_name: questionservice-wichat_es3a
@@ -83,6 +97,24 @@ services:
       AUTH_SERVICE_URL: http://authservice:8002
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
+      QUESTION_SERVICE_URL: http://questionservice:8004
+
+
+  gateway-api-service:
+    container_name: gateway-api-service-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest
+    profiles: ["dev", "prod"]
+    build: ./gateway-api-service
+    depends_on:
+      - mongodb
+      - userservice
+      - questionservice
+    ports:
+      - "8006:8006"
+    networks:
+      - mynetwork
+    environment:
+      USER_SERVICE_URL: http://userservice:8001
       QUESTION_SERVICE_URL: http://questionservice:8004
 
   webapp:
