@@ -51,6 +51,28 @@ defineFeature(feature, test => {
         });
     })
 
+    test('The user is not registered in the site', ({given, when, then}) => {
+
+        let username;
+        let password;
+
+        given('A not registered user', async () => {
+            username = "loginUser2"
+            password = "123456q@"
+        })
+
+        when('I fill the data in the form and press submit', async () => {
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Login' });
+        })
+
+        then('The error message should be displayed', async () => {
+            await expect(page).toMatchElement("p", { text: "Usuario o contraseña incorrectos" });
+        })
+
+    })
+
     afterAll(async ()=>{
         browser.close()
     })
