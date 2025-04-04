@@ -77,15 +77,18 @@ defineFeature(feature, test => {
 
 
         given('An unregistered user', async () => {
-
+            username = "username"
+            password = "123456"
         });
 
         when('I fill the data in the form and press submit with an invalid password', async () => {
-
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
         });
 
         then('An error message should be displayed', async () => {
-
+            await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
         });
 
     })
