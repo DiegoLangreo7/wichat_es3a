@@ -27,7 +27,7 @@ defineFeature(feature, test => {
         let password;
 
         given('An unregistered user', async () => {
-            username = "pablo"
+            username = "signInUser"
             password = "123456q@"
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
@@ -39,7 +39,7 @@ defineFeature(feature, test => {
         });
 
         then('The main page should be displayed', async () => {
-            await expect(page).toMatchElement("div", { text: "pablo, ¿Listo para jugar?" });
+            await expect(page).toMatchElement("div", { text: username + ", ¿Listo para jugar?" });
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
@@ -51,7 +51,7 @@ defineFeature(feature, test => {
         let password;
 
         given('A registered user', async () => {
-            username = "pablo"
+            username = "signInUser"
             password = "123456q@"
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
@@ -63,7 +63,7 @@ defineFeature(feature, test => {
         });
 
         then('An error message should be displayed', async () => {
-            await expect(page).toMatchElement("p", { text: "El usuario pablo ya existe" });
+            await expect(page).toMatchElement("p", { text: "El usuario " + username +" ya existe" });
         });
 
     })
@@ -75,7 +75,7 @@ defineFeature(feature, test => {
 
 
         given('An unregistered user', async () => {
-            username = "username"
+            username = "signInUser2"
             password = "123456"
         });
 
