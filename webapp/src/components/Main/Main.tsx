@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, Paper, Slider } from "@mui/material";
+import { Box, Button, Typography, Paper, Slider, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PublicIcon from '@mui/icons-material/Public';
+import HistoryIcon from '@mui/icons-material/History';
+import ScienceIcon from '@mui/icons-material/Science';
+import MovieIcon from '@mui/icons-material/Movie';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -16,8 +20,8 @@ const Main = () => {
         puntuation: 0
     });
 
-    const [difficulty, setDifficulty] = useState<number>(1); 
-    
+    const [difficulty, setDifficulty] = useState<number>(1);
+    const [gameMode, setGameMode] = useState<string>("geografía");
 
     const isAuthenticated = !!localStorage.getItem("token");
 
@@ -57,14 +61,37 @@ const Main = () => {
         2: { label: "Difícil", time: 10, color: "#EF5350" },
     };
 
+    const gameModes = [
+        { value: "geografía", label: "Geografía", icon: <PublicIcon /> },
+        { value: "historia", label: "Historia", icon: <HistoryIcon /> },
+        { value: "ciencia", label: "Ciencia", icon: <ScienceIcon /> },
+        { value: "cine", label: "Cine", icon: <MovieIcon /> }
+    ];
+
+    const handleModeChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newMode: string,
+    ) => {
+        if (newMode !== null) {
+            setGameMode(newMode);
+        }
+    };
+
     const handleButtonClick = () => {
         const selected = difficultyMap[difficulty];
+        
+        // Crear objeto de temas basado en el modo seleccionado
+        const themes: Record<string, boolean> = {};
+        gameModes.forEach(mode => {
+            themes[mode.value] = mode.value === gameMode;
+        });
+        
         navigate("/game", {
             state: {
                 username,
                 totalQuestions: 10,
                 timeLimit: selected.time,
-                themes: { geografía: true, historia: false }
+                themes: themes
             }
         });
     };
@@ -88,8 +115,57 @@ const Main = () => {
                     {username}, ¿Listo para jugar?
                 </Typography>
 
+                {/* Selector de modo de juego */}
+                <Box sx={{ width: 350, mx: "auto", mb: 3, backgroundColor: '#F7FFF7', borderRadius: "10px", padding: 3 }}>
+                    <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold" }}>
+                        Modo de juego
+                    </Typography>
+                    <ToggleButtonGroup
+                        value={gameMode}
+                        exclusive
+                        onChange={handleModeChange}
+                        aria-label="modo de juego"
+                        sx={{ 
+                            display: 'flex', 
+                            flexWrap: 'wrap', 
+                            justifyContent: 'center',
+                            '& .MuiToggleButton-root': {
+                                margin: '4px',
+                                borderRadius: '8px',
+                                border: '2px solid',
+                                fontFamily: '"Press Start 2P", cursive',
+                                fontSize: '0.7rem',
+                                padding: '8px 12px',
+                                '&.Mui-selected': {
+                                    backgroundColor: '#5f4bb6',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#4a3a9f'
+                                    }
+                                }
+                            }
+                        }}
+                    >
+                        {gameModes.map((mode) => (
+                            <ToggleButton 
+                                key={mode.value} 
+                                value={mode.value}
+                                sx={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    gap: '5px',
+                                    width: '130px'
+                                }}
+                            >
+                                {mode.icon}
+                                {mode.label}
+                            </ToggleButton>
+                        ))}
+                    </ToggleButtonGroup>
+                </Box>
+
                 {/* Selector de dificultad */}
-                <Box sx={{ width: 250, mx: "auto", mb: 3 , backgroundColor : '#F7FFF7', borderRadius: "10px", padding: 5}}>
+                <Box sx={{ width: 300, mx: "auto", mb: 3, backgroundColor: '#F7FFF7', borderRadius: "10px", padding: 3 }}>
                     <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color }}>
                         Dificultad: {difficultyMap[difficulty].label}
                     </Typography>
@@ -141,7 +217,8 @@ const Main = () => {
                 width: "80%",
                 maxWidth: "400px",
                 borderRadius: "10px",
-                backgroundColor: "#F7FFF7"
+                backgroundColor: "#F7FFF7",
+                mb: 4
             }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                     📊 Estadísticas
