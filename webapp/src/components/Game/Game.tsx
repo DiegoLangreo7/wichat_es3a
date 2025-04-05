@@ -125,7 +125,7 @@ const Game: React.FC = () => {
     setShowScoreAlert(true);
   };
 
-  const handleNextRound = (answeredCorrectly: boolean) => {
+  const handleNextRound = async (answeredCorrectly: boolean) => {
     const currentTimer = timer;
     const roundTimeTaken = timeLimitFixed - currentTimer;
 
@@ -135,12 +135,12 @@ const Game: React.FC = () => {
 
     // Calculamos la puntuación base
     let baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
-    
+
     // Si se usó una pista, reducimos la puntuación a la mitad
     if (clueUsed) {
       baseScore = baseScore / 2;
     }
-    
+
     const roundScore = Math.round(baseScore * multiplier);
 
     if (answeredCorrectly) {
@@ -159,6 +159,21 @@ const Game: React.FC = () => {
     };
 
     setRoundResults(prev => [...prev, roundResult]);
+
+    try {
+      await axios.post(`${apiEndpoint}/historic/addQuestion`, {
+        user: username,
+        question: currentQuestion?.question,
+        options: currentQuestion?.options,
+        correctAnswer: currentQuestion?.correctAnswer,
+        category: currentQuestion?.category,
+        answer: selectedAnswer,
+        time: roundTimeTaken,
+      });
+    } catch (error) {
+      console.error("Error al guardar en el historial:", error);
+    }
+
     setGuessed(false);
     // Reiniciamos el estado de clueUsed para la siguiente ronda
     setClueUsed(false);
@@ -198,6 +213,7 @@ const Game: React.FC = () => {
     setIsCorrectAnswer(isCorrect);
     setGuessed(true);
     const answeredCorrectly = isCorrect;
+
     setTimeout(() => {
       handleNextRound(answeredCorrectly);
     }, 2000);
