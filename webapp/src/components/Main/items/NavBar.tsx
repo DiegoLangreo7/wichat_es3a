@@ -5,10 +5,24 @@ import { useNavigate } from "react-router-dom";
 const NavBar: React.FC = () => {
     const [openUserMenu, setOpenUserMenu] = useState(false);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+    const user : string = localStorage.getItem("username") || "Usuario";
+    const username : string = user === "Usuario" ? "Usuario" : user.slice(1, user.length-1);
 
     const handleUserMenu = () => setOpenUserMenu((prev) => !prev);
     const handleMenuClose = () => setOpenUserMenu(false);
+
+    const handleHistoric = () => {
+        navigate("/historic");
+    };
+
+    const handleRanking = () => {
+        navigate("/ranking");
+    };
+
+    const handleMain = () => {
+        navigate("/main");
+    };
 
     const handleLogout = () => {
         handleMenuClose(); 
@@ -17,24 +31,66 @@ const NavBar: React.FC = () => {
         navigate("/logout"); 
     };
 
-    return (
-        <AppBar position="static" sx={{ backgroundColor: "#1E293B", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
-            <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
-                
-                <Typography 
-                    variant="h6" 
-                    sx={{ 
-                        color: "white", 
-                        fontWeight: "bold", 
-                        letterSpacing: "1px",
-                        cursor: "pointer",
-                        transition: "color 0.3s ease-in-out",
-                        "&:hover": { color: "#3B82F6" } 
-                    }}
-                >
-                    WI CHAT
-                </Typography>
+    const handleApi = () => {
+        navigate("/api");
+    };
 
+    return (
+        <AppBar position="static" sx={{ backgroundColor: "#5f4bb6", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Typography
+                        variant="h6"
+                        onClick={handleMain}
+                        sx={{ 
+                            color: "white", 
+                            fontWeight: "bold", 
+                            letterSpacing: "1px",
+                            cursor: "pointer",
+                            transition: "color 0.3s ease-in-out",
+                            "&:hover": { color: "#202A25" }
+                        }}
+                    >
+                        WI CHAT
+                    </Typography>
+    
+                    <Button
+                        onClick={handleRanking}
+                        sx={{
+                            color: "white",
+                            fontSize: "1rem",
+                            textTransform: "none",
+                            padding: "6px 12px",
+                            borderRadius: "8px",
+                            transition: "all 0.3s ease-in-out",
+                            "&:hover": { 
+                                backgroundColor: "#5f4bb6",
+                                transform: "scale(1.05)"
+                            },
+                        }}
+                    >
+                        Ranking Global
+                    </Button>
+
+                    <Button
+                        onClick={handleApi}
+                        sx={{
+                            color: "white",
+                            fontSize: "1rem",
+                            textTransform: "none",
+                            padding: "6px 12px",
+                            borderRadius: "8px",
+                            transition: "all 0.3s ease-in-out",
+                            "&:hover": { 
+                                backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                transform: "scale(1.05)"
+                            },
+                        }}
+                    >
+                        API Platform
+                    </Button>
+                </Box>
+    
                 <ClickAwayListener onClickAway={handleMenuClose}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Button
@@ -48,12 +104,12 @@ const NavBar: React.FC = () => {
                                 borderRadius: "8px",
                                 transition: "all 0.3s ease-in-out",
                                 "&:hover": { 
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)", 
+                                    backgroundColor: "#5f4bb6",
                                     transform: "scale(1.05)"
                                 },
                             }}
                         >
-                            Usuario
+                            {username}
                         </Button>
                         <Menu
                             open={openUserMenu}
@@ -62,7 +118,7 @@ const NavBar: React.FC = () => {
                             PaperProps={{
                                 sx: {
                                     mt: 1,
-                                    backgroundColor: "#1E293B",
+                                    backgroundColor: "#5f4bb6",
                                     boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
                                     borderRadius: 2,
                                     minWidth: 160,
@@ -70,10 +126,10 @@ const NavBar: React.FC = () => {
                                 },
                             }}
                         >
-                            <MenuItem onClick={handleMenuClose} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
+                            <MenuItem onClick={handleHistoric} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                 Historial
                             </MenuItem>
-                            <MenuItem onClick={handleMenuClose} sx={{ color: "#FFFFFF", "&:hover": { backgroundColor: "#40474D" } }}>
+                            <MenuItem onClick={handleMenuClose} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                 Cuenta
                             </MenuItem>
                             <MenuItem 
@@ -92,6 +148,6 @@ const NavBar: React.FC = () => {
             </Toolbar>
         </AppBar>
     );
-};
+}    
 
 export default NavBar;
