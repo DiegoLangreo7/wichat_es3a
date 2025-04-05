@@ -70,16 +70,32 @@ const Game: React.FC = () => {
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-  const fetchQuestion = async () => {
-    try {
-      const response = await axios.get(`${apiEndpoint}/questions/country`);
-      setCurrentQuestion(response.data);
-    } catch (error) {
-      console.error("Error fetching question:", error);
-    } finally {
-      setIsLoading(false);
+  const fetchQuestion = async (retries = 10, delay = 2000) => {
+    let attempt = 0;
+    setIsLoading(true);
+  
+    while (attempt < retries) {
+      try {
+        const response = await axios.get(`${apiEndpoint}/questions/country`);
+  
+        if (response.data && response.data.question) {
+          setCurrentQuestion(response.data);
+          break;
+        } else {
+          console.warn("No hay pregunta aún, reintentando...");
+          await new Promise(resolve => setTimeout(resolve, delay));
+          attempt++;
+        }
+      } catch (error) {
+        console.error("Error fetching question:", error);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        attempt++;
+      }
     }
+  
+    setIsLoading(false);
   };
+  
 
   const handleTimeRemaining = (): string => {
     const remaining = isPaused ? transitionTimer : timer;
@@ -256,12 +272,12 @@ const Game: React.FC = () => {
         <NavBar />
       </Box>
       {isLoading ? (
-        <Box display="flex" alignItems="center">
-          <Typography variant="h6" color="textSecondary" sx={{ mr: 2 }}>
-            Cargando...
+        <Box display="flex" alignItems="center" flexDirection="column">
+          <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
+            Cargando pregunta...
           </Typography>
-          <CircularProgress />
-        </Box>
+        <CircularProgress />
+      </Box>
       ) : (
         <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3}  sx={{
           transform: 'scale(0.80)',
