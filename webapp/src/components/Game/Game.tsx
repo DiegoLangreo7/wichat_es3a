@@ -70,16 +70,32 @@ const Game: React.FC = () => {
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-  const fetchQuestion = async () => {
-    try {
-      const response = await axios.get(`${apiEndpoint}/questions/country`);
-      setCurrentQuestion(response.data);
-    } catch (error) {
-      console.error("Error fetching question:", error);
-    } finally {
-      setIsLoading(false);
+  const fetchQuestion = async (retries = 10, delay = 2000) => {
+    let attempt = 0;
+    setIsLoading(true);
+  
+    while (attempt < retries) {
+      try {
+        const response = await axios.get(`${apiEndpoint}/questions/country`);
+  
+        if (response.data && response.data.question) {
+          setCurrentQuestion(response.data);
+          break;
+        } else {
+          console.warn("No hay pregunta aún, reintentando...");
+          await new Promise(resolve => setTimeout(resolve, delay));
+          attempt++;
+        }
+      } catch (error) {
+        console.error("Error fetching question:", error);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        attempt++;
+      }
     }
+  
+    setIsLoading(false);
   };
+  
 
   const handleTimeRemaining = (): string => {
     const remaining = isPaused ? transitionTimer : timer;
@@ -315,6 +331,7 @@ const Game: React.FC = () => {
             <LLMChat
               question={currentQuestion?.question || ""}
               solution={currentQuestion?.correctAnswer || ""}
+              options={currentQuestion?.options || []}
               onClueUsed={handleClueUsed}
             />
           )}

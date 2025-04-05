@@ -6,6 +6,7 @@ import Game from "../components/Game/Game";
 import EndGame from "../components/Game/EndGame";
 import Ranking from "../components/Ranking/Ranking";
 import Historic from "../components/Historic/Historic";
+import Api from "../components/Api/Api";
 
 const router = createBrowserRouter([
     { path: "/", element: <Navigate to="/login" replace /> },
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     { path: "/logout", element: <Login /> },
     { path: "/historic", element: <Historic /> },
     { path: "/ranking", element: <Ranking /> },
+    { path: "/api", element: <Api /> },
 ]);
 
 export default router;

@@ -94,6 +94,7 @@ const Login = () => {
           Welcome to WICHAT
         </Typography>
         <TextField
+          name="username"
           margin="normal"
           fullWidth
           label="Username"
@@ -125,6 +126,7 @@ const Login = () => {
           }}
         />
         <TextField
+          name="password"
           margin="normal"
           fullWidth
           label="Password"

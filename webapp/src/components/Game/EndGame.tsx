@@ -12,7 +12,7 @@ interface RoundResult {
   correct: boolean;
   timeTaken: number;
   roundScore: number;
-  usedClue?: boolean; // Nueva propiedad para rastrear si se usó pista
+  usedClue?: boolean; 
 }
 
 interface EndGameProps {
@@ -42,7 +42,14 @@ const EndGame: React.FC = () => {
   const username = typeof rawUsername === 'string' ? rawUsername.replace(/^"|"$/g, '') : rawUsername;
 
   const handlePlayAgain = () => {
-    navigate('/game');
+    navigate("/game", {
+      state: {
+          username,
+          totalQuestions: 10,
+          timeLimit: timeLimit,
+          themes: { geografía: true, historia: false }
+      }
+  });
   };
 
   const handleBackToMenu = () => {

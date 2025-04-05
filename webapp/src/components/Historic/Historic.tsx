@@ -62,8 +62,7 @@ const Historic: React.FC = () => {
 
         fetchStats();
     }, []);
-
-    const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
     return (
         <ThemeProvider theme={theme}>

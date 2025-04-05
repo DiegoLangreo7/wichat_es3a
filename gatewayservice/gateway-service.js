@@ -21,6 +21,20 @@ app.use(express.json());
 const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
 
+// NO BORREIS ESTO QUE ES PARA LOS TESTS DE ACEPTACION GRACIAS BESUS DANI
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK' });
+});
+
+app.post('/login', async (req, res) => {
+    try {
+        const authResponse = await axios.post(authServiceUrl+'/login', req.body);
+        res.json(authResponse.data);
+    } catch (error) {
+        res.status(error.response.status).json({ error: error.response.data.error });
+    }
+});
+
 // Endpoint: Obtener estadísticas de un usuario
 app.get('/stats/:username', async (req, res) => {
   try {
@@ -99,13 +113,14 @@ app.post('/adduser', async (req, res) => {
 // Endpoint para pedir pistas al LLM para el juego
 app.post('/game-hint', async (req, res) => {
     try {
-        const { question, solution, userMessage } = req.body;
+        const { question, solution, options, userMessage } = req.body;
         console.log("Request to game-hint:", req.body);
         
         // Reenviar la solicitud directamente al servicio LLM
         const response = await axios.post(`${llmServiceUrl}/game-hint`, {
             question,
             solution,
+            options,
             userMessage
         });
         
