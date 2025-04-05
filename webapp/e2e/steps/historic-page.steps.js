@@ -42,10 +42,9 @@ defineFeature(feature, test => {
         });
 
         then('I can see the historic page', async () => {
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            await expect(page).toMatchElement("h5", { text: "Estadísticas de " + username });
+            await expect(page).toMatchElement("h5", { text: "Estadísticas de usuario" });
         });
-    }, 150000);
+    });
 
     afterAll(async ()=>{
         browser.close()

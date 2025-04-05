@@ -62,7 +62,7 @@ const Historic: React.FC<HistoricProps> = ({username}) => {
             backgroundColor: "#F4F4F4"
         }}>
             <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-                📊 Estadísticas de {username.replace(/"/g, '')}
+                📊 Estadísticas de usuario
             </Typography>
             <Typography variant="body1">
                 <b>Tiempo Jugado:</b> {stats.timePlayed} segundos

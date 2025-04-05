@@ -50,6 +50,7 @@ defineFeature(feature, test => {
 
                 await new Promise(resolve => setTimeout(resolve, 7000));
             }
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await expect(page).toMatchElement("div", { text: "¡Juego Terminado!" });
 
         });
