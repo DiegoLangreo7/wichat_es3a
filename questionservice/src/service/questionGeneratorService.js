@@ -1,27 +1,22 @@
 const axios = require('axios');
 const dataService = require('./questionSaverService');
 
-const generating = new Set(); 
+// Set para rastrear categorías en proceso de generación
+const generating = new Set();
 
-const labelKeys = {
-    country: "countryLabel",
-    sports: "sportLabel",
-    science: "instrumentLabel", // Cambiado para instrumentos científicos
-    history: "eventLabel", // Cambiado para eventos históricos
-    art: "paintingLabel", // Cambiado para pinturas
-    animals: "animalLabel",
-};
-
+// Consultas SPARQL para cada categoría
 const wikidataCategoriesQueries = {   
     "country": {  
         query: `
-        SELECT ?country ?countryLabel ?image
+        SELECT ?city ?cityLabel ?country ?countryLabel ?image
         WHERE {
-            ?country wdt:P31 wd:Q6256.  # País
-            ?country wdt:P41 ?image.     # Bandera del país
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?countryLabel) = "es")
-            FILTER (!REGEX(?countryLabel, "^Q[0-9]"))
+            ?city wdt:P31 wd:Q515.  # Ciudad
+            ?city wdt:P17 ?country.  # País de la ciudad
+            ?city wdt:P18 ?image.    # Imagen de la ciudad
+            ?country wdt:P31 wd:Q6256. # Es un país
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -33,9 +28,9 @@ const wikidataCategoriesQueries = {
         WHERE {
             ?sport wdt:P31 wd:Q349.  # Deporte
             ?sport wdt:P18 ?image.    # Imagen del deporte
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?sportLabel) = "es")
-            FILTER (!REGEX(?sportLabel, "^Q[0-9]"))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -47,9 +42,9 @@ const wikidataCategoriesQueries = {
         WHERE {
             ?instrument wdt:P31/wdt:P279* wd:Q33070.  # Instrumento científico
             ?instrument wdt:P18 ?image.  # Imagen
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?instrumentLabel) = "es")
-            FILTER (!REGEX(?instrumentLabel, "^Q[0-9]"))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -61,10 +56,9 @@ const wikidataCategoriesQueries = {
         WHERE {
             ?event wdt:P31/wdt:P279* wd:Q178561.  # Evento histórico
             ?event wdt:P18 ?image.  # Imagen del evento
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?eventLabel) = "es")
-            FILTER (!REGEX(?eventLabel, "^Q[0-9]"))
-            FILTER(STRLEN(?eventLabel) > 5)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -76,9 +70,9 @@ const wikidataCategoriesQueries = {
         WHERE {
             ?painting wdt:P31 wd:Q3305213.  # Pintura
             ?painting wdt:P18 ?image.  # Imagen de la pintura
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?paintingLabel) = "es")
-            FILTER (!REGEX(?paintingLabel, "^Q[0-9]"))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -90,9 +84,9 @@ const wikidataCategoriesQueries = {
         WHERE {
             ?animal wdt:P31/wdt:P279* wd:Q729.  # Animal
             ?animal wdt:P18 ?image.  # Imagen del animal
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?animalLabel) = "es")
-            FILTER (!REGEX(?animalLabel, "^Q[0-9]"))
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
         }
         ORDER BY RAND()
         LIMIT ?limit
@@ -100,46 +94,7 @@ const wikidataCategoriesQueries = {
     },
 };
 
-// Consultas fallback para cuando las principales no obtienen suficientes resultados
-const fallbackQueries = {
-    "science": `
-        SELECT ?discovery ?discoveryLabel ?image
-        WHERE {
-            ?discovery wdt:P31/wdt:P279* wd:Q336.  # Descubrimiento científico
-            ?discovery wdt:P18 ?image.  # Imagen
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?discoveryLabel) = "es")
-            FILTER (!REGEX(?discoveryLabel, "^Q[0-9]"))
-        }
-        ORDER BY RAND()
-        LIMIT 20
-    `,
-    "history": `
-        SELECT ?event ?eventLabel ?image
-        WHERE {
-            ?event wdt:P31/wdt:P279* wd:Q13418847.  # Batalla
-            ?event wdt:P18 ?image.  # Imagen
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?eventLabel) = "es")
-            FILTER (!REGEX(?eventLabel, "^Q[0-9]"))
-        }
-        ORDER BY RAND()
-        LIMIT 20
-    `,
-    "art": `
-        SELECT ?artwork ?artworkLabel ?image
-        WHERE {
-            ?artwork wdt:P31/wdt:P279* wd:Q838948.  # Obra de arte
-            ?artwork wdt:P18 ?image.  # Imagen
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-            FILTER(LANG(?artworkLabel) = "es")
-            FILTER (!REGEX(?artworkLabel, "^Q[0-9]"))
-        }
-        ORDER BY RAND()
-        LIMIT 20
-    `
-};
-
+// Textos de las preguntas para cada categoría
 const titlesQuestionsCategories = {
     "country": "¿A qué país pertenece esta imagen?",
     "sports": "¿Qué deporte se muestra en la imagen?",
@@ -151,27 +106,13 @@ const titlesQuestionsCategories = {
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 
-// Función para verificar si una etiqueta es válida (sin códigos Q)
-function isValidLabel(label) {
-    if (!label) return false;
-    if (label.match(/^Q\d+$/)) return false;
-    if (label.includes("Q")) return false;
-    if (label.length < 3 || label.length > 100) return false;
-    return true;
-}
-
-// Obtener imágenes de Wikidata para crear preguntas
-async function getImagesFromWikidata(category, numImages) {
-    const categoryQueries = wikidataCategoriesQueries[category];
-    if (!categoryQueries) {
-        console.error(`Categoría no válida: ${category}`);
-        return [];
-    }
-    
-    const sparqlQuery = categoryQueries.query.replace('?limit', numImages * 3);
-
+// Obtener imágenes de Wikidata para country (categoría principal)
+async function getImagesForCountry(numImages) {
     try {
-        console.log(`Consultando Wikidata para categoría: ${category}`);
+        const sparqlQuery = wikidataCategoriesQueries.country.query.replace('?limit', numImages * 2);
+        
+        console.log("Consultando Wikidata para obtener ciudades y países...");
+        
         const response = await axios.get(urlApiWikidata, {
             params: {
                 query: sparqlQuery,
@@ -184,61 +125,53 @@ async function getImagesFromWikidata(category, numImages) {
             timeout: 15000
         });
 
-        const labelKey = labelKeys[category];
-        if (!labelKey) {
-            console.error(`No se encontró labelKey para ${category}`);
+        const data = response.data.results.bindings;
+        console.log(`Se obtuvieron ${data.length} resultados`);
+        
+        if (data.length === 0) {
+            console.error("No se obtuvieron datos");
             return [];
         }
 
-        const data = response.data.results.bindings;
-        console.log(`Recibidos ${data.length} resultados para ${category}`);
-        
-        if (data.length === 0 || data.length < 5) {
-            console.log(`Pocos resultados para ${category}, intentando consulta alternativa`);
-            return await tryFallbackQuery(category, numImages);
-        }
-
-        // Filtrar para asegurarnos de que tenemos imágenes válidas y etiquetas sin códigos Q
         const filteredImages = data
-            .filter(item => {
-                return item.image && 
-                       item.image.value && 
-                       item[labelKey] && 
-                       item[labelKey].value &&
-                       isValidLabel(item[labelKey].value);
-            })
+            .filter(item => 
+                item.cityLabel && 
+                item.cityLabel.value && 
+                item.countryLabel && 
+                item.countryLabel.value && 
+                item.image && 
+                item.image.value
+            )
             .slice(0, numImages)
             .map(item => ({
-                imageUrl: item.image.value,
-                label: item[labelKey].value
+                city: item.cityLabel.value,
+                country: item.countryLabel.value,
+                imageUrl: item.image.value
             }));
         
-        console.log(`Filtradas ${filteredImages.length} imágenes válidas para ${category}`);
-        
-        if (filteredImages.length < 5) {
-            console.log(`Insuficientes imágenes válidas para ${category}, probando alternativa`);
-            return await tryFallbackQuery(category, numImages);
-        }
-        
+        console.log(`Filtrados ${filteredImages.length} elementos con datos completos`);
         return filteredImages;
     } catch (error) {
-        console.error(`Error obteniendo imágenes para ${category}: ${error.message}`);
-        return await tryFallbackQuery(category, numImages);
+        console.error(`Error en getImagesForCountry: ${error.message}`);
+        return [];
     }
 }
 
-// Intentar consulta fallback si la consulta principal falla
-async function tryFallbackQuery(category, numImages) {
-    if (!fallbackQueries[category]) {
-        console.log(`No hay consulta fallback para ${category}`);
-        return [];
-    }
-    
+// Obtener imágenes para otras categorías
+async function getImagesForCategory(category, numImages) {
     try {
-        console.log(`Ejecutando consulta fallback para ${category}`);
+        if (!wikidataCategoriesQueries[category]) {
+            console.error(`Categoría no soportada: ${category}`);
+            return [];
+        }
+        
+        const sparqlQuery = wikidataCategoriesQueries[category].query.replace('?limit', numImages * 2);
+        
+        console.log(`Consultando Wikidata para categoría: ${category}`);
+        
         const response = await axios.get(urlApiWikidata, {
             params: {
-                query: fallbackQueries[category],
+                query: sparqlQuery,
                 format: 'json'
             },
             headers: {
@@ -247,141 +180,120 @@ async function tryFallbackQuery(category, numImages) {
             },
             timeout: 15000
         });
-        
-        // Determinar la clave correcta basada en la consulta fallback
-        let fallbackLabelKey;
-        if (category === "science") fallbackLabelKey = "discoveryLabel";
-        else if (category === "history") fallbackLabelKey = "eventLabel";
-        else if (category === "art") fallbackLabelKey = "artworkLabel";
-        else fallbackLabelKey = labelKeys[category];
-        
+
         const data = response.data.results.bindings;
-        console.log(`Consulta fallback: ${data.length} resultados para ${category}`);
+        console.log(`Se obtuvieron ${data.length} resultados para ${category}`);
         
         if (data.length === 0) {
+            console.error(`No se obtuvieron datos para ${category}`);
             return [];
         }
-        
+
+        // Determinar qué clave usar para cada categoría
+        let labelKey;
+        switch(category) {
+            case "sports": labelKey = "sportLabel"; break;
+            case "science": labelKey = "instrumentLabel"; break;
+            case "history": labelKey = "eventLabel"; break;
+            case "art": labelKey = "paintingLabel"; break;
+            case "animals": labelKey = "animalLabel"; break;
+            default: labelKey = "label";
+        }
+
         const filteredImages = data
             .filter(item => {
-                return item.image && 
-                       item.image.value && 
-                       item[fallbackLabelKey] && 
-                       item[fallbackLabelKey].value &&
-                       isValidLabel(item[fallbackLabelKey].value);
+                // Verificar que tenemos la etiqueta y la imagen
+                return item[labelKey] && 
+                       item[labelKey].value && 
+                       item.image && 
+                       item.image.value &&
+                       !item[labelKey].value.startsWith("Q") && // Filtrar etiquetas que empiezan con Q
+                       !item[labelKey].value.includes("Q");     // Filtrar etiquetas que contienen Q
             })
             .slice(0, numImages)
             .map(item => ({
-                imageUrl: item.image.value,
-                label: item[fallbackLabelKey].value
+                label: item[labelKey].value,
+                imageUrl: item.image.value
             }));
-            
-        console.log(`Fallback: ${filteredImages.length} imágenes válidas para ${category}`);
+        
+        console.log(`Filtrados ${filteredImages.length} elementos con datos completos para ${category}`);
         return filteredImages;
     } catch (error) {
-        console.error(`Error en consulta fallback para ${category}: ${error.message}`);
+        console.error(`Error en getImagesForCategory para ${category}: ${error.message}`);
         return [];
     }
 }
 
-// Obtener opciones incorrectas para una pregunta
-async function getIncorrectOptions(correctOption, category) {
-    if (!isValidLabel(correctOption)) {
-        console.error(`Opción correcta inválida: ${correctOption}`);
-        return [];
-    }
-
-    // Adaptar consultas según la categoría
-    let query;
-    
-    switch(category) {
-        case "country":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?country wdt:P31 wd:Q6256.  # País
-                    ?country rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 2)
-                }
-                LIMIT 100
-            `;
-            break;
-        case "sports":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?sport wdt:P31 wd:Q349.  # Deporte
-                    ?sport rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 2)
-                }
-                LIMIT 100
-            `;
-            break;
-        case "science":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?instrument wdt:P31/wdt:P279* wd:Q33070.  # Instrumento científico
-                    ?instrument rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 2)
-                }
-                LIMIT 100
-            `;
-            break;
-        case "history":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?event wdt:P31/wdt:P279* wd:Q178561.  # Evento histórico
-                    ?event rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 5)
-                }
-                LIMIT 100
-            `;
-            break;
-        case "art":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?painting wdt:P31 wd:Q3305213.  # Pintura
-                    ?painting rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 2)
-                }
-                LIMIT 100
-            `;
-            break;
-        case "animals":
-            query = `
-                SELECT DISTINCT ?label
-                WHERE {
-                    ?animal wdt:P31/wdt:P279* wd:Q729.  # Animal
-                    ?animal rdfs:label ?label.
-                    FILTER(LANG(?label) = "es")
-                    FILTER (!REGEX(?label, "^Q[0-9]"))
-                    FILTER(STRLEN(?label) > 2)
-                }
-                LIMIT 100
-            `;
-            break;
-        default:
-            console.error(`Categoría no reconocida: ${category}`);
-            return [];
-    }
+// Obtener países incorrectos para country
+async function getIncorrectCountries(correctCountry) {
+    const sparqlQuery = `
+        SELECT DISTINCT ?countryLabel
+        WHERE {
+            ?country wdt:P31 wd:Q6256.  # País
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
+            FILTER(LANG(?countryLabel) = "es")
+            FILTER (!REGEX(?countryLabel, "^Q[0-9]"))
+        }
+        LIMIT 100
+    `;
 
     try {
         const response = await axios.get(urlApiWikidata, {
             params: {
-                query: query,
+                query: sparqlQuery,
+                format: 'json'
+            },
+            headers: {
+                'User-Agent': 'QuestionGeneration/1.0',
+                'Accept': 'application/json'
+            },
+            timeout: 10000
+        });
+
+        const countries = response.data.results.bindings
+            .map(item => item.countryLabel.value)
+            .filter(country => 
+                country !== correctCountry && 
+                !country.startsWith("Q") && 
+                !country.includes("Q")
+            );
+        
+        // Seleccionamos aleatoriamente 3 opciones incorrectas
+        return countries.sort(() => 0.5 - Math.random()).slice(0, 3);
+    } catch (error) {
+        console.error(`Error obteniendo países incorrectos: ${error.message}`);
+        return getFallbackOptions("country", correctCountry);
+    }
+}
+
+// Obtener opciones incorrectas para otras categorías
+async function getIncorrectOptions(category, correctOption) {
+    let entityType;
+    
+    switch(category) {
+        case "sports": entityType = "wd:Q349"; break;        // Deporte
+        case "science": entityType = "wd:Q33070"; break;      // Instrumento científico
+        case "history": entityType = "wd:Q178561"; break;     // Evento histórico
+        case "art": entityType = "wd:Q3305213"; break;        // Pintura
+        case "animals": entityType = "wd:Q729"; break;        // Animal
+        default: return [];
+    }
+    
+    const sparqlQuery = `
+        SELECT DISTINCT ?itemLabel
+        WHERE {
+            ?item wdt:P31/wdt:P279* ${entityType}.
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
+            FILTER(LANG(?itemLabel) = "es")
+            FILTER (!REGEX(?itemLabel, "^Q[0-9]"))
+        }
+        LIMIT 100
+    `;
+
+    try {
+        const response = await axios.get(urlApiWikidata, {
+            params: {
+                query: sparqlQuery,
                 format: 'json'
             },
             headers: {
@@ -392,121 +304,192 @@ async function getIncorrectOptions(correctOption, category) {
         });
 
         const options = response.data.results.bindings
-            .map(item => item.label?.value)
-            .filter(label => isValidLabel(label) && label !== correctOption);
+            .map(item => item.itemLabel.value)
+            .filter(option => 
+                option !== correctOption && 
+                !option.startsWith("Q") && 
+                !option.includes("Q") &&
+                option.length > 2
+            );
         
-        // Si no hay suficientes opciones, usar lista de respaldo
         if (options.length < 3) {
             console.log(`Opciones insuficientes para ${category}, usando respaldo`);
-            return getBackupOptions(category, correctOption);
+            return getFallbackOptions(category, correctOption);
         }
         
-        // Seleccionar 3 opciones aleatorias
+        // Seleccionamos aleatoriamente 3 opciones incorrectas
         return options.sort(() => 0.5 - Math.random()).slice(0, 3);
     } catch (error) {
-        console.error(`Error obteniendo opciones incorrectas: ${error.message}`);
-        return getBackupOptions(category, correctOption);
+        console.error(`Error obteniendo opciones incorrectas para ${category}: ${error.message}`);
+        return getFallbackOptions(category, correctOption);
     }
 }
 
-// Opciones de respaldo para cuando la consulta de Wikidata falla
-function getBackupOptions(category, correctOption) {
-    const backupOptions = {
-        "country": ["España", "Francia", "Italia", "Alemania", "Portugal", "Reino Unido", "Estados Unidos", "Canadá", "Brasil", "Argentina", "México", "Japón", "China", "India", "Australia"],
-        "sports": ["Fútbol", "Baloncesto", "Tenis", "Voleibol", "Natación", "Atletismo", "Ciclismo", "Golf", "Rugby", "Boxeo", "Béisbol", "Hockey", "Gimnasia", "Esquí", "Patinaje"],
+// Opciones de respaldo predefinidas
+function getFallbackOptions(category, correctOption) {
+    const fallbackOptions = {
+        "country": ["España", "Francia", "Italia", "Alemania", "Portugal", "Reino Unido", "Estados Unidos", "Brasil", "China", "Japón", "Australia", "India", "México", "Canadá", "Argentina"],
+        "sports": ["Fútbol", "Baloncesto", "Tenis", "Golf", "Natación", "Atletismo", "Ciclismo", "Voleibol", "Rugby", "Boxeo", "Gimnasia", "Esquí", "Hockey", "Béisbol", "Ajedrez"],
         "science": ["Microscopio", "Telescopio", "Balanza", "Termómetro", "Barómetro", "Voltímetro", "Amperímetro", "Espectroscopio", "Centrífuga", "Pipeta", "Probeta", "Matraz", "Tubo de ensayo", "Calorímetro"],
-        "history": ["Primera Guerra Mundial", "Segunda Guerra Mundial", "Revolución Francesa", "Revolución Industrial", "Descubrimiento de América", "Caída del Muro de Berlín", "Revolución Rusa", "Guerra Civil Española", "Imperio Romano", "Edad Media"],
-        "art": ["La Gioconda", "La noche estrellada", "El grito", "Las meninas", "La persistencia de la memoria", "Guernica", "La última cena", "El nacimiento de Venus", "La creación de Adán", "La joven de la perla"],
+        "history": ["Primera Guerra Mundial", "Segunda Guerra Mundial", "Revolución Francesa", "Revolución Industrial", "Descubrimiento de América", "Caída del Muro de Berlín", "Guerra Civil Española", "Imperio Romano", "Revolución Rusa", "Independencia de Estados Unidos"],
+        "art": ["La Gioconda", "La noche estrellada", "El grito", "Las meninas", "Guernica", "La última cena", "El nacimiento de Venus", "La creación de Adán", "La joven de la perla", "El jardín de las delicias"],
         "animals": ["León", "Tigre", "Elefante", "Jirafa", "Leopardo", "Gorila", "Delfín", "Ballena", "Águila", "Cocodrilo", "Pingüino", "Oso polar", "Koala", "Canguro", "Panda"]
     };
     
-    const options = backupOptions[category] || backupOptions.country;
+    const options = fallbackOptions[category] || fallbackOptions.country;
     return options
         .filter(option => option !== correctOption)
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
 }
 
-// Procesar las imágenes y crear preguntas
-async function processQuestions(images, category) {
-    if (!images || images.length === 0) {
-        console.error(`No hay imágenes para procesar en categoría: ${category}`);
-        return;
-    }
-
+// Procesar preguntas para la categoría country
+async function processQuestionsCountry(images, category) {
     let successCount = 0;
-    const failedItems = [];
+    let failedCount = 0;
     
-    const tasks = images.map(async (image, index) => {
+    for (const image of images) {
         try {
-            if (!image || !image.label || !image.imageUrl) {
-                failedItems.push(`Imagen #${index}: datos incompletos`);
-                return;
+            if (!image.country || !image.imageUrl) {
+                console.log("Imagen con datos incompletos, saltando...");
+                failedCount++;
+                continue;
             }
             
             // Obtener opciones incorrectas
-            const incorrectAnswers = await getIncorrectOptions(image.label, category);
+            const incorrectAnswers = await getIncorrectCountries(image.country);
+            
             if (incorrectAnswers.length < 3) {
-                failedItems.push(`${image.label}: opciones insuficientes`);
-                return;
+                console.log(`Opciones incorrectas insuficientes para ${image.city || "ciudad desconocida"}`);
+                failedCount++;
+                continue;
             }
 
-            // Crear pregunta
-            const options = [image.label, ...incorrectAnswers].sort(() => 0.5 - Math.random());
-            const questionText = titlesQuestionsCategories[category]; 
-
+            // Crear opciones y mezclarlas aleatoriamente
+            const options = [image.country, ...incorrectAnswers].sort(() => 0.5 - Math.random());
+            
+            // Obtener texto de la pregunta
+            const questionText = titlesQuestionsCategories[category];
+            
+            // Crear objeto de pregunta
             const newQuestion = {
                 question: questionText,
-                options,
-                correctAnswer: image.label,
-                category,
+                options: options,
+                correctAnswer: image.country,
+                category: category,
                 imageUrl: image.imageUrl
             };
-
-            // Guardar en base de datos
+            
+            // Guardar en la base de datos
             await dataService.saveQuestion(newQuestion);
             successCount++;
-            console.log(`Pregunta ${successCount} creada: ${image.label}`);
+            
+            console.log(`Pregunta #${successCount} creada: ${image.city} (${image.country})`);
         } catch (error) {
-            console.error(`Error procesando pregunta: ${error.message}`);
-            failedItems.push(`${image?.label || 'desconocida'}: ${error.message}`);
+            console.error(`Error procesando imagen: ${error.message}`);
+            failedCount++;
         }
-    });
-
-    await Promise.all(tasks);
-    console.log(`Categoría ${category}: ${successCount} preguntas creadas, ${failedItems.length} fallidas`);
+    }
+    
+    console.log(`Categoría ${category}: ${successCount} preguntas creadas, ${failedCount} fallidas`);
+    return successCount;
 }
 
-// Función principal para generar preguntas por categoría
-async function generateQuestionsByCategory(category, quantity) {
+// Procesar preguntas para otras categorías
+async function processQuestions(images, category) {
+    let successCount = 0;
+    let failedCount = 0;
+    
+    for (const image of images) {
+        try {
+            if (!image.label || !image.imageUrl) {
+                console.log("Imagen con datos incompletos, saltando...");
+                failedCount++;
+                continue;
+            }
+            
+            // Obtener opciones incorrectas
+            const incorrectAnswers = await getIncorrectOptions(category, image.label);
+            
+            if (incorrectAnswers.length < 3) {
+                console.log(`Opciones incorrectas insuficientes para ${image.label}`);
+                failedCount++;
+                continue;
+            }
+
+            // Crear opciones y mezclarlas aleatoriamente
+            const options = [image.label, ...incorrectAnswers].sort(() => 0.5 - Math.random());
+            
+            // Obtener texto de la pregunta
+            const questionText = titlesQuestionsCategories[category];
+            
+            // Crear objeto de pregunta
+            const newQuestion = {
+                question: questionText,
+                options: options,
+                correctAnswer: image.label,
+                category: category,
+                imageUrl: image.imageUrl
+            };
+            
+            // Guardar en la base de datos
+            await dataService.saveQuestion(newQuestion);
+            successCount++;
+            
+            console.log(`Pregunta #${successCount} creada: ${image.label}`);
+        } catch (error) {
+            console.error(`Error procesando imagen: ${error.message}`);
+            failedCount++;
+        }
+    }
+    
+    console.log(`Categoría ${category}: ${successCount} preguntas creadas, ${failedCount} fallidas`);
+    return successCount;
+}
+
+// Función principal para generar preguntas
+async function generateQuestionsByCategory(category, numQuestions) {
     if (generating.has(category)) {
         console.log(`Ya se está generando para categoría: ${category}`);
-        return;
+        return 0;
     }
-
+    
     try {
         generating.add(category);
-        console.log(`Iniciando generación para categoría: ${category}, cantidad: ${quantity}`);
+        console.log(`Iniciando generación para categoría: ${category}`);
         
-        // Obtener imágenes de Wikidata
-        const images = await getImagesFromWikidata(category, quantity);
+        let images = [];
+        let questionsCreated = 0;
+        
+        // Obtener imágenes según la categoría
+        if (category === 'country') {
+            images = await getImagesForCountry(numQuestions);
+            if (images.length > 0) {
+                questionsCreated = await processQuestionsCountry(images, category);
+            }
+        } else {
+            images = await getImagesForCategory(category, numQuestions);
+            if (images.length > 0) {
+                questionsCreated = await processQuestions(images, category);
+            }
+        }
         
         if (images.length === 0) {
             console.error(`No se pudieron obtener imágenes para categoría: ${category}`);
-            return;
+            return 0;
         }
         
-        // Procesar imágenes y crear preguntas
-        await processQuestions(images, category);
-        console.log(`Preguntas generadas para categoría: ${category}`);
+        return questionsCreated;
     } catch (error) {
-        console.error(`Error en generación para categoría ${category}: ${error.message}`);
+        console.error(`Error generando preguntas para ${category}: ${error.message}`);
+        return 0;
     } finally {
         generating.delete(category);
+        console.log(`Generación para ${category} completada`);
     }
 }
 
-// Verificar si una categoría está en proceso de generación
+// Función para verificar si una categoría está en proceso de generación
 function isGenerating(category) {
     return generating.has(category);
 }
