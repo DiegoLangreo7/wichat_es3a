@@ -6,10 +6,11 @@ import axios from 'axios';
 interface LLMChatProps {
   question: string;
   solution: string;
+  options: string[];
   onClueUsed: () => void; // Nuevo prop para notificar que se usó una pista
 }
 
-const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => {
+const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUsed }) => {
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
@@ -36,6 +37,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
         const response = await axios.post(`${apiEndpoint}/game-hint`, {
           question: question,
           solution: solution,
+          options: options,
           userMessage: userMessage
         });
         

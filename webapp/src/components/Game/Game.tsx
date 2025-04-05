@@ -314,6 +314,7 @@ const Game: React.FC = () => {
             <LLMChat
               question={currentQuestion?.question || ""}
               solution={currentQuestion?.correctAnswer || ""}
+              options={currentQuestion?.options || []}
               onClueUsed={handleClueUsed}
             />
           )}
