@@ -1,10 +1,12 @@
 const axios = require('axios');
 const dataService = require('./questionSaverService');
 
+const generating = new Set(); 
+
 const wikidataCategoriesQueries = {   
     "country": {  
         query: `
-        SELECT ?city ?cityLabel ?country ?label ?image
+        SELECT ?city ?cityLabel ?country ?countryLabel ?image
         WHERE {
             ?city wdt:P31 wd:Q515.  # Ciudad
             ?city wdt:P17 ?country.  # País de la ciudad
@@ -134,7 +136,7 @@ async function getImagesFromWikidata(category, numImages) {
                 .slice(0, numImages)  // Limitar la cantidad de imágenes a `numImages`
                 .map(item => ({
                     imageUrl: item.image.value,
-                    label: item.label.value
+                    label: item.countryLabel.value
                 }));
             console.log(`filter: ${filteredImages}`);
             return filteredImages;
@@ -147,7 +149,6 @@ async function getImagesFromWikidata(category, numImages) {
 }
 
 
-// Obtener 3 países incorrectos aleatorios
 async function getIncorrect(correctOption, category) {
     const queryIncorrectCountry = `
         SELECT DISTINCT ?countryLabel
@@ -207,7 +208,7 @@ async function getIncorrect(correctOption, category) {
         "animals": queryIncorrectAnimals,
     };
 
-    const incorrectQuery = queryIncorrect[category];
+    const incorrectQuery = queries[category];
 
     try {
         const response = await axios.get(urlApiWikidata, {
@@ -221,8 +222,8 @@ async function getIncorrect(correctOption, category) {
             }
         });
 
-        const data = response.data.results.bindings.map(item => item.label.value);
-        const incorrectOptions = data.filter(topic => topic !== incorrectOptions);
+        const data = response.data.results.bindings.map(item => item.countryLabel.value);
+        const incorrectOptions = data.filter(topic => topic !== correctOption);
         
         // Seleccionamos aleatoriamente 3 opciones incorrectas
         return incorrectOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -232,34 +233,41 @@ async function getIncorrect(correctOption, category) {
     }
 }
 
-async function processQuestions(images,category) {
-    for (const image of images) {
+async function processQuestions(images, category) {
+    const tasks = images.map(async (image) => {
         const incorrectAnswers = await getIncorrect(image.label, category);
-        if (incorrectAnswers.length < 3) continue; // Si no hay suficientes respuestas incorrectas, saltamos
+        if (incorrectAnswers.length < 3) return;
 
-        // Crear opciones y mezclarlas
         const options = [image.label, ...incorrectAnswers].sort(() => 0.5 - Math.random());
-
-        // Generar pregunta
         const questionText = titlesQuestionsCategories[category]; 
-        
+
         const newQuestion = {
             question: questionText,
-            options: options,
+            options,
             correctAnswer: image.label,
-            category: category,
+            category,
             imageUrl: image.imageUrl
         };
-        console.log(newQuestion);
-        await dataService.saveQuestion(newQuestion);
-    }
 
+        await dataService.saveQuestion(newQuestion);
+    });
+
+    await Promise.all(tasks); // ejecuta en paralelo
 }
 // Generate questions
-async function generateQuestionsByCategory(category, numImages) {
-    const images = await getImagesFromWikidata(category, numImages);
-    
-    await processQuestions(images, category);
+async function generateQuestionsByCategory(category, quantity) {
+    if (generating.has(category)) {
+        console.log(`Ya se está generando para la categoría ${category}`);
+        return;
+    }
+
+    try {
+        generating.add(category);
+        const images = await getImagesFromWikidata(category, quantity);
+        await processQuestions(images, category);
+    } finally {
+        generating.delete(category);
+    }
 }
 
 module.exports = {
