@@ -3,6 +3,15 @@ const dataService = require('./questionSaverService');
 
 const generating = new Set(); 
 
+const labelKeys = {
+    country: "countryLabel",
+    sports: "sportLabel",
+    science: "scientistLabel",
+    history: "personLabel",
+    art: "artistLabel",
+    animals: "animalLabel",
+};
+
 const wikidataCategoriesQueries = {   
     "country": {  
         query: `
@@ -21,7 +30,7 @@ const wikidataCategoriesQueries = {
     },
     "sports": {
         query: `
-        SELECT ?sport ?label ?image
+        SELECT ?sport ?sportLabel ?image
         WHERE {
             ?sport wdt:P31 wd:Q349.  # Deporte
             OPTIONAL { ?sport wdt:P18 ?image. }  # Imagen del deporte (opcional)
@@ -35,7 +44,7 @@ const wikidataCategoriesQueries = {
     },
     "science": {
         query: `
-        SELECT ?scientist ?label ?image
+        SELECT ?scientist ?scientistLabel ?image
         WHERE {
             ?scientist wdt:P31 wd:Q5.  # Científico
             OPTIONAL { ?scientist wdt:P18 ?image. }  # Imagen del científico (opcional)
@@ -49,7 +58,7 @@ const wikidataCategoriesQueries = {
     },
     "history": {
         query: `
-        SELECT ?person ?label ?image
+        SELECT ?person ?personLabel ?image
         WHERE {
             ?person wdt:P31 wd:Q5.  # Persona
             OPTIONAL { ?person wdt:P18 ?image. }  # Imagen de la persona (opcional)
@@ -63,7 +72,7 @@ const wikidataCategoriesQueries = {
     },
     "art": {
         query: `
-       SELECT ?painting ?label ?image
+       SELECT ?painting ?artistLabel ?image
         WHERE {
             ?painting wdt:P31 wd:Q3305213.  # Elemento que sea una pintura
             ?painting wdt:P170 ?artist.  # Relación con el artista
@@ -81,7 +90,7 @@ const wikidataCategoriesQueries = {
     }, 
     "animals": {
         query: `
-        SELECT ?animal ?label ?image
+        SELECT ?animal ?animalLabel ?image
         WHERE {
             ?animal wdt:P31 wd:Q729.  # Animal
             OPTIONAL { ?animal wdt:P18 ?image. }  # Imagen del animal (opcional)
@@ -128,15 +137,17 @@ async function getImagesFromWikidata(category, numImages) {
             }
         });
 
+        const labelKey = labelKeys[category];
+
         const data = response.data.results.bindings;
         console.log(`data: ${JSON.stringify(data, null, 2)}`);
         if (data.length > 0) {
             const filteredImages = data
-                .filter(item => item.image)  // Filtrar solo los elementos con ciudad e imagen
+                .filter(item => item.image && item[labelKey])  // Filtrar solo los elementos con ciudad e imagen
                 .slice(0, numImages)  // Limitar la cantidad de imágenes a `numImages`
                 .map(item => ({
                     imageUrl: item.image.value,
-                    label: item.countryLabel.value
+                    label: item[labelKey].value
                 }));
             console.log(`filter: ${filteredImages}`);
             return filteredImages;
@@ -209,6 +220,7 @@ async function getIncorrect(correctOption, category) {
     };
 
     const incorrectQuery = queries[category];
+    const labelKey = labelKeys[category];
 
     try {
         const response = await axios.get(urlApiWikidata, {
@@ -222,7 +234,7 @@ async function getIncorrect(correctOption, category) {
             }
         });
 
-        const data = response.data.results.bindings.map(item => item.countryLabel.value);
+        const data = response.data.results.bindings.map(item => item[labelKey].value);
         const incorrectOptions = data.filter(topic => topic !== correctOption);
         
         // Seleccionamos aleatoriamente 3 opciones incorrectas
