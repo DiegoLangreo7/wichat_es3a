@@ -31,7 +31,6 @@ jobs:
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@v5
         env:
-          API_URI: http://${{ secrets.DEPLOY_HOST }}:8000
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
         with:
           name: arquisoft/wichat_es3a/webapp
@@ -39,7 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
           workdir: webapp
-          buildargs: API_URI,LLM_API_KEY
+          buildargs: LLM_API_KEY
 
   docker-push-authservice:
     runs-on: ubuntu-latest
