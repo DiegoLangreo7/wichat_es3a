@@ -22,7 +22,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
+      MONGODB_URI: ${MONGO_URI}
 
   userservice:
     container_name: userservice-wichat_es3a
@@ -34,7 +34,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
+      MONGODB_URI: ${MONGO_URI}
 
   questionservice:
     container_name: questionservice-wichat_es3a
@@ -55,14 +55,12 @@ services:
     image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
     profiles: ["dev", "prod"]
     build: ./llmservice
-    env_file:
-      - .env
     ports:
       - "8003:8003"
     networks:
       - mynetwork
     environment:
-      LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+      LLM_API_KEY: ${LLM_API_KEY}
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
@@ -83,7 +81,7 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
-      
+
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest
@@ -108,15 +106,14 @@ services:
     build:
       context: ./webapp
       args:
-        REACT_APP_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
-        REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
+        REACT_APP_LLM_API_KEY: ${LLM_API_KEY}
+        REACT_APP_API_ENDPOINT: ${API_URI}
     depends_on:
       - gatewayservice
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
-
+      REACT_APP_API_ENDPOINT: ${API_URI}
 
   prometheus:
     image: prom/prometheus

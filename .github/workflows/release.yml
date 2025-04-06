@@ -8,17 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-    - run: npm --prefix users/authservice ci
-    - run: npm --prefix users/userservice ci
-    - run: npm --prefix questionservice ci
-    - run: npm --prefix llmservice ci
-    - run: npm --prefix gatewayservice ci
-    - run: npm --prefix gateway-api-service ci
-    - run: npm --prefix webapp ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm --prefix users/authservice ci
+      - run: npm --prefix users/userservice ci
+      - run: npm --prefix questionservice ci
+      - run: npm --prefix llmservice ci
+      - run: npm --prefix gatewayservice ci
+      - run: npm --prefix gateway-api-service ci
+      - run: npm --prefix webapp ci
 
   docker-push-webapp:
     runs-on: ubuntu-latest
@@ -27,19 +27,19 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      env:
-        API_URI: http://${{ secrets.DEPLOY_HOST }}:8000
-        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-      with:
-        name: arquisoft/wichat_es3a/webapp
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: webapp
-        buildargs: API_URI,LLM_API_KEY
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        env:
+          API_URI: http://${{ secrets.DEPLOY_HOST }}:8000
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        with:
+          name: arquisoft/wichat_es3a/webapp
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: webapp
+          buildargs: API_URI,LLM_API_KEY
 
   docker-push-authservice:
     runs-on: ubuntu-latest
@@ -48,18 +48,18 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      with:
-        name: arquisoft/wichat_es3a/authservice
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: users/authservice
-        platforms: linux/amd64,linux/arm64
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/authservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: users/authservice
+          platforms: linux/amd64,linux/arm64
 
   docker-push-userservice:
     runs-on: ubuntu-latest
@@ -68,15 +68,15 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      with:
-        name: arquisoft/wichat_es3a/userservice
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: users/userservice
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/userservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: users/userservice
 
   docker-push-llmservice:
     runs-on: ubuntu-latest
@@ -85,15 +85,15 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      with:
-        name: arquisoft/wichat_es3a/llmservice
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: llmservice
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/llmservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: llmservice
 
   docker-push-gatewayservice:
     runs-on: ubuntu-latest
@@ -102,19 +102,19 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Update OpenAPI configuration
-      run: |
-        DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
-        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" gatewayservice/openapi.yaml
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      with:
-        name: arquisoft/wichat_es3a/gatewayservice
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: gatewayservice
+      - uses: actions/checkout@v4
+      - name: Update OpenAPI configuration
+        run: |
+          DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
+          sed -i "s/SOMEIP/${DEPLOY_HOST}/g" gatewayservice/openapi.yaml
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/gatewayservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: gatewayservice
 
   docker-push-gateway-api-service:
     runs-on: ubuntu-latest
@@ -123,15 +123,15 @@ jobs:
       packages: write
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v5
-      with:
-        name: arquisoft/wichat_es3a/gateway-api-service
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ghcr.io
-        workdir: gateway-api-service
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/gateway-api-service
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: gateway-api-service
 
   deploy:
     runs-on: ubuntu-latest
@@ -144,13 +144,15 @@ jobs:
       docker-push-webapp
     ]
     steps:
-    - name: Deploy over SSH
-      uses: fifsky/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        user: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        command: |
-          wget https://raw.githubusercontent.com/arquisoft/wichat_es3a/master/docker-compose.yml -O docker-compose.yml
-          docker compose --profile prod down
-          docker compose --profile prod up -d --pull always
+      - name: Deploy over SSH
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          command: |
+            wget https://raw.githubusercontent.com/arquisoft/wichat_es3a/master/docker-compose.yml -O docker-compose.yml
+            export LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
+            export MONGO_URI="${{ secrets.MONGO_URI }}"
+            docker compose --profile prod down
+            docker compose --profile prod up -d --pull always
