@@ -13,6 +13,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 | Delivery time | Medium | Being  many members can difficult the communication. However, if the previous suggestions are followed there should not be any problem.
 | Connection failure | Medium | It is possible that some of the parts of the project that may require a connection to a server are not available, and due to time it may cause problems.
 | Documentation | Low | Since the documentation is carried out at the same time as the project, it can generate delays.
+| Team member losses | High | This causes reorganization of all tasks and breaks the flow.
 |===
 
 === Technical debts 
@@ -20,4 +21,6 @@ ifndef::imagesdir[:imagesdir: ../images]
 |===
 | Technical Debt | Relevance |  Considerations
 | Not implementing automated tests from the beginning | High | It is not a recommended practice and can avoid problems in the future.
+| Excessive separation of duties | Low | This results in team members being unaware of project modules they did not work on.
+| Few security measures | Medium | There are security holes in the application.
 |===
