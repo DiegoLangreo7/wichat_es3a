@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, Paper, Slider } from "@mui/material";
+import { Box, Button, Typography, Paper, Slider, Grid } from "@mui/material";
 import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PublicIcon from '@mui/icons-material/Public';
+import HistoryIcon from '@mui/icons-material/History';
+import ScienceIcon from '@mui/icons-material/Science';
+import MovieIcon from '@mui/icons-material/Movie';
+import PetsIcon from '@mui/icons-material/Pets';
+import PaletteIcon from '@mui/icons-material/Palette';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -16,8 +22,8 @@ const Main = () => {
         puntuation: 0
     });
 
-    const [difficulty, setDifficulty] = useState<number>(1); 
-    
+    const [difficulty, setDifficulty] = useState<number>(1);
+    const [selectedMode, setSelectedMode] = useState<string>("country");
 
     const isAuthenticated = !!localStorage.getItem("token");
 
@@ -57,14 +63,24 @@ const Main = () => {
         2: { label: "Difícil", time: 10, color: "#EF5350" },
     };
 
+    const gameModes = [
+        { value: "country", label: "Geografía", icon: <PublicIcon fontSize="medium" /> },
+        { value: "history", label: "Historia", icon: <HistoryIcon fontSize="medium" /> },
+        { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="medium" /> },
+        { value: "sports", label: "Deportes", icon: <MovieIcon fontSize="medium" /> },
+        { value: "animals", label: "Animales", icon: <PetsIcon fontSize="medium" /> },
+        { value: "art", label: "Arte", icon: <PaletteIcon fontSize="medium" /> },
+    ];
+
     const handleButtonClick = () => {
         const selected = difficultyMap[difficulty];
+        
         navigate("/game", {
             state: {
                 username,
                 totalQuestions: 10,
                 timeLimit: selected.time,
-                themes: { geografía: true, historia: false }
+                gameMode: selectedMode
             }
         });
     };
@@ -77,20 +93,73 @@ const Main = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 backgroundColor: "#202A25",
+                padding: "0 16px 32px 16px"
             }}
         >
             <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
                 <NavBar />
             </Box>
 
-            <Box sx={{ textAlign: "center", mt: 12 }}>
+            <Box sx={{ textAlign: "center", mt: 12, width: "100%", maxWidth: "800px" }}>
                 <Typography variant="h4" sx={{ color: '#F7FFF7', fontWeight: "bold", mb: 3 }}>
                     {username}, ¿Listo para jugar?
                 </Typography>
 
+                {/* Selector de modo de juego */}
+                <Paper sx={{ p: 2, mb: 3, borderRadius: "10px", backgroundColor: '#F7FFF7' }}>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", color: "#5f4bb6" }}>
+                        Selecciona un modo de juego
+                    </Typography>
+                    
+                    <Grid container spacing={1}>
+                        {gameModes.map((mode) => (
+                            <Grid item xs={6} sm={4} key={mode.value}>
+                                <Paper 
+                                    elevation={2}
+                                    onClick={() => setSelectedMode(mode.value)}
+                                    sx={{
+                                        p: 1.5,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        borderRadius: '8px',
+                                        border: mode.value === selectedMode ? '2px solid #5f4bb6' : '2px solid transparent',
+                                        backgroundColor: mode.value === selectedMode ? 'rgba(95, 75, 182, 0.1)' : 'white',
+                                        '&:hover': {
+                                            transform: 'translateY(-3px)',
+                                            boxShadow: '0 5px 10px rgba(0,0,0,0.1)',
+                                        }
+                                    }}
+                                >
+                                    <Box sx={{ 
+                                        color: '#5f4bb6',
+                                        backgroundColor: 'rgba(95, 75, 182, 0.1)',
+                                        borderRadius: '50%',
+                                        p: 0.8,
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        width: 40,
+                                        height: 40,
+                                        mb: 0.5
+                                    }}>
+                                        {mode.icon}
+                                    </Box>
+                                    <Typography variant="subtitle1" fontWeight="bold" fontSize="0.85rem">
+                                        {mode.label}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Paper>
+
                 {/* Selector de dificultad */}
-                <Box sx={{ width: 250, mx: "auto", mb: 3 , backgroundColor : '#F7FFF7', borderRadius: "10px", padding: 5}}>
-                    <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color }}>
+                <Paper sx={{ p: 2, mb: 3, borderRadius: "10px", backgroundColor: '#F7FFF7', maxWidth: "400px", mx: "auto" }}>
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color, fontSize: "1rem" }}>
                         Dificultad: {difficultyMap[difficulty].label}
                     </Typography>
                     <Slider
@@ -105,21 +174,27 @@ const Main = () => {
                         ]}
                         onChange={(_, newValue) => setDifficulty(newValue as number)}
                         sx={{
-                            color: difficultyMap[difficulty].color
+                            color: difficultyMap[difficulty].color,
+                            '& .MuiSlider-markLabel': {
+                                fontSize: '0.7rem'
+                            }
                         }}
                     />
-                </Box>
+                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary', fontSize: "0.8rem" }}>
+                        Tiempo por pregunta: {difficultyMap[difficulty].time} segundos
+                    </Typography>
+                </Paper>
 
                 <Button
                     onClick={handleButtonClick}
                     sx={{
                         backgroundColor: "#5f4bb6",
                         color: "white",
-                        fontSize: "1.5rem",
+                        fontSize: "1.2rem",
                         fontWeight: "bold",
-                        padding: "16px 32px",
+                        padding: "12px 24px",
                         borderRadius: "8px",
-                        boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                         transition: "all 0.3s ease-in-out",
                         "&:hover": {
                             backgroundColor: "#EDC9FF",
@@ -136,30 +211,30 @@ const Main = () => {
 
             <Paper elevation={3} sx={{
                 mt: 4,
-                padding: "20px",
+                padding: "16px",
                 textAlign: "center",
-                width: "80%",
-                maxWidth: "400px",
+                width: "100%",
+                maxWidth: "350px",
                 borderRadius: "10px",
-                backgroundColor: "#F7FFF7"
+                backgroundColor: "#F7FFF7",
             }}>
-                <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                     📊 Estadísticas
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <b>Tiempo Jugado:</b> {stats.timePlayed} segundos
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <b>Partidas Jugadas:</b> {stats.gamesPlayed}
                 </Typography>
-                <Typography variant="body1">
-                    <b>Puntuacion total:</b> {stats.puntuation}
+                <Typography variant="body2">
+                    <b>Puntuación total:</b> {stats.puntuation}
                 </Typography>
-                <Typography variant="body1" sx={{ color: "#4CAF50" }}>
-                    <b>Preguntas acertadas:</b> {stats.correctAnswered}
+                <Typography variant="body2" sx={{ color: "#4CAF50" }}>
+                    <b>Aciertos:</b> {stats.correctAnswered}
                 </Typography>
-                <Typography variant="body1" sx={{ color: "#F44336" }}>
-                    <b>Preguntas falladas:</b> {stats.incorrectAnswered}
+                <Typography variant="body2" sx={{ color: "#F44336" }}>
+                    <b>Fallos:</b> {stats.incorrectAnswered}
                 </Typography>
             </Paper>
         </Box>
