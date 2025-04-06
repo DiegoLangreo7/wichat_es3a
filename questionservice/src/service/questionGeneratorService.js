@@ -328,13 +328,79 @@ async function getIncorrectOptions(category, correctOption) {
 // Opciones de respaldo predefinidas
 function getFallbackOptions(category, correctOption) {
     const fallbackOptions = {
-        "country": ["España", "Francia", "Italia", "Alemania", "Portugal", "Reino Unido", "Estados Unidos", "Brasil", "China", "Japón", "Australia", "India", "México", "Canadá", "Argentina"],
-        "sports": ["Fútbol", "Baloncesto", "Tenis", "Golf", "Natación", "Atletismo", "Ciclismo", "Voleibol", "Rugby", "Boxeo", "Gimnasia", "Esquí", "Hockey", "Béisbol", "Ajedrez"],
-        "science": ["Microscopio", "Telescopio", "Balanza", "Termómetro", "Barómetro", "Voltímetro", "Amperímetro", "Espectroscopio", "Centrífuga", "Pipeta", "Probeta", "Matraz", "Tubo de ensayo", "Calorímetro"],
-        "history": ["Primera Guerra Mundial", "Segunda Guerra Mundial", "Revolución Francesa", "Revolución Industrial", "Descubrimiento de América", "Caída del Muro de Berlín", "Guerra Civil Española", "Imperio Romano", "Revolución Rusa", "Independencia de Estados Unidos"],
-        "art": ["La Gioconda", "La noche estrellada", "El grito", "Las meninas", "Guernica", "La última cena", "El nacimiento de Venus", "La creación de Adán", "La joven de la perla", "El jardín de las delicias"],
-        "animals": ["León", "Tigre", "Elefante", "Jirafa", "Leopardo", "Gorila", "Delfín", "Ballena", "Águila", "Cocodrilo", "Pingüino", "Oso polar", "Koala", "Canguro", "Panda"]
-    };
+        "country": [
+          "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", "Argentina", "Armenia",
+          "Australia", "Austria", "Azerbaiyán", "Bahamas", "Baréin", "Bangladesh", "Barbados", "Bélgica", "Belice", "Benín",
+          "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
+          "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre",
+          "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca",
+          "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
+          "Estonia", "Esuatini", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia",
+          "Ghana", "Granada", "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Haití", "Honduras", "Hungría",
+          "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia",
+          "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto",
+          "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo"
+        ],
+        "sports": [
+          "Fútbol", "Baloncesto", "Tenis", "Golf", "Natación", "Atletismo", "Ciclismo", "Voleibol", "Rugby", "Boxeo",
+          "Gimnasia", "Esquí", "Hockey sobre hielo", "Béisbol", "Ajedrez", "Cricket", "Fútbol Americano", "Lacrosse", "Waterpolo", "Surf",
+          "Skateboarding", "Snowboarding", "Bádminton", "Esgrima", "Karate", "Taekwondo", "MMA", "Escalada", "Atletismo Paralímpico", "Softbol",
+          "Handbol", "Fútbol sala", "Fútbol australiano", "Billar", "Bolos", "Equitación", "Motociclismo", "Automovilismo", "Parapente", "Esquí acuático",
+          "Wakeboard", "Patinaje artístico", "Patinaje de velocidad", "Salto con pértiga", "Lucha libre", "Esquí de fondo", "Biatlón", "Triatlón", "Decatlón", "Maratón",
+          "Carrera de obstáculos", "Carrera de relevos", "Atletismo urbano", "Ciclismo de montaña", "Ciclismo de pista", "Ciclismo BMX", "Escalada deportiva", "Parkour", "Rally", "Motocross",
+          "Karting", "Pesca deportiva", "Tiro con arco", "Tiro deportivo", "Bádminton de playa", "Póker deportivo", "eSports", "Sumo", "Boxeo tailandés", "Lucha grecorromana",
+          "Lucha olímpica", "Canoeing", "Kayak", "Remo", "Bobsleigh", "Skeleton", "Luge", "Surf de remo", "Slackline", "Danza deportiva",
+          "BMX freestyle", "Skate", "Snowkite", "Esquí acrobático", "Paracaidismo", "Esquí alpino", "Esquí de velocidad", "Carrera de bicicletas", "Escalada en hielo", "Pesca con mosca",
+          "Salto de esquí", "Rallycross", "Tenis de mesa", "Squash", "Rugby a 7", "Ultimate Frisbee", "Handbol playa", "Dodgeball", "Esquí de montaña", "Free running"
+        ],
+        "science": [
+          "Microscopio", "Telescopio", "Balanza", "Termómetro", "Barómetro", "Voltímetro", "Amperímetro", "Espectroscopio", "Centrífuga", "Pipeta",
+          "Probeta", "Matraz", "Tubo de ensayo", "Calorímetro", "Multímetro", "Osciloscopio", "Cronómetro", "pH-metro", "Bureta", "Agitador magnético",
+          "Vórtex", "Refractómetro", "Espectrofotómetro", "Cámara de combustión", "Centrífuga de laboratorio", "Potenciómetro", "Termopar", "Anemómetro", "Higrómetro", "Condensador",
+          "Fusible", "Resistencia", "Transistor", "Circuito impreso", "Robot de laboratorio", "Analizador de gases", "Cromatógrafo", "Secuenciador", "Resonador", "Dinamómetro",
+          "Medidor de luz", "Luxómetro", "Polarímetro", "Goniómetro", "Microscopio electrónico", "Microscopio confocal", "Equipo de resonancia magnética", "Laparoscopio", "Nanoscopio", "Cámara de vacío",
+          "Sonda de ultrasonido", "Espectrómetro de masas", "Cámara climática", "Densímetro", "Instrumento de punción", "Sonda de pH", "Potenciómetro digital", "Medidor de presión", "Transductor", "Impedancímetro",
+          "Analizador de redes", "Microscopio digital", "Scanner 3D", "Oscilador", "Micrómetro", "Calibrador digital", "Instrumento óptico", "Espectroreflectómetro", "Medidor de vibraciones", "Sonómetro",
+          "Espectroscopio de absorción", "Fotómetro", "Actímetro", "Polarímetro de laboratorio", "Colorímetro", "Termógrafo", "Anemómetro digital", "Analizador de espectros", "Medidor de humedad", "Detector de radiación",
+          "Dosímetro", "Reloj atómico", "Sensor infrarrojo", "Escáner de superficie", "Sensor ultrasónico", "Detector de metales"
+        ],
+        "history": [
+          "Primera Guerra Mundial", "Segunda Guerra Mundial", "Revolución Francesa", "Revolución Industrial", "Descubrimiento de América", "Caída del Muro de Berlín", "Guerra Civil Española", "Imperio Romano", "Revolución Rusa", "Independencia de Estados Unidos",
+          "Guerra de Vietnam", "Revolución Mexicana", "Independencia de India", "La Reforma", "Unificación de Alemania", "Conquista del Imperio Azteca", "Caída de Constantinopla", "Guerra de los Cien Años", "Renacimiento Italiano", "Era de los Descubrimientos",
+          "Revolución Americana", "Revolución Haitiana", "Primera Cruzada", "Segunda Cruzada", "Tercera Cruzada", "Caída del Imperio Bizantino", "Invención de la imprenta", "Revolución Industrial en Inglaterra", "Guerra de Secesión de EE.UU.", "Guerra de Corea",
+          "Crisis de los Misiles en Cuba", "Independencia de Brasil", "Independencia de Argentina", "Construcción de las Pirámides", "Imperio Persa", "Edad Media", "Ilustración", "Revolución de los Derechos Civiles", "Guerra Fría", "Revolución China",
+          "Revolución Islámica en Irán", "Independencia de Sudáfrica", "Guerra del Golfo", "Revolución Digital", "Revolución Industrial 2.0", "Movimiento Sufragista", "Revolución de Terciopelo", "Primavera Árabe", "Caída del Imperio Otomano", "Conferencia de Paz de Westfalia",
+          "Formación de la Unión Europea", "Independencia de Pakistán", "Descolonización de África", "Revolución Cubana", "Guerra del Pacífico", "Revolución Nicaragüense", "Ascenso del Imperio Mongol", "Invasiones Vikingas", "Reforma Protestante", "Guerra de los Treinta Años",
+          "Era del Barroco", "Siglo de las Luces", "Revolución Industrial en América", "Invención del Teléfono", "Invención de la Electricidad", "Invención del Automóvil", "Invención del Avión", "Carrera Espacial", "Inauguración del Canal de Panamá", "Guerra de Independencia de México",
+          "Independencia de Colombia", "Independencia de Venezuela", "Revolución de 1848 en Europa", "Unificación de Italia", "Unificación de Japón", "Fiebre del Oro en California", "La Gran Depresión", "Segunda Revolución Industrial", "Movimiento Hippie", "Revolución de la Información",
+          "Expansión del Imperio Británico", "Guerra de los Farrapos", "Revolución de Octubre", "Gran Migración Afroamericana", "Guerra de las Malvinas", "Caída del Telón de Acero", "Crisis Financiera de 2008", "Revolución de Internet", "Primera Guerra del Golfo", "Invasión de Normandía",
+          "Batalla de Stalingrado", "Tratado de Versalles", "Creación de las Naciones Unidas", "Caída del Imperio Romano de Occidente", "Reinado de Alejandro Magno", "Revolución de 1917 en Rusia", "Revolución de Mayo en Argentina", "Revolución Digital de los 90", "Inicio de la era del cambio climático"
+        ],
+        "art": [
+          "La Gioconda", "La noche estrellada", "El grito", "Las meninas", "Guernica", "La última cena", "El nacimiento de Venus", "La creación de Adán", "La joven de la perla", "El jardín de las delicias",
+          "El beso", "La persistencia de la memoria", "La libertad guiando al pueblo", "La escuela de Atenas", "El David", "La Venus de Milo", "La Victoria de Samotracia", "La Madonna Sixtina", "La Anunciación", "La Pietà",
+          "El Juicio Final", "La balsa de la Medusa", "La gran ola de Kanagawa", "El rapto de Europa", "La muerte de Marat", "El beso de Klimt", "La ronda de noche", "El hijo del hombre", "La mujer que llora", "Las señoritas de Avignon",
+          "La danza de Matisse", "El retrato de Adele Bloch-Bauer", "La batalla de San Romano", "La Adoración de los Magos", "La crucifixión", "La Madonna col Bambino", "El retrato de Dora Maar", "El caballero de la mano en el pecho", "La rendición de Breda", "La rendición de París",
+          "La batalla de Anghiari", "La asamblea de los reyes", "La adoración de los pastores", "El juicio de París", "La rendición de Troya", "El rapto de las hijas de Leucipo", "El misterio del jardín", "La danza del fuego", "El puente sobre el agua", "La sinfonía del color",
+          "El sueño de Jacob", "La mirada del tiempo", "El instante eterno", "La ensoñación", "El eco del alma", "La crónica del silencio", "La vibración del ser", "La huella del espíritu", "El viaje onírico", "La contemplación",
+          "La reminiscencia", "El diálogo de los elementos", "La esencia del color", "El susurro del viento", "La melodía del silencio", "El reflejo del pasado", "La sombra del recuerdo", "La sinfonía del silencio", "La abstracción del ser", "El laberinto de la mente",
+          "La armonía del caos", "La serenidad", "La forma y el vacío", "El misterio del crepúsculo", "El rastro de la memoria", "El suspiro del alma", "La efímera belleza", "El clamor del silencio", "La luz del atardecer", "El enigma del tiempo",
+          "La fragancia del instante", "El canto de la noche", "La mirada interior", "La esencia del sueño", "El murmullo del pasado", "La fusión de los mundos", "El ritmo de la vida", "La paleta de la emoción", "El viaje del color", "La sinfonía de la existencia"
+        ],
+        "animals": [
+          "León", "Tigre", "Elefante", "Jirafa", "Leopardo", "Gorila", "Delfín", "Ballena", "Águila", "Cocodrilo",
+          "Pingüino", "Oso polar", "Koala", "Canguro", "Panda", "Lobo", "Zorro", "Rinoceronte", "Hipopótamo", "Búfalo",
+          "Camello", "Cebra", "Pavo real", "Ardilla", "Erizo", "Lince", "Nutria", "Oso panda rojo", "Mono", "Gacela",
+          "Antílope", "Caballo", "Burro", "Oveja", "Cabra", "Cerdo", "Vaca", "Búho", "Halcón", "Mariposa",
+          "Escorpión", "Araña", "Ciempiés", "Milpiés", "Rana", "Sapo", "Iguana", "Camaleón", "Serpiente", "Tortuga",
+          "Lagarto", "Caracol", "Pulpo", "Calamar", "Estrella de mar", "Erizo de mar", "Cangrejo", "Langosta", "Medusa", "Pez payaso",
+          "Pez espada", "Tiburón", "Anguila", "Delfín nariz de botella", "Orca", "Foca", "Morsa", "Lobo marino", "Nutria marina", "Gato",
+          "Perro", "Conejo", "Ratón", "Ardilla voladora", "Zorrillo", "Erizo de tierra", "Topo", "Murciélago", "Alce", "Ciervo",
+          "Bisonte", "Caribú", "Oso negro", "Puma", "Jaguar", "Ocelote", "Impala", "Ñu", "Avestruz", "Flamenco",
+          "Pelícano", "Cisne", "Colibrí", "Tucán", "Loro", "Kiwi", "Albatros", "Buitre"
+        ]
+      };
+      
     
     const options = fallbackOptions[category] || fallbackOptions.country;
     return options
