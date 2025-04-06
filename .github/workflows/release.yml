@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  unit-tests:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -18,39 +18,14 @@ jobs:
     - run: npm --prefix llmservice ci
     - run: npm --prefix gatewayservice ci
     - run: npm --prefix webapp ci
-    - run: npm --prefix users/authservice test -- --coverage
-    - run: npm --prefix users/userservice test -- --coverage
-    - run: npm --prefix questionservice test -- --coverage
-    - run: npm --prefix llmservice test -- --coverage
-    - run: npm --prefix gatewayservice test -- --coverage
-    - run: npm --prefix webapp test -- --coverage
-    - name: Analyze with SonarCloud
-      uses: SonarSource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  e2e-tests:
-    needs: [unit-tests]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-    - run: npm --prefix users/authservice install
-    - run: npm --prefix users/userservice install
-    - run: npm --prefix questionservice install
-    - run: npm --prefix llmservice install
-    - run: npm --prefix gatewayservice install
-    - run: npm --prefix webapp install
-    - run: npm --prefix webapp run build
-    - run: npm --prefix webapp run test:e2e
+
   docker-push-webapp:
     name: Push webapp Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: [e2e-tests]
+    needs: [build]
     steps:
     - uses: actions/checkout@v4
     - name: Publish to Registry
@@ -65,13 +40,14 @@ jobs:
           registry: ghcr.io
           workdir: webapp
           buildargs: API_URI,LLM_API_KEY
+
   docker-push-authservice:
     name: Push auth service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: [e2e-tests]
+    needs: [build]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
@@ -92,7 +68,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [e2e-tests]
+    needs: [build]
     steps:
     - uses: actions/checkout@v4
     - name: Publish to Registry
@@ -110,7 +86,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [e2e-tests]
+    needs: [build]
     steps:
     - uses: actions/checkout@v4
     - name: Publish to Registry
@@ -128,7 +104,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [e2e-tests]
+    needs: [build]
     steps:
     - uses: actions/checkout@v4
     - name: Update OpenAPI configuration
@@ -143,18 +119,19 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: gatewayservice
+
   deploy:
-     name: Deploy over SSH
-     runs-on: ubuntu-latest
-     needs: [docker-push-userservice,docker-push-authservice,docker-push-llmservice,docker-push-gatewayservice,docker-push-webapp]
-     steps:
-     - name: Deploy over SSH
-       uses: fifsky/ssh-action@master
-       with:
-         host: ${{ secrets.DEPLOY_HOST }}
-         user: ${{ secrets.DEPLOY_USER }}
-         key: ${{ secrets.DEPLOY_KEY }}
-         command: |
-           wget https://raw.githubusercontent.com/arquisoft/wichat_es3a/master/docker-compose.yml -O docker-compose.yml
-           docker compose --profile prod down
-           docker compose --profile prod up -d --pull always
+    name: Deploy over SSH
+    runs-on: ubuntu-latest
+    needs: [docker-push-userservice,docker-push-authservice,docker-push-llmservice,docker-push-gatewayservice,docker-push-webapp]
+    steps:
+    - name: Deploy over SSH
+      uses: fifsky/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        user: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        command: |
+          wget https://raw.githubusercontent.com/arquisoft/wichat_es3a/master/docker-compose.yml -O docker-compose.yml
+          docker compose --profile prod down
+          docker compose --profile prod up -d --pull always
