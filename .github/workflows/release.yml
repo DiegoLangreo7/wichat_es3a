@@ -17,6 +17,7 @@ jobs:
     - run: npm --prefix questionservice ci
     - run: npm --prefix llmservice ci
     - run: npm --prefix gatewayservice ci
+    - run: npm --prefix gateway-api-service ci
     - run: npm --prefix webapp ci
 
   docker-push-webapp:
@@ -115,9 +116,33 @@ jobs:
         registry: ghcr.io
         workdir: gatewayservice
 
+  docker-push-gateway-api-service:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: arquisoft/wichat_es3a/gateway-api-service
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: gateway-api-service
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [docker-push-userservice, docker-push-authservice, docker-push-llmservice, docker-push-gatewayservice, docker-push-webapp]
+    needs: [
+      docker-push-userservice,
+      docker-push-authservice,
+      docker-push-llmservice,
+      docker-push-gatewayservice,
+      docker-push-gateway-api-service,
+      docker-push-webapp
+    ]
     steps:
     - name: Deploy over SSH
       uses: fifsky/ssh-action@master
