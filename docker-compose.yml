@@ -15,6 +15,7 @@ services:
   authservice:
     container_name: authservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/authservice:latest
+    build: ./users/authservice
     profiles: ["dev", "prod"]
     ports:
       - "8002:8002"
@@ -26,6 +27,7 @@ services:
   userservice:
     container_name: userservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/userservice:latest
+    build: ./users/userservice
     profiles: ["dev", "prod"]
     ports:
       - "8001:8001"
@@ -37,6 +39,7 @@ services:
   questionservice:
     container_name: questionservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
+    build: ./questionservice
     profiles: ["dev", "prod"]
     depends_on:
       - mongodb
@@ -50,6 +53,7 @@ services:
   llmservice:
     container_name: llmservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
+    build: ./llmservice
     profiles: ["dev", "prod"]
     ports:
       - "8003:8003"
@@ -61,6 +65,7 @@ services:
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gatewayservice:latest
+    build: ./gatewayservice
     profiles: ["dev", "prod"]
     depends_on:
       - userservice
@@ -80,6 +85,7 @@ services:
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest
+    build: ./gateway-api-service
     profiles: ["dev", "prod"]
     depends_on:
       - mongodb
@@ -96,6 +102,11 @@ services:
   webapp:
     container_name: webapp-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/webapp:latest
+    build:
+      context: ./webapp
+      args:
+        REACT_APP_LLM_API_KEY: ${LLM_API_KEY}
+        REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
     profiles: ["dev", "prod"]
     depends_on:
       - gatewayservice
