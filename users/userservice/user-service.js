@@ -135,6 +135,15 @@ app.get('/getStats', async (req, res) => {
   }
 });
 
+app.get('/getDBUsers', async (req, res) => {
+  try {
+    const users = await User.find({}, { username: 1, _id: 1, createdAt: 1 });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los usuarios' });
+  }
+});
+
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);

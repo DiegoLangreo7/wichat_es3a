@@ -11,26 +11,22 @@ module.exports = {
     
     getNumberQuestionsByCategory: async function(category){
         try{
-
             const numberQuestions = await Question.countDocuments({category: category});
             return numberQuestions;
-
-        }catch (error) {
-            res.status(500).json({ error: error.message });
-
+        } catch (error) {
+            console.error('Error al obtener número de preguntas:', error.message);
+            throw new Error(`Error al obtener número de preguntas: ${error.message}`);
         }
-
     },
-
+    
     saveQuestion: async function(question){
         try{
-
             const newQuestion = new Question(question);
             await newQuestion.save();
-
-        }catch (error) {
-            res.status(500).json({ error: error.message });
-
+            return newQuestion;
+        } catch (error) {
+            console.error('Error al guardar pregunta:', error.message);
+            throw new Error(`Error al guardar pregunta: ${error.message}`);
         }
     },
 
@@ -59,6 +55,40 @@ module.exports = {
             return question.length > 0 ? question[0] : null; 
         } catch (error) {
             console.error("Error fetching random question:", error);
+            throw new Error(error.message);
+        }
+    },
+
+    getTotalQuestions: async function() {
+        try {
+            const count = await Question.countDocuments({});
+            return count;
+        } catch (error) {
+            console.error('Error obteniendo número total de preguntas:', error.message);
+            throw new Error(`Error al obtener número total de preguntas: ${error.message}`);
+        }
+    },
+    
+    getQuestionsByCategory: async function(category) {
+        try {
+            const questions = await Question.find({ category }, { __v: 0 });
+            return questions;
+        } catch (error) {
+            console.error(`Error obteniendo preguntas para categoría ${category}:`, error.message);
+            throw new Error(`Error al obtener preguntas: ${error.message}`);
+        }
+    },
+    
+    /**
+     * Gets all questions from the database.
+     * @returns {Promise<Array>} - A promise that resolves to an array of all questions
+     */
+    getAllQuestions: async function() {
+        try {
+            const questions = await Question.find({}, { __v: 0 });
+            return questions;
+        } catch (error) {
+            console.error('Error getting all questions:', error);
             throw new Error(error.message);
         }
     }
