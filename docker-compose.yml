@@ -4,7 +4,7 @@ services:
   mongodb:
     container_name: mongodb-wichat_es3a
     image: mongo
-    profiles: ["dev"]
+    profiles: ["dev", "prod"]
     volumes:
       - mongodb_data:/data/db
     ports:
