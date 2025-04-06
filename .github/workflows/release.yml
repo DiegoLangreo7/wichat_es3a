@@ -1,4 +1,4 @@
-name: CI for wichat_es3a
+name: Build and Push Packages
 
 on:
   release:
@@ -20,7 +20,6 @@ jobs:
     - run: npm --prefix webapp ci
 
   docker-push-webapp:
-    name: Push webapp Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,15 +33,14 @@ jobs:
         API_URI: http://${{ secrets.DEPLOY_HOST }}:8000
         LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
       with:
-          name: arquisoft/wichat_es3a/webapp
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.io
-          workdir: webapp
-          buildargs: API_URI,LLM_API_KEY
+        name: arquisoft/wichat_es3a/webapp
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: webapp
+        buildargs: API_URI,LLM_API_KEY
 
   docker-push-authservice:
-    name: Push auth service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,15 +53,14 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
-          name: arquisoft/wichat_es3a/authservice
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.io
-          workdir: users/authservice
-          platforms: linux/amd64,linux/arm64
-          
+        name: arquisoft/wichat_es3a/authservice
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: users/authservice
+        platforms: linux/amd64,linux/arm64
+
   docker-push-userservice:
-    name: Push user service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -81,7 +78,6 @@ jobs:
         workdir: users/userservice
 
   docker-push-llmservice:
-    name: Push llm service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -99,7 +95,6 @@ jobs:
         workdir: llmservice
 
   docker-push-gatewayservice:
-    name: Push gateway service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -121,9 +116,8 @@ jobs:
         workdir: gatewayservice
 
   deploy:
-    name: Deploy over SSH
     runs-on: ubuntu-latest
-    needs: [docker-push-userservice,docker-push-authservice,docker-push-llmservice,docker-push-gatewayservice,docker-push-webapp]
+    needs: [docker-push-userservice, docker-push-authservice, docker-push-llmservice, docker-push-gatewayservice, docker-push-webapp]
     steps:
     - name: Deploy over SSH
       uses: fifsky/ssh-action@master
