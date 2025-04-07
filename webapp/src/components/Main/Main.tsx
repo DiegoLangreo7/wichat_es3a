@@ -61,20 +61,21 @@ const Main = () => {
         0: { label: "Fácil", time: 30, color: "#4CAF50" },
         1: { label: "Medio", time: 20, color: "#FFA726" },
         2: { label: "Difícil", time: 10, color: "#EF5350" },
+        3: { label: "Excomulgado", time: 5, color: "#202A25" },
     };
 
     const gameModes = [
-        { value: "country", label: "Geografía", icon: <PublicIcon fontSize="medium" /> },
-        { value: "history", label: "Historia", icon: <HistoryIcon fontSize="medium" /> },
-        { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="medium" /> },
-        { value: "sports", label: "Deportes", icon: <MovieIcon fontSize="medium" /> },
-        { value: "animals", label: "Animales", icon: <PetsIcon fontSize="medium" /> },
-        { value: "art", label: "Arte", icon: <PaletteIcon fontSize="medium" /> },
+        { value: "country", label: "Geografía", icon: <PublicIcon fontSize="small" /> },
+        { value: "history", label: "Historia", icon: <HistoryIcon fontSize="small" /> },
+        { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="small" /> },
+        { value: "sports", label: "Deportes", icon: <MovieIcon fontSize="small" /> },
+        { value: "animals", label: "Animales", icon: <PetsIcon fontSize="small" /> },
+        { value: "art", label: "Arte", icon: <PaletteIcon fontSize="small" /> },
     ];
 
     const handleButtonClick = () => {
         const selected = difficultyMap[difficulty];
-        
+
         navigate("/game", {
             state: {
                 username,
@@ -87,156 +88,206 @@ const Main = () => {
 
     return (
         <Box component="main"
-            sx={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                backgroundColor: "#202A25",
-                padding: "0 16px 32px 16px"
-            }}
+             sx={{
+                 height: "100vh",
+                 display: "flex",
+                 flexDirection: "column",
+                 alignItems: "center",
+                 backgroundColor: "#202A25",
+                 padding: "0 8px",
+                 overflow: "hidden",
+                 boxSizing: "border-box"
+             }}
         >
-            <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
+            <Box sx={{ width: "100%", position: "sticky", top: 0, zIndex: 1000 }}>
                 <NavBar />
             </Box>
 
-            <Box sx={{ textAlign: "center", mt: 12, width: "100%", maxWidth: "800px" }}>
-                <Typography variant="h4" sx={{ color: '#F7FFF7', fontWeight: "bold", mb: 3 }}>
-                    {username}, ¿Listo para jugar?
-                </Typography>
-
-                {/* Selector de modo de juego */}
-                <Paper sx={{ p: 2, mb: 3, borderRadius: "10px", backgroundColor: '#F7FFF7' }}>
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", color: "#5f4bb6" }}>
-                        Selecciona un modo de juego
+            <Box sx={{
+                textAlign: "center",
+                width: "100%",
+                maxWidth: "500px",
+                height: "calc(100vh - 64px)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                pb: 1,
+                overflowY: "auto",
+                "&::-webkit-scrollbar": {
+                    display: "none"
+                }
+            }}>
+                <Box sx={{ px: 1 }}>
+                    <Typography variant="h5" sx={{
+                        color: '#F7FFF7',
+                        fontWeight: "bold",
+                        mb: 2,
+                        mt: 2,
+                        fontSize: "1.4rem"
+                    }}>
+                        {username}, ¿Listo para jugar?
                     </Typography>
-                    
-                    <Grid container spacing={1}>
-                        {gameModes.map((mode) => (
-                            <Grid item xs={6} sm={4} key={mode.value}>
-                                <Paper 
-                                    elevation={2}
-                                    onClick={() => setSelectedMode(mode.value)}
-                                    sx={{
-                                        p: 1.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        textAlign: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        borderRadius: '8px',
-                                        border: mode.value === selectedMode ? '2px solid #5f4bb6' : '2px solid transparent',
-                                        backgroundColor: mode.value === selectedMode ? 'rgba(95, 75, 182, 0.1)' : 'white',
-                                        '&:hover': {
-                                            transform: 'translateY(-3px)',
-                                            boxShadow: '0 5px 10px rgba(0,0,0,0.1)',
-                                        }
-                                    }}
-                                >
-                                    <Box sx={{ 
-                                        color: '#5f4bb6',
-                                        backgroundColor: 'rgba(95, 75, 182, 0.1)',
-                                        borderRadius: '50%',
-                                        p: 0.8,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        width: 40,
-                                        height: 40,
-                                        mb: 0.5
-                                    }}>
-                                        {mode.icon}
-                                    </Box>
-                                    <Typography variant="subtitle1" fontWeight="bold" fontSize="0.85rem">
-                                        {mode.label}
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Paper>
 
-                {/* Selector de dificultad */}
-                <Paper sx={{ p: 2, mb: 3, borderRadius: "10px", backgroundColor: '#F7FFF7', maxWidth: "400px", mx: "auto" }}>
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold", color: difficultyMap[difficulty].color, fontSize: "1rem" }}>
-                        Dificultad: {difficultyMap[difficulty].label}
-                    </Typography>
-                    <Slider
-                        value={difficulty}
-                        min={0}
-                        max={2}
-                        step={1}
-                        marks={[
-                            { value: 0, label: "Fácil" },
-                            { value: 1, label: "Medio" },
-                            { value: 2, label: "Difícil" },
-                        ]}
-                        onChange={(_, newValue) => setDifficulty(newValue as number)}
-                        sx={{
+                    {/* Selector de modo de juego */}
+                    <Paper sx={{
+                        p: 1.5,
+                        mb: 2,
+                        borderRadius: "10px",
+                        backgroundColor: '#F7FFF7',
+                        width: "100%",
+                        mx: "auto",
+                        boxShadow: 2,
+                        maxWidth: '90%'
+                    }}>
+                        <Typography variant="subtitle1" sx={{
+                            mb: 1.5,
+                            fontWeight: "bold",
+                            color: "#5f4bb6",
+                            fontSize: "1rem"
+                        }}>
+                            Modo de juego
+                        </Typography>
+
+                        <Grid container spacing={1}>
+                            {gameModes.map((mode) => (
+                                <Grid item xs={4} key={mode.value}>
+                                    <Paper
+                                        elevation={1}
+                                        onClick={() => setSelectedMode(mode.value)}
+                                        sx={{
+                                            p: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            textAlign: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            borderRadius: '8px',
+                                            border: mode.value === selectedMode ? '2px solid #5f4bb6' : '1px solid #e0e0e0',
+                                            backgroundColor: mode.value === selectedMode ? 'rgba(95, 75, 182, 0.1)' : 'white',
+                                            minHeight: '80px',
+                                            justifyContent: 'center',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: '0 3px 6px rgba(0,0,0,0.1)',
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{
+                                            color: '#5f4bb6',
+                                            backgroundColor: 'rgba(95, 75, 182, 0.1)',
+                                            borderRadius: '50%',
+                                            p: 0.8,
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            width: 36,
+                                            height: 36,
+                                            mb: 1
+                                        }}>
+                                            {mode.icon}
+                                        </Box>
+                                        <Typography variant="body2" fontWeight="bold" sx={{ fontSize: "0.8rem" }}>
+                                            {mode.label}
+                                        </Typography>
+                                    </Paper>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Paper>
+
+                    {/* Selector de dificultad */}
+                    <Paper sx={{
+                        p: 2,
+                        mb: 1,
+                        borderRadius: "10px",
+                        backgroundColor: '#F7FFF7',
+                        width: "100%",
+                        mx: "auto",
+                        boxShadow: 2,
+                        maxWidth: '80%'
+                    }}>
+                        <Typography variant="subtitle1" sx={{
+                            mb: 1.5,
+                            fontWeight: "bold",
                             color: difficultyMap[difficulty].color,
-                            '& .MuiSlider-markLabel': {
-                                fontSize: '0.7rem'
-                            }
-                        }}
-                    />
-                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary', fontSize: "0.8rem" }}>
-                        Tiempo por pregunta: {difficultyMap[difficulty].time} segundos
-                    </Typography>
-                </Paper>
+                            fontSize: "1rem"
+                        }}>
+                            Dificultad: {difficultyMap[difficulty].label}
+                        </Typography>
+                        <Slider
+                            value={difficulty}
+                            min={0}
+                            max={3}
+                            step={1}
+                            marks={[
+                                { value: 0, label: "" },
+                                { value: 1, label: "" },
+                                { value: 2, label: "" },
+                                { value: 3, label: "" },
+                            ]}
+                            onChange={(_, newValue) => setDifficulty(newValue as number)}
+                            sx={{
+                                color: difficultyMap[difficulty].color,
+                                mb: 1,
+                                px: 1,
+                                maxWidth: '80%'
+                            }}
+                        />
+                        <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(4, 1fr)', // 4 columnas de igual tamaño
+                            gap: '10px', // Espacio entre elementos
+                            justifyContent: 'space-evenly',
+                            alignItems: 'center' // Alineación vertical si es necesario
+                        }}>
+                            {[0, 1, 2, 3].map((value) => (
+                                <Typography key={value} variant="caption" sx={{
+                                    color: difficulty === value ? difficultyMap[value].color : 'text.secondary',
+                                    fontWeight: difficulty === value ? 'bold' : 'normal',
+                                    fontSize: '0.7rem'
+                                }}>
+                                    {difficultyMap[value].label}
+                                </Typography>
+                            ))}
+                        </Box>
+                        <Typography variant="caption" sx={{
+                            mt: 1,
+                            color: 'text.secondary',
+                            fontSize: "0.75rem",
+                            display: "block"
+                        }}>
+                            Tiempo por pregunta: {difficultyMap[difficulty].time} segundos
+                        </Typography>
+                    </Paper>
+                </Box>
 
                 <Button
                     onClick={handleButtonClick}
                     sx={{
                         backgroundColor: "#5f4bb6",
                         color: "white",
-                        fontSize: "1.2rem",
+                        fontSize: "0.95rem",
                         fontWeight: "bold",
-                        padding: "12px 24px",
+                        padding: "12px",
                         borderRadius: "8px",
-                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                        boxShadow: 2,
                         transition: "all 0.3s ease-in-out",
                         "&:hover": {
                             backgroundColor: "#EDC9FF",
-                            transform: "scale(1.05)",
+                            transform: "scale(1.02)",
                         },
                         "&:active": {
-                            transform: "scale(0.95)",
+                            transform: "scale(0.98)",
                         },
+                        width: "calc(100% - 16px)",
+                        mx: "auto",
+                        mb: 1
                     }}
                 >
                     🎮 JUGAR
                 </Button>
             </Box>
-
-            <Paper elevation={3} sx={{
-                mt: 4,
-                padding: "16px",
-                textAlign: "center",
-                width: "100%",
-                maxWidth: "350px",
-                borderRadius: "10px",
-                backgroundColor: "#F7FFF7",
-            }}>
-                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                    📊 Estadísticas
-                </Typography>
-                <Typography variant="body2">
-                    <b>Tiempo Jugado:</b> {stats.timePlayed} segundos
-                </Typography>
-                <Typography variant="body2">
-                    <b>Partidas Jugadas:</b> {stats.gamesPlayed}
-                </Typography>
-                <Typography variant="body2">
-                    <b>Puntuación total:</b> {stats.puntuation}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#4CAF50" }}>
-                    <b>Aciertos:</b> {stats.correctAnswered}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#F44336" }}>
-                    <b>Fallos:</b> {stats.incorrectAnswered}
-                </Typography>
-            </Paper>
         </Box>
     );
 };
