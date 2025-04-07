@@ -105,9 +105,7 @@ const Main = () => {
 
             <Box sx={{
                 textAlign: "center",
-                width: "100%",
-                maxWidth: "500px",
-                height: "calc(100vh - 64px)",
+                width: "80%",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -280,7 +278,7 @@ const Main = () => {
                         "&:active": {
                             transform: "scale(0.98)",
                         },
-                        width: "calc(100% - 16px)",
+                        width: "50%",
                         mx: "auto",
                         mb: 1
                     }}
