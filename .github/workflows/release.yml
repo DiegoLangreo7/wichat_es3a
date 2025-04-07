@@ -94,6 +94,23 @@ jobs:
           registry: ghcr.io
           workdir: llmservice
 
+  docker-push-questionservice:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/questionservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: questionservice
+
   docker-push-gatewayservice:
     runs-on: ubuntu-latest
     permissions:
@@ -138,6 +155,7 @@ jobs:
       docker-push-userservice,
       docker-push-authservice,
       docker-push-llmservice,
+      docker-push-questionservice,
       docker-push-gatewayservice,
       docker-push-gateway-api-service,
       docker-push-webapp
