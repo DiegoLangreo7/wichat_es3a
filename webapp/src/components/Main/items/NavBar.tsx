@@ -36,10 +36,10 @@ const NavBar: React.FC = () => {
     };
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: "#5f4bb6", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
-            <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Typography
+        <AppBar id="app-bar-component" position="static" sx={{ backgroundColor: "#5f4bb6", boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)" }}>
+            <Toolbar id="tool-bar-component" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
+                <Box id="elements-container" sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Typography id="home-link"
                         variant="h6"
                         onClick={handleMain}
                         sx={{ 
@@ -54,7 +54,7 @@ const NavBar: React.FC = () => {
                         WI CHAT
                     </Typography>
     
-                    <Button
+                    <Button id="ranking-button"
                         onClick={handleRanking}
                         sx={{
                             color: "white",
@@ -72,7 +72,7 @@ const NavBar: React.FC = () => {
                         Ranking Global
                     </Button>
 
-                    <Button
+                    <Button id="api-button"
                         onClick={handleApi}
                         sx={{
                             color: "white",
@@ -92,8 +92,8 @@ const NavBar: React.FC = () => {
                 </Box>
     
                 <ClickAwayListener onClickAway={handleMenuClose}>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Button
+                    <Box id="user-menu-container" sx={{ display: "flex", alignItems: "center" }}>
+                        <Button id="user-menu-button"
                             ref={buttonRef}
                             onClick={handleUserMenu}
                             sx={{
@@ -111,7 +111,7 @@ const NavBar: React.FC = () => {
                         >
                             {username}
                         </Button>
-                        <Menu
+                        <Menu id="user-menu"
                             open={openUserMenu}
                             anchorEl={buttonRef.current}
                             onClose={handleMenuClose}
@@ -126,10 +126,10 @@ const NavBar: React.FC = () => {
                                 },
                             }}
                         >
-                            <MenuItem onClick={handleHistoric} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
+                            <MenuItem id="user-menu-historic" onClick={handleHistoric} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                 Historial
                             </MenuItem>
-                            <MenuItem 
+                            <MenuItem id="user-menu-logout"
                                 onClick={handleLogout} 
                                 sx={{ 
                                     color: "#FF4D4D", 

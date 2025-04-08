@@ -298,7 +298,7 @@ const Game: React.FC = () => {
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
   return (
-    <Box component="main" sx={{
+    <Box id="game-container" component="main" sx={{
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -307,25 +307,25 @@ const Game: React.FC = () => {
       position: 'relative',
       backgroundColor: '#202A25',
     }}>
-      <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
+      <Box id="navbar-container" sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
         <NavBar />
       </Box>
       {isLoading ? (
-        <Box display="flex" alignItems="center" flexDirection="column">
-          <Typography variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
+        <Box id="loading-container" display="flex" alignItems="center" flexDirection="column">
+          <Typography id="loading-text" variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
             Cargando pregunta...
           </Typography>
-          <CircularProgress sx={{ color: '#F7B801' }} />
+          <CircularProgress id="loading-spinner" sx={{ color: '#F7B801' }} />
         </Box>
       ) : fetchError ? (
-        <Box display="flex" alignItems="center" flexDirection="column" sx={{ p: 4, backgroundColor: '#5f4bb6', borderRadius: 2 }}>
-          <Typography variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
+        <Box id="error-container" display="flex" alignItems="center" flexDirection="column" sx={{ p: 4, backgroundColor: '#5f4bb6', borderRadius: 2 }}>
+          <Typography id="error-title" variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
             No se pudieron cargar preguntas para esta categoría.
           </Typography>
-          <Typography variant="body1" color="#F7FFF7" sx={{ mb: 3 }}>
+          <Typography id="error-message" variant="body1" color="#F7FFF7" sx={{ mb: 3 }}>
             Por favor, inténtalo de nuevo más tarde o selecciona otra categoría.
           </Typography>
-          <Button 
+          <Button id="return-button"
             variant="contained" 
             onClick={() => navigate('/main')}
             sx={{
@@ -340,21 +340,21 @@ const Game: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3} sx={{
+        <Box id="game-content-container" display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3} sx={{
           transform: 'scale(0.80)',
           transformOrigin: 'center',
           backgroundColor: '#5f4bb6'
         }}>
-          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center">
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
-              <CircularProgress
+          <Box id="question-section" display='flex' flexDirection='column' justifyContent="center" alignItems="center">
+            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
+              <CircularProgress id="timer-circle"
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
                 size={80}
                 sx={{ color: '#F7B801'}}
               />
               {isVisible && (
-                <Typography
+                <Typography id="timer-text"
                   variant="h6"
                   sx={{
                     position: "absolute",
@@ -373,10 +373,10 @@ const Game: React.FC = () => {
               )}
             </Box>
             {currentQuestion && (
-              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />
             )}
-            <Box display="flex" justifyContent="center" mt={3}>
-              <Button 
+            <Box id="clue-button-container" display="flex" justifyContent="center" mt={3}>
+              <Button id="clue-button"
                 variant="contained" 
                 color="secondary" 
                 size="large" 
@@ -398,13 +398,13 @@ const Game: React.FC = () => {
       )}
       
       {/* Alerta que aparece cuando se usa una pista */}
-      <Snackbar 
+      <Snackbar id="clue-penalty-alert"
         open={showScoreAlert} 
         autoHideDuration={3000} 
         onClose={() => setShowScoreAlert(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert 
+        <Alert id="clue-penalty-message"
           onClose={() => setShowScoreAlert(false)} 
           severity="warning" 
           sx={{ width: '100%' }}
