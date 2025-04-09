@@ -19,6 +19,7 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
 
     return (
         <Paper
+            id="question-paper"
             elevation={3}
             sx={{
                 mt: 1,
@@ -29,10 +30,10 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                 backgroundColor: "#F4F4F4",
             }}
         >
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+            <Typography id="question-title" variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                 {question.question}
             </Typography>
-            <Typography variant="body1">
+            <Typography id="question-time" variant="body1">
                 <b>Tiempo:</b> {question.time} segundos
             </Typography>
             {question.options.map((opt, index) => {
@@ -45,7 +46,7 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                 }
 
                 return (
-                    <Typography
+                    <Typography id={`question-answer-${index}`}
                         key={index}
                         variant="body1"
                         sx={{ color: color, mb: 1 }} // Usar el color calculado

@@ -41,10 +41,10 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
     }
 
     return (
-        <Container maxWidth="lg" >
-            <Box display="flex" justifyContent="center" sx={{ mb: 2}}>
+        <Container id="question-container" maxWidth="lg" >
+            <Box id="question-image-container" display="flex" justifyContent="center" sx={{ mb: 2}}>
                 {question.imageUrl && (
-                    <img 
+                    <img  id="question-image"
                         src={question.imageUrl} 
                         alt="Imagen" 
                         style={{ 
@@ -57,13 +57,13 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
                     />
                 )}
             </Box>
-            <Typography component="h1" variant="h5" sx={{ textAlign: 'center', color: '#F7FFF7' }}>
+            <Typography id="question-text" component="h1" variant="h5" sx={{ textAlign: 'center', color: '#F7FFF7' }}>
                 {question.question}
             </Typography>
-            <Grid container spacing={2} justifyContent="center">
+            <Grid id="options-grid" container spacing={2} justifyContent="center">
                 {question.options.map((respuesta, index) => (
-                    <Grid item xs={6} key={index}>
-                        <Button
+                    <Grid id={`option-${index}-container`} item xs={6} key={index}>
+                        <Button id={`option-${index}-button`}
                             variant="contained"
                             color={
                                 selectedOption !== null ?

@@ -12,8 +12,8 @@ import {
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
-import LLMChat from './LLMChat';  // Importamos el componente LLMChat
-import PauseIcon from '@mui/icons-material/Pause'; // Importamos el icono de pausa
+import LLMChat from './LLMChat';  
+import PauseIcon from '@mui/icons-material/Pause'; 
 
 interface Question {
   question: string;
@@ -49,6 +49,8 @@ const Game: React.FC = () => {
   const TRANSITION_ROUND_TIME = 3;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [clueOpen, setClueOpen] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
@@ -70,33 +72,61 @@ const Game: React.FC = () => {
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-  const fetchQuestion = async (retries = 10, delay = 2000) => {
-    let attempt = 0;
-    setIsLoading(true);
-  
-    while (attempt < retries) {
+  const fetchQuestion = async () => {
+    let attempts = 0;
+    const maxAttempts = 5; // Aumentamos los intentos para dar más tiempo
+    
+    const tryFetchQuestion = async () => {
       try {
-        const response = await axios.get(`${apiEndpoint}/questions/country`);
-  
-        if (response.data && response.data.question) {
-          setCurrentQuestion(response.data);
-          break;
-        } else {
-          console.warn("No hay pregunta aún, reintentando...");
-          await new Promise(resolve => setTimeout(resolve, delay));
-          attempt++;
-        }
+        const gameMode = location.state?.gameMode || "country";
+        console.log(`Intento ${attempts+1}: Obtener pregunta para modo: ${gameMode}`);
+        
+        const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
+        setCurrentQuestion(response.data);
+        console.log("Pregunta obtenida correctamente:", response.data);
+        return true;
       } catch (error) {
-        console.error("Error fetching question:", error);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        attempt++;
+        console.error(`Intento ${attempts+1} fallido:`, error);
+        
+        // Si el error es 503 (Service Unavailable), el servicio está generando preguntas
+        if (axios.isAxiosError(error) && error.response && error.response.status === 503) {
+          console.log("El servicio está generando preguntas, reintentando en 3 segundos...");
+          return false; // Debemos reintentar
+        }
+        
+        // Si es 404, no hay preguntas para esa categoría
+        if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+          console.error(`No hay preguntas disponibles para la categoría: ${location.state?.gameMode}`);
+          return false; // Reintentar, quizás se estén generando
+        }
+        
+        return false; // Cualquier otro error, reintentamos
+      }
+    };
+    
+    setIsLoading(true);
+    setFetchError(false);
+    
+    while (attempts < maxAttempts) {
+      const success = await tryFetchQuestion();
+      if (success) {
+        setIsLoading(false);
+        return;
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        // Esperar 3 segundos antes de reintentar
+        await new Promise(resolve => setTimeout(resolve, 3000));
       }
     }
-  
+    
+    // Si llegamos aquí, es que fallaron todos los intentos
     setIsLoading(false);
+    setFetchError(true);
+    setErrorMessage(`No se pudieron cargar preguntas para ${location.state?.gameMode || "esta categoría"}.`);
   };
   
-
   const handleTimeRemaining = (): string => {
     const remaining = isPaused ? transitionTimer : timer;
     const secsR = remaining % 60;
@@ -220,7 +250,18 @@ const Game: React.FC = () => {
   };
 
   useEffect(() => {
+    setFetchError(false); // Reiniciamos el estado de error
     fetchQuestion();
+    
+    // Función para reintentar obtener pregunta si falló
+    const retryTimer = setTimeout(() => {
+      if (isLoading && !currentQuestion) {
+        console.log("Reintentando obtener pregunta después de tiempo de espera...");
+        fetchQuestion();
+      }
+    }, 8000); // Reintentar después de 8 segundos si sigue cargando
+    
+    return () => clearTimeout(retryTimer);
   }, []);
 
   // Efecto para manejar la intermitencia del icono de pausa
@@ -272,10 +313,8 @@ const Game: React.FC = () => {
     }
   }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
 
-  
-
   return (
-    <Box component="main" sx={{
+    <Box id="game-container" component="main" sx={{
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -284,34 +323,54 @@ const Game: React.FC = () => {
       position: 'relative',
       backgroundColor: '#202A25',
     }}>
-      <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
+      <Box id="navbar-container" sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
         <NavBar />
       </Box>
       {isLoading ? (
-        <Box display="flex" alignItems="center">
-          <Typography variant="h6" sx={{ mr: 2, color: '#F7FFF7' }}>
-            Cargando...
+        <Box id="loading-container" display="flex" alignItems="center" flexDirection="column">
+          <Typography id="loading-text" variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
+            Cargando pregunta...
           </Typography>
-          <CircularProgress sx = {{ color: '#F7B801'}}/>
+          <CircularProgress id="loading-spinner" sx={{ color: '#F7B801' }} />
+        </Box>
+      ) : fetchError ? (
+        <Box id="error-container" display="flex" alignItems="center" flexDirection="column" sx={{ p: 4, backgroundColor: '#5f4bb6', borderRadius: 2 }}>
+          <Typography id="error-title" variant="h6" color="#F7FFF7" sx={{ mb: 2 }}>
+            No se pudieron cargar preguntas para esta categoría.
+          </Typography>
+          <Typography id="error-message" variant="body1" color="#F7FFF7" sx={{ mb: 3 }}>
+            Por favor, inténtalo de nuevo más tarde o selecciona otra categoría.
+          </Typography>
+          <Button id="return-button"
+            variant="contained" 
+            onClick={() => navigate('/main')}
+            sx={{
+              backgroundColor: "#F7B801",
+              color: "#202A25",
+              '&:hover': {
+                backgroundColor: "#EDC9FF",
+              }
+            }}
+          >
+            Volver al Menú Principal
+          </Button>
         </Box>
       ) : (
-        <Box display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3}  sx={{
+        <Box id="game-content-container" display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3} sx={{
           transform: 'scale(0.80)',
           transformOrigin: 'center',
           backgroundColor: '#5f4bb6'
         }}>
-          <Box display='flex' flexDirection='column' justifyContent="center" alignItems="center" sx={{
-
-          }}>
-            <Box display="flex" justifyContent="center" alignItems="center" position="relative" mt={2} mb={3} >
-              <CircularProgress
+          <Box id="question-section" display='flex' flexDirection='column' justifyContent="center" alignItems="center">
+            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
+              <CircularProgress id="timer-circle"
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
                 size={80}
                 sx={{ color: '#F7B801'}}
               />
               {isVisible && (
-                <Typography
+                <Typography id="timer-text"
                   variant="h6"
                   sx={{
                     position: "absolute",
@@ -329,15 +388,15 @@ const Game: React.FC = () => {
                 </Typography>
               )}
             </Box>
-{currentQuestion && (
-              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />            )}
-            <Box display="flex" justifyContent="center" mt={3}>
-              <Button 
+            {currentQuestion && (
+              <Question question={currentQuestion} onAnswer={handleAnswer} isTransitioning={isTransitioning} disabled={clueOpen} />
+            )}
+            <Box id="clue-button-container" display="flex" justifyContent="center" mt={3}>
+              <Button id="clue-button"
                 variant="contained" 
                 color="secondary" 
                 size="large" 
                 onClick={handleClueToggle}
-                sx = {{ color: '#202A25', backgroundColor: '#EDC9FF'}}
               >
                 {clueOpen ? "Cerrar Pista" : "Pedir Pista"}
               </Button>
@@ -355,13 +414,13 @@ const Game: React.FC = () => {
       )}
       
       {/* Alerta que aparece cuando se usa una pista */}
-      <Snackbar 
+      <Snackbar id="clue-penalty-alert"
         open={showScoreAlert} 
         autoHideDuration={3000} 
         onClose={() => setShowScoreAlert(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert 
+        <Alert id="clue-penalty-message"
           onClose={() => setShowScoreAlert(false)} 
           severity="warning" 
           sx={{ width: '100%' }}

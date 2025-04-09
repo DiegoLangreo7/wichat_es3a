@@ -75,11 +75,22 @@ app.get('/getStats', async (req, res) => {
 // Endpoint: Obtener preguntas por categoría
 app.get('/questions/:category', async (req, res) => {
     try{
-        console.log("Category: " + req.params.category);
+        console.log(`Gateway - Solicitando preguntas para categoría: ${req.params.category}`);
+        console.log(`Gateway - URL completa: ${questionServiceUrl}/questions/${req.params.category}`);
+        
         const category = req.params.category;
-        const questionResponse = await axios.get(questionServiceUrl+`/getQuestionsDb/${category}`);
+        const questionResponse = await axios.get(`${questionServiceUrl}/questions/${category}`);
+        console.log(`Gateway - Respuesta recibida correctamente para ${category}`);
         res.json(questionResponse.data);
-    }catch (error) {
+    } catch (error) {
+        console.error(`Gateway - Error al solicitar preguntas para ${req.params.category}:`, error.message);
+        if (error.response) {
+            console.error(`Gateway - Código de estado: ${error.response.status}`);
+            console.error(`Gateway - Respuesta del servidor: `, error.response.data);
+        } else if (error.request) {
+            console.error(`Gateway - No se recibió respuesta del servidor`);
+        }
+        
         res.status(error?.response?.status || 500).json({
             error: error?.response?.data?.error || error.message || 'Error interno'
         });
