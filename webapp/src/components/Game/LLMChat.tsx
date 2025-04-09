@@ -70,7 +70,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
   };
 
   return (
-    <Box
+    <Box id="llm-chat-container"
       sx={{
         width: '100%', // Ancho fijo para la columna de chat
         display: 'flex',
@@ -83,7 +83,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
         minHeight: '0' // Importante para que flex funcione correctamente
     }}
     >
-      <Box 
+      <Box id="chat-messages-container"
         sx={{ 
           flexGrow: 1, 
           overflowY: 'auto', 
@@ -95,7 +95,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
         }}
       >
         {messages.map((message, index) => (
-          <Box
+          <Box id={`message-${index}-${message.sender}`}
             key={index}
             sx={{
               display: 'flex',
@@ -103,7 +103,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
               mb: 1,
             }}
           >
-            <Typography
+            <Typography id={`message-content-${index}`}
               sx={{
                 bgcolor: message.sender === 'user' ? '#5f4bb6' : '#F7FFF7',
                 color: message.sender === 'user' ? '#F7FFF7' : '#202A25',
@@ -118,14 +118,14 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
           </Box>
         ))}
         {isLoading && (
-          <Box
+          <Box id="loading-indicator"
             sx={{
               display: 'flex',
               justifyContent: 'flex-start',
               mb: 1,
             }}
           >
-            <Typography
+            <Typography id="loading-text"
               sx={{
                 bgcolor: 'grey.200',
                 color: 'black',
@@ -138,8 +138,8 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
           </Box>
         )}
       </Box>
-      <Box display="flex">
-        <TextField
+      <Box id="chat-input-container" display="flex">
+        <TextField id="message-input-field"
           fullWidth
           placeholder="Escribe tu mensaje..."
           value={newMessage}
@@ -166,12 +166,12 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
           variant="outlined"
           size="small"
         />
-        <IconButton
+        <IconButton id="send-message-button"
           onClick={handleSendMessage} 
           disabled={isLoading || newMessage.trim() === ''}
 
         >
-          <SendIcon sx = {{ color: '#F7B801'}}/>
+          <SendIcon id="send-icon" sx = {{ color: '#F7B801'}}/>
         </IconButton>
       </Box>
     </Box>

@@ -59,8 +59,8 @@ const AddUser = () => {
 	
 
     return (
-        <Box component="main" sx={{display: 'flex', justifyContent: 'center', backgroundColor: '#202A25', width: '100%' , height: '100vh' }}>
-            <Paper elevation={3} sx={{
+        <Box id="add-user-main-container" component="main" sx={{display: 'flex', justifyContent: 'center', backgroundColor: '#202A25', width: '100%' , height: '100vh' }}>
+            <Paper id="add-user-paper" elevation={3} sx={{
                 m: 20,
                 padding: "20px",
                 textAlign: "center",
@@ -68,10 +68,11 @@ const AddUser = () => {
                 borderRadius: "10px",
                 backgroundColor: "#5f4bb6"
             }}>
-                <Typography component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7'}}>
+                <Typography id="add-user-title" component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7'}}>
                     Create an account
                 </Typography>
                     <TextField
+                        id="username-input"
                         name="username"
                         margin="normal"
                         fullWidth
@@ -104,6 +105,7 @@ const AddUser = () => {
                         }}
                     />
                     <TextField
+                        id="password-input"
                         name="password"
                         margin="normal"
                         fullWidth
@@ -137,7 +139,7 @@ const AddUser = () => {
                         }}
                     />
                     {error.general && (
-                        <Typography color="error" sx={{ mt: 1 }}>
+                        <Typography id="error-message" color="error" sx={{ mt: 1 }}>
                             {error.general.split('\n').map((line, index) => (
                                 <React.Fragment key={index}>
                                     {line}
@@ -147,13 +149,14 @@ const AddUser = () => {
                         </Typography>
                     )}
 
-                <Box sx={{
+                <Box id="action-buttons-container" sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-end', // Alinea items a la derecha
                     mt: 2
                 }}>
                     <Button
+                        id="submit-button"
                         variant="contained"
                         color="primary"
                         onClick={addUser}
@@ -163,7 +166,7 @@ const AddUser = () => {
                             '&:active': { transform: 'scale(0.95)' }, backgroundColor: '#F7B801', color: '#202A25' }}>
                         {loading ? 'Loading...' : 'Add User'}
                     </Button>
-                    <Link component="button" variant="body2" onClick={() => navigate('/login')} sx={{ mt: 2, display: 'block', color: '#EDC9FF' }}>
+                    <Link id="login-link" component="button" variant="body2" onClick={() => navigate('/login')} sx={{ mt: 2, display: 'block', color: '#EDC9FF' }}>
                         Already have an account? Login here.
                         </Link>
                 </Box>
