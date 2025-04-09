@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, Paper, Slider, Grid } from "@mui/material";
+import { Box, Button, Typography, Paper, Avatar, IconButton } from "@mui/material";
 import NavBar from "./items/NavBar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PublicIcon from '@mui/icons-material/Public';
 import HistoryIcon from '@mui/icons-material/History';
 import ScienceIcon from '@mui/icons-material/Science';
-import MovieIcon from '@mui/icons-material/Movie';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import PetsIcon from '@mui/icons-material/Pets';
 import PaletteIcon from '@mui/icons-material/Palette';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
+interface StatEntry {
+    username: string;
+    puntuation: number;
+}
+
 const Main = () => {
     const navigate = useNavigate();
+    const [topRanking, setTopRanking] = useState<StatEntry[]>([]);
     const [stats, setStats] = useState({
         timePlayed: 0,
         gamesPlayed: 0,
@@ -21,9 +30,7 @@ const Main = () => {
         incorrectAnswered: 0,
         puntuation: 0
     });
-
-    const [difficulty, setDifficulty] = useState<number>(1);
-    const [selectedMode, setSelectedMode] = useState<string>("country");
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const isAuthenticated = !!localStorage.getItem("token");
 
@@ -34,257 +41,331 @@ const Main = () => {
     }, [isAuthenticated, navigate]);
 
     useEffect(() => {
-        const fetchStats = async () => {
+        const fetchData = async () => {
             const storedUsername = localStorage.getItem("username");
             const username = storedUsername ? JSON.parse(storedUsername) : "";
+
             try {
-                const response = await axios.get(`${apiEndpoint}/stats/${username}`);
-                setStats(response.data);
+                const statsResponse = await axios.get(`${apiEndpoint}/stats/${username}`);
+                setStats(statsResponse.data);
+
+                const rankingResponse = await axios.get(`${apiEndpoint}/getStats`);
+                const sorted = rankingResponse.data.sort((a: StatEntry, b: StatEntry) => b.puntuation - a.puntuation);
+                setTopRanking(sorted.slice(0, 3));
             } catch (error) {
-                console.error("Error fetching stats, intentando crear ranking:", error);
+                console.error("Error fetching data:", error);
                 try {
                     const createResponse = await axios.post(`${apiEndpoint}/stats`, { username });
                     setStats(createResponse.data);
                 } catch (createError) {
-                    console.error("Error creando ranking:", createError);
+                    console.error("Error creando stats:", createError);
                 }
             }
         };
 
-        fetchStats();
+        fetchData();
     }, []);
 
     const storedUsername = localStorage.getItem('username');
     const username = storedUsername ? JSON.parse(storedUsername) : "Jugador";
 
-    const difficultyMap: Record<number, { label: string; time: number; color: string }> = {
-        0: { label: "Fácil", time: 30, color: "#4CAF50" },
-        1: { label: "Medio", time: 20, color: "#FFA726" },
-        2: { label: "Difícil", time: 10, color: "#EF5350" },
-        3: { label: "Excomulgado", time: 5, color: "#202A25" },
-    };
-
     const gameModes = [
-        { value: "country", label: "Geografía", icon: <PublicIcon fontSize="small" /> },
-        { value: "history", label: "Historia", icon: <HistoryIcon fontSize="small" /> },
-        { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="small" /> },
-        { value: "sports", label: "Deportes", icon: <MovieIcon fontSize="small" /> },
-        { value: "animals", label: "Animales", icon: <PetsIcon fontSize="small" /> },
-        { value: "art", label: "Arte", icon: <PaletteIcon fontSize="small" /> },
+        { value: "question", label: "Preguntas", icon: <PublicIcon />, color: "#F7B801", text: "#F7FFF7"  },
+        { value: "", label: "Cartas", icon: <HistoryIcon />, color: "#EDC9FF", text: "#2A363B"},
+        { value: "", label: "¡Muchas cosas están por llegar!", icon: <ScienceIcon />, color: "#5f4bb6", text: "#F7FFF7" },
     ];
 
-    const handleButtonClick = () => {
-        const selected = difficultyMap[difficulty];
-
-        navigate("/game", {
-            state: {
-                username,
-                totalQuestions: 10,
-                timeLimit: selected.time,
-                gameMode: selectedMode
-            }
-        });
+    const getMedalColor = (position: number) => {
+        switch(position) {
+            case 0: return "#FFD700";
+            case 1: return "#C0C0C0";
+            case 2: return "#CD7F32";
+            default: return "#5f4bb6";
+        }
     };
 
+    const navigateToGameMode = (mode: string) => {
+        navigate(`/main/${mode}`);
+    };
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev === gameModes.length - 1 ? 0 : prev + 1));
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) => (prev === 0 ? gameModes.length - 1 : prev - 1));
+    };
+
+    const visibleCards = 1;
+    const visibleModes = [];
+    for (let i = 0; i < visibleCards; i++) {
+        const index = (currentSlide + i) % gameModes.length;
+        visibleModes.push(gameModes[index]);
+    }
+
     return (
-        <Box component="main"
-             sx={{
-                 height: "100vh",
-                 display: "flex",
-                 flexDirection: "column",
-                 alignItems: "center",
-                 backgroundColor: "#202A25",
-                 padding: "0 8px",
-                 overflow: "hidden",
-                 boxSizing: "border-box"
-             }}
-        >
-            <Box sx={{ width: "100%", position: "sticky", top: 0, zIndex: 1000 }}>
-                <NavBar />
-            </Box>
+        <Box component="main" sx={{
+            height: "100vh",
+            width: "100vw",
+            backgroundColor: "#202A25",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
+        }}>
+            <NavBar />
 
             <Box sx={{
-                textAlign: "center",
-                width: "80%",
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                pb: 1,
-                overflowY: "auto",
-                "&::-webkit-scrollbar": {
-                    display: "none"
-                }
+                height: "calc(100vh - 64px)",
+                width: "100vw",
+                overflow: "hidden"
             }}>
-                <Box sx={{ px: 1 }}>
-                    <Typography variant="h5" sx={{
-                        color: '#F7FFF7',
-                        fontWeight: "bold",
-                        mb: 2,
-                        mt: 2,
-                        fontSize: "1.4rem"
-                    }}>
-                        {username}, ¿Listo para jugar?
-                    </Typography>
-
-                    {/* Selector de modo de juego */}
-                    <Paper sx={{
-                        p: 1.5,
-                        mb: 2,
-                        borderRadius: "10px",
-                        backgroundColor: '#F7FFF7',
-                        width: "100%",
-                        mx: "auto",
-                        boxShadow: 2,
-                        maxWidth: '90%'
-                    }}>
-                        <Typography variant="subtitle1" sx={{
-                            mb: 1.5,
-                            fontWeight: "bold",
-                            color: "#5f4bb6",
-                            fontSize: "1rem"
+                {/* Panel lateral ranking */}
+                <Box sx={{
+                    width: "300px",
+                    backgroundColor: "#2A363B",
+                    color: "#F7FFF7",
+                    height: "100%",
+                    overflowY: "auto",
+                    flexShrink: 0
+                }}>
+                    <Box sx={{ p: 3 }}>
+                        <Typography variant="h6" sx={{
+                            mb: 3,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 1
                         }}>
-                            Modo de juego
+                            <EmojiEventsIcon /> Top 3 Jugadores
                         </Typography>
 
-                        <Grid container spacing={1}>
-                            {gameModes.map((mode) => (
-                                <Grid item xs={4} key={mode.value}>
-                                    <Paper
-                                        elevation={1}
-                                        onClick={() => setSelectedMode(mode.value)}
-                                        sx={{
-                                            p: 1,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            textAlign: 'center',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            borderRadius: '8px',
-                                            border: mode.value === selectedMode ? '2px solid #5f4bb6' : '1px solid #e0e0e0',
-                                            backgroundColor: mode.value === selectedMode ? 'rgba(95, 75, 182, 0.1)' : 'white',
-                                            minHeight: '80px',
-                                            justifyContent: 'center',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: '0 3px 6px rgba(0,0,0,0.1)',
-                                            }
-                                        }}
-                                    >
-                                        <Box sx={{
-                                            color: '#5f4bb6',
-                                            backgroundColor: 'rgba(95, 75, 182, 0.1)',
-                                            borderRadius: '50%',
-                                            p: 0.8,
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            width: 36,
-                                            height: 36,
-                                            mb: 1
-                                        }}>
-                                            {mode.icon}
-                                        </Box>
-                                        <Typography variant="body2" fontWeight="bold" sx={{ fontSize: "0.8rem" }}>
-                                            {mode.label}
-                                        </Typography>
-                                    </Paper>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Paper>
-
-                    {/* Selector de dificultad */}
-                    <Paper sx={{
-                        p: 2,
-                        mb: 1,
-                        borderRadius: "10px",
-                        backgroundColor: '#F7FFF7',
-                        width: "100%",
-                        mx: "auto",
-                        boxShadow: 2,
-                        maxWidth: '80%'
-                    }}>
-                        <Typography variant="subtitle1" sx={{
-                            mb: 1.5,
-                            fontWeight: "bold",
-                            color: difficultyMap[difficulty].color,
-                            fontSize: "1rem"
-                        }}>
-                            Dificultad: {difficultyMap[difficulty].label}
-                        </Typography>
-                        <Slider
-                            value={difficulty}
-                            min={0}
-                            max={3}
-                            step={1}
-                            marks={[
-                                { value: 0, label: "" },
-                                { value: 1, label: "" },
-                                { value: 2, label: "" },
-                                { value: 3, label: "" },
-                            ]}
-                            onChange={(_, newValue) => setDifficulty(newValue as number)}
-                            sx={{
-                                color: difficultyMap[difficulty].color,
-                                mb: 1,
-                                px: 1,
-                                maxWidth: '80%'
-                            }}
-                        />
-                        <Box sx={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(4, 1fr)', // 4 columnas de igual tamaño
-                            gap: '10px', // Espacio entre elementos
-                            justifyContent: 'space-evenly',
-                            alignItems: 'center' // Alineación vertical si es necesario
-                        }}>
-                            {[0, 1, 2, 3].map((value) => (
-                                <Typography key={value} variant="caption" sx={{
-                                    color: difficulty === value ? difficultyMap[value].color : 'text.secondary',
-                                    fontWeight: difficulty === value ? 'bold' : 'normal',
-                                    fontSize: '0.7rem'
+                        {topRanking.map((entry, index) => (
+                            <Paper key={entry.username} sx={{
+                                mb: 2,
+                                p: 2,
+                                backgroundColor: "#5f4bb6",
+                                color: "#F7FFF7",
+                                borderRadius: "8px",
+                                display: "flex",
+                                alignItems: "center",
+                                borderLeft: `4px solid ${getMedalColor(index)}`
+                            }}>
+                                <Avatar sx={{
+                                    bgcolor: getMedalColor(index),
+                                    width: 32,
+                                    height: 32,
+                                    mr: 2,
+                                    fontSize: "0.8rem",
+                                    fontWeight: "bold"
                                 }}>
-                                    {difficultyMap[value].label}
-                                </Typography>
-                            ))}
+                                    {index + 1}
+                                </Avatar>
+                                <Box>
+                                    <Typography fontWeight="bold">{entry.username}</Typography>
+                                    <Typography variant="body2">Puntos: {entry.puntuation}</Typography>
+                                </Box>
+                            </Paper>
+                        ))}
+
+                        <Box sx={{ mt: 4 }}>
+                            <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center" }}>
+                                Tus Estadísticas
+                            </Typography>
+                            <Paper sx={{ p: 2, backgroundColor: "#5f4bb6", color: "#F7FFF7", borderRadius: "8px" }}>
+                                <Typography variant="body2">Partidas: {stats.gamesPlayed}</Typography>
+                                <Typography variant="body2">Aciertos: {stats.correctAnswered}</Typography>
+                                <Typography variant="body2">Puntuación: {stats.puntuation}</Typography>
+                            </Paper>
                         </Box>
-                        <Typography variant="caption" sx={{
-                            mt: 1,
-                            color: 'text.secondary',
-                            fontSize: "0.75rem",
-                            display: "block"
-                        }}>
-                            Tiempo por pregunta: {difficultyMap[difficulty].time} segundos
-                        </Typography>
-                    </Paper>
+                    </Box>
                 </Box>
 
-                <Button
-                    onClick={handleButtonClick}
-                    sx={{
-                        backgroundColor: "#5f4bb6",
-                        color: "white",
-                        fontSize: "0.95rem",
-                        fontWeight: "bold",
-                        padding: "12px",
-                        borderRadius: "8px",
-                        boxShadow: 2,
-                        transition: "all 0.3s ease-in-out",
-                        "&:hover": {
-                            backgroundColor: "#EDC9FF",
-                            transform: "scale(1.02)",
-                        },
-                        "&:active": {
-                            transform: "scale(0.98)",
-                        },
-                        width: "50%",
-                        mx: "auto",
-                        mb: 1
-                    }}
-                >
-                    🎮 JUGAR
-                </Button>
+                {/* Contenido principal */}
+                <Box sx={{
+                    flex: 1,
+                    width: "900px",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                }}>
+                    <Typography variant="h4" sx={{
+                        mb: 4,
+                        color: "#F7FFF7",
+                        textAlign: "center",
+                        fontWeight: "bold"
+                    }}>
+                        ¡Hola {username}, elige un modo de juego!
+                    </Typography>
+
+                    {/* Carrusel */}
+                    <Box sx={{
+                        maxHeight: "60%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        position: "relative",
+                    }}>
+                        <IconButton
+                            onClick={prevSlide}
+                            sx={{
+                                position: "absolute",
+                                left: -40,
+                                color: "#F7FFF7",
+                                zIndex: 1,
+                                backgroundColor: "rgba(95, 75, 182, 0.7)",
+                                "&:hover": {
+                                    backgroundColor: "#5f4bb6"
+                                },
+                            }}
+                        >
+                            <ChevronLeftIcon fontSize="large" />
+                        </IconButton>
+
+                        <Box sx={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: 3
+                        }}>
+                            {visibleModes.map((mode, index) => (
+                                <Paper
+                                    key={`${mode.value}-${index}`}
+                                    onClick={() => navigateToGameMode(mode.value)}
+                                    sx={{
+                                        width: "280px",
+                                        height: "350px",
+                                        backgroundColor: mode.color,
+                                        color: mode.text,
+                                        borderRadius: "12px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        cursor: "pointer",
+                                        transition: "transform 0.3s",
+                                        "&:hover": {
+                                            transform: "scale(1.03)"
+                                        },
+                                        p: 3,
+                                        position: "relative",
+                                        boxShadow: 3,
+                                        flexShrink: 0
+                                    }}
+                                >
+                                    <Avatar sx={{
+                                        bgcolor: "rgba(0,0,0,0.2)",
+                                        width: 80,
+                                        height: 80,
+                                        mb: 3
+                                    }}>
+                                        {mode.icon}
+                                    </Avatar>
+                                    <Typography variant="h5" sx={{
+                                        fontWeight: "bold",
+                                        mb: 2,
+                                        textAlign: "center"
+                                    }}>
+                                        {mode.label}
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            mt: 2,
+                                            backgroundColor: "rgba(255,255,255,0.2)",
+                                            "&:hover": {
+                                                backgroundColor: "rgba(255,255,255,0.3)"
+                                            },
+                                            color: mode.text
+                                        }}
+                                    >
+                                        Jugar
+                                    </Button>
+                                </Paper>
+                            ))}
+                        </Box>
+
+                        <IconButton
+                            onClick={nextSlide}
+                            sx={{
+                                position: "absolute",
+                                right: -40,
+                                color: "#F7FFF7",
+                                zIndex: 1,
+                                backgroundColor: "rgba(95, 75, 182, 0.7)",
+                                "&:hover": {
+                                    backgroundColor: "#5f4bb6"
+                                }
+                            }}
+                        >
+                            <ChevronRightIcon fontSize="large" />
+                        </IconButton>
+                    </Box>
+
+                    {/* Indicadores del carrusel */}
+                    <Box sx={{
+                        display: "flex",
+                        gap: 1,
+                        mt: 2,
+                        mb: 2,
+                        justifyContent: "center"
+                    }}>
+                        {gameModes.map((_, index) => (
+                            <Box
+                                key={index}
+                                onClick={() => setCurrentSlide(index)}
+                                sx={{
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: "50%",
+                                    backgroundColor: currentSlide === index ? "#5f4bb6" : "rgba(255,255,255,0.3)",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.3s"
+                                }}
+                            />
+                        ))}
+                    </Box>
+
+                    {/* Juego aleatorio */}
+                    <Box sx={{
+                        textAlign: "center"
+                    }}>
+                        <Typography variant="h5" sx={{
+                            mb: 3,
+                            color: "#F7FFF7",
+                            fontWeight: "bold"
+                        }}>
+                            ¿Te sientes aventurero?
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            sx={{
+                                backgroundColor: "#5f4bb6",
+                                color: "white",
+                                fontSize: "1rem",
+                                fontWeight: "bold",
+                                padding: "12px 24px",
+                                borderRadius: "8px",
+                                boxShadow: 3,
+                                "&:hover": {
+                                    backgroundColor: "#EDC9FF",
+                                    transform: "scale(1.02)",
+                                }
+                            }}
+                            onClick={() => {
+                                const randomMode = gameModes[Math.floor(Math.random() * gameModes.length)].value;
+                                navigateToGameMode(randomMode);
+                            }}
+                        >
+                            Modo Aleatorio
+                        </Button>
+                    </Box>
+                </Box>
             </Box>
         </Box>
     );
