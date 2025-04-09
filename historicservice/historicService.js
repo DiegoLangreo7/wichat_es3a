@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const cors = require('cors');
 
-const User = require('../../../users/userservice/user-model');
-const Question = require('../model/Question');
-const QuestionUser = require('../model/QuestionUser');
+const User = require('../users/userservice/user-model');
+const Question = require('../questionservice/src/model/question');
+const QuestionUser = require('./questionUser');
 
 const app = express();
 const port = 8007;
