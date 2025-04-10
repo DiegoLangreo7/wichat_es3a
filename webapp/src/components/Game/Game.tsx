@@ -362,7 +362,8 @@ const Game: React.FC = () => {
           backgroundColor: '#5f4bb6'
         }}>
           <Box id="question-section" display='flex' flexDirection='column' justifyContent="center" alignItems="center">
-            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
+            <Typography sx = {{ color: '#F7B801', gap: 50, fontSize: 32}}><strong>Ronda: {round}</strong></Typography>
+            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={3} mb={3} >
               <CircularProgress id="timer-circle"
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
@@ -383,7 +384,17 @@ const Game: React.FC = () => {
                   }}
                 >
                   {(isPaused && clueOpen && !isTransitioning) ? 
-                    (isPauseIconVisible ? <PauseIcon fontSize="medium" /> : null) : 
+                    (<Box sx={{
+                      bgcolor: '#F7FFF7',
+                      width: 40,
+                      height: 40,
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {isPauseIconVisible && <PauseIcon fontSize="medium" sx={{ color: '#5f4bb6' }} />}
+                    </Box>) :
                     handleTimeRemaining()}
                 </Typography>
               )}
