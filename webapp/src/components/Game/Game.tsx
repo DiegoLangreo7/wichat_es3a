@@ -158,12 +158,12 @@ const Game: React.FC = () => {
 
     // Calculamos la puntuación base
     let baseScore = answeredCorrectly ? (currentTimer / timeLimitFixed) * 100 : 0;
-    
+
     // Si se usó una pista, reducimos la puntuación a la mitad
     if (clueUsed) {
       baseScore = baseScore / 2;
     }
-    
+
     const roundScore = Math.round(baseScore * multiplier);
 
     if (answeredCorrectly) {
@@ -182,6 +182,21 @@ const Game: React.FC = () => {
     };
 
     setRoundResults(prev => [...prev, roundResult]);
+
+    try {
+      await axios.post(`${apiEndpoint}/historic/addQuestion`, {
+        user: username,
+        question: currentQuestion?.question,
+        options: currentQuestion?.options,
+        correctAnswer: currentQuestion?.correctAnswer,
+        category: currentQuestion?.category,
+        answer: selectedAnswer,
+        time: roundTimeTaken,
+      });
+    } catch (error) {
+      console.error("Error al guardar en el historial:", error);
+    }
+
     setGuessed(false);
     // Reiniciamos el estado de clueUsed para la siguiente ronda
     setClueUsed(false);
@@ -221,6 +236,7 @@ const Game: React.FC = () => {
     setIsCorrectAnswer(isCorrect);
     setGuessed(true);
     const answeredCorrectly = isCorrect;
+
     setTimeout(() => {
       handleNextRound(answeredCorrectly);
     }, 2000);
@@ -337,7 +353,8 @@ const Game: React.FC = () => {
           backgroundColor: '#5f4bb6'
         }}>
           <Box id="question-section" display='flex' flexDirection='column' justifyContent="center" alignItems="center">
-            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={10} mb={3} >
+            <Typography sx = {{ color: '#F7B801', gap: 50, fontSize: 32}}><strong>Ronda: {round}</strong></Typography>
+            <Box id="timer-container" display="flex" justifyContent="center" alignItems="center" position="relative" mt={3} mb={3} >
               <CircularProgress id="timer-circle"
                 variant="determinate"
                 value={isPaused ? (transitionTimer / TRANSITION_ROUND_TIME) * 100 : (timer / timeLimitFixed) * 100}
@@ -358,7 +375,17 @@ const Game: React.FC = () => {
                   }}
                 >
                   {(isPaused && clueOpen && !isTransitioning) ? 
-                    (isPauseIconVisible ? <PauseIcon fontSize="medium" /> : null) : 
+                    (<Box sx={{
+                      bgcolor: '#F7FFF7',
+                      width: 40,
+                      height: 40,
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {isPauseIconVisible && <PauseIcon fontSize="medium" sx={{ color: '#5f4bb6' }} />}
+                    </Box>) :
                     handleTimeRemaining()}
                 </Typography>
               )}

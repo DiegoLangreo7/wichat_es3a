@@ -1,0 +1,27 @@
+{
+  "name": "historicservice",
+  "version": "1.0.0",
+  "description": "Historic service, in charge of saving detailed game info of the users",
+  "main": "index.js",
+  "scripts": {
+    "start": "node historicService.js",
+    "test": "jest --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arquisoft/wichat_es3a.git"
+  },
+  "homepage": "https://github.com/arquisoft/wichat_es3a#readme",
+  "dependencies": {
+    "@entitree/helper": "^0.8.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.3",
+    "supertest": "^7.0.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -22,13 +22,15 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
 
     const handleButtonClick = (respuestaSeleccionada: string, index: number): void => {
         if (selectedOption !== null || isTransitioning) return;
-        
+
         if (disabled) return;
 
         setSelectedOption(index);
 
         const isCorrect = respuestaSeleccionada === question?.correctAnswer;
         onAnswer(isCorrect, respuestaSeleccionada);
+
+
     };
 
     useEffect(() => {
