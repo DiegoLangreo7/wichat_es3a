@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const questionUsersSchema = new mongoose.Schema({
-    question: String,
+    type: String,
     options: [String],
     correctAnswer: String,
     answer: String,
     category: String,
-    imageUrl: {type: String},
+    imageUrl: String,
     user: String,
     time: Number
 });
