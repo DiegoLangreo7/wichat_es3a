@@ -71,7 +71,7 @@ const Main = () => {
 
     const gameModes = [
         { value: "question", label: "Preguntas", icon: <PublicIcon />, color: "#F7B801", text: "#F7FFF7"  },
-        { value: "", label: "Cartas", icon: <HistoryIcon />, color: "#EDC9FF", text: "#2A363B"},
+        { value: "cards", label: "Cartas", icon: <HistoryIcon />, color: "#EDC9FF", text: "#2A363B"},
         { value: "", label: "¡Muchas cosas están por llegar!", icon: <ScienceIcon />, color: "#5f4bb6", text: "#F7FFF7" },
     ];
 
@@ -90,8 +90,11 @@ const Main = () => {
                 {
                     categories: ["country"]
                 });
+            navigate(`/main/${mode}`);
+        }else{
+            navigate(`/${mode}`);
         }
-        navigate(`/main/${mode}`);
+
     };
 
     const nextSlide = () => {
@@ -278,19 +281,21 @@ const Main = () => {
                                     }}>
                                         {mode.label}
                                     </Typography>
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            mt: 2,
-                                            backgroundColor: "rgba(255,255,255,0.2)",
-                                            "&:hover": {
-                                                backgroundColor: "rgba(255,255,255,0.3)"
-                                            },
-                                            color: mode.text
-                                        }}
-                                    >
-                                        Jugar
-                                    </Button>
+                                    {mode.value != "" && (
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                mt: 2,
+                                                backgroundColor: "rgba(255,255,255,0.2)",
+                                                "&:hover": {
+                                                    backgroundColor: "rgba(255,255,255,0.3)"
+                                                },
+                                                color: mode.text
+                                            }}
+                                        >
+                                            Jugar
+                                        </Button>
+                                    )}
                                 </Paper>
                             ))}
                         </Box>
