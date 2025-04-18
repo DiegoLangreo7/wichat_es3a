@@ -8,6 +8,7 @@ import Ranking from "../components/Ranking/Ranking";
 import Historic from "../components/Historic/Historic";
 import Api from "../components/Api/Api";
 import MainQuestionGame from "../components/Main/MainQuestionGame";
+import CardGame from "../components/Game/extras/CardGame";
 
 const router = createBrowserRouter([
     { path: "/", element: <Navigate to="/login" replace /> },
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
     { path: "/historic", element: <Historic /> },
     { path: "/ranking", element: <Ranking /> },
     { path: "/api", element: <Api /> },
+    { path: "/cards", element: <CardGame /> },
 ]);
 
 export default router;

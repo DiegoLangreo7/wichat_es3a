@@ -20,6 +20,10 @@ const NavBar: React.FC = () => {
         navigate("/main/question");
     };
 
+    const handleCards = () => {
+        navigate("/cards");
+    };
+
     const handleHistoric = () => {
         navigate("/historic");
     };
@@ -139,8 +143,11 @@ const NavBar: React.FC = () => {
                                       },
                                   }}
                             >
-                                <MenuItem id="user-menu-historic" onClick={handleQuestions} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
+                                <MenuItem id="play-menu-questions" onClick={handleQuestions} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
                                     Preguntas
+                                </MenuItem>
+                                <MenuItem id="play-menu-cards" onClick={handleCards} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
+                                    Memory
                                 </MenuItem>
                             </Menu>
                         </Box>
