@@ -74,6 +74,7 @@ const Game: React.FC = () => {
   
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+  const historicEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
 
   const preloadImage = (src: string): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -184,14 +185,16 @@ const Game: React.FC = () => {
     setRoundResults(prev => [...prev, roundResult]);
 
     try {
-      await axios.post(`${apiEndpoint}/historic/addQuestion`, {
+      console.log("mandando a historial")
+      await axios.post(`${historicEndpoint}/historic/addQuestion`, {
         user: username,
-        question: currentQuestion?.question,
+        type: currentQuestion?.category,
         options: currentQuestion?.options,
         correctAnswer: currentQuestion?.correctAnswer,
         category: currentQuestion?.category,
         answer: selectedAnswer,
         time: roundTimeTaken,
+        imageUrl: currentQuestion?.imageUrl
       });
     } catch (error) {
       console.error("Error al guardar en el historial:", error);

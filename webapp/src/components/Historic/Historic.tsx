@@ -21,15 +21,17 @@ interface HistoricProps {
 }
 
 interface Question {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    answer: string;
-    imageUrl?: string;
-    time: number;
+    options: [string],
+    correctAnswer: string,
+    answer: string,
+    category: string,
+    imageUrl: string,
+    user: string,
+    time: number
 }
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+const historicEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
 
 const Historic: React.FC = () => {
     const user: string = localStorage.getItem("username") || "Usuario";
@@ -41,6 +43,8 @@ const Historic: React.FC = () => {
         incorrectAnswered: 0,
         puntuation: 0
     });
+    const [questions, setQuestions] = useState<Question[]>([]);
+
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -62,7 +66,23 @@ const Historic: React.FC = () => {
 
         fetchStats();
     }, []);
-  const [questions, setQuestions] = useState<Question[]>([]);
+
+    useEffect(() => {
+        // Función para obtener usuarios
+        const fetchQuestions = async () => {
+            try {
+                console.log("Sacando historial");
+                const response = await axios.get(`${historicEndpoint}/historic/${username}`);
+                setQuestions(response.data);
+            } catch (err: any) {
+                console.error('Error fetching users:', err);
+
+            }
+
+    };
+        fetchQuestions();}, []);
+
+
 
     return (
         <ThemeProvider theme={theme}>

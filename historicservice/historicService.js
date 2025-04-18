@@ -21,12 +21,13 @@ app.post('/historic/addQuestion', async (req, res) => {
 
         const questionUser = new QuestionUser({
             user: req.body.user,
-            question: req.body.question,
+            type: req.body.type,
             options: req.body.options,
             correctAnswer: req.body.correctAnswer,
             category: req.body.category,
             answer: req.body.answer,
             time: req.body.time,
+            imageUrl: req.body.imageUrl,
         })
 
         await questionUser.save();
