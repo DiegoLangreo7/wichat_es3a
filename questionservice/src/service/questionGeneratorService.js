@@ -43,7 +43,7 @@ const wikidataCategoriesQueries = {
         SELECT ?scientist ?scientistLabel ?image
         WHERE {
             ?scientist wdt:P106 wd:Q901. # Científico
-            FILTER NOT EXISTS { ?scientist wdt:P31 wd:Q15632617. }       
+            FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios
             OPTIONAL { ?scientist wdt:P18 ?image. }  # Imagen del científico (opcional)
             SERVICE wikibase:label {
                 bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
@@ -193,7 +193,7 @@ async function fetchIncorrectOptionsForCategory(category) {
             SELECT distinct ?scientistLabel
         WHERE {
             ?scientist wdt:P106 wd:Q901. # Científico
-            FILTER NOT EXISTS { ?scientist wdt:P31 wd:Q15632617. }       
+            FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios       
             SERVICE wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".}
         }LIMIT 150
         `,
