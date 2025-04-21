@@ -8,7 +8,8 @@ import HistoryIcon from '@mui/icons-material/History';
 import ScienceIcon from '@mui/icons-material/Science';
 import MovieIcon from '@mui/icons-material/Movie';
 import PetsIcon from '@mui/icons-material/Pets';
-import PaletteIcon from '@mui/icons-material/Palette';
+import FlagIcon from '@mui/icons-material/Flag';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -66,11 +67,11 @@ const MainQuestionGame = () => {
 
     const gameModes = [
         { value: "country", label: "Geografía", icon: <PublicIcon fontSize="small" /> },
-        { value: "history", label: "Historia", icon: <HistoryIcon fontSize="small" /> },
+        { value: "flags", label: "Banderas", icon: <FlagIcon  fontSize="small" /> },
         { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="small" /> },
-        { value: "sports", label: "Deportes", icon: <MovieIcon fontSize="small" /> },
+        { value: "sports", label: "Futbol", icon: <SportsSoccerIcon  fontSize="small" /> },
         { value: "animals", label: "Animales", icon: <PetsIcon fontSize="small" /> },
-        { value: "art", label: "Arte", icon: <PaletteIcon fontSize="small" /> },
+        { value: "cine", label: "Cine", icon: <MovieIcon fontSize="small" /> },
     ];
 
     const handleButtonClick = () => {

@@ -71,7 +71,8 @@ const Game: React.FC = () => {
   const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
   const [clueUsed, setClueUsed] = useState<boolean>(false); // Nuevo estado para rastrear si se usó una pista
   const [showScoreAlert, setShowScoreAlert] = useState<boolean>(false); // Para mostrar alerta cuando se usa una pista
-  
+  const [usedImageUrls, setUsedImageUrls] = useState<Set<string>>(new Set());
+
 
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
   const historicEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
@@ -90,7 +91,16 @@ const Game: React.FC = () => {
       const gameMode = location.state?.gameMode || "country";
       console.log("petición de preguntas");
       const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
-      const question = response.data;
+      let question = response.data;
+
+      if (question!) {
+        let sameImage = usedImageUrls.has(question.imageUrl!);
+        while (sameImage){
+          const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
+          question = response.data;
+          sameImage = usedImageUrls.has(question.imageUrl!);
+        }
+      }
 
       if (question! && question.imageUrl){
         await preloadImage(question.imageUrl);

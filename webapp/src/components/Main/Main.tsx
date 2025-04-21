@@ -88,7 +88,7 @@ const Main = () => {
         if (mode == "question"){
             axios.post(`${apiEndpoint}/initializeQuestionsDB`, 
                 {
-                    categories: ["country"]
+                    categories: ["country", "cine", "science", "sports", "animals", "flags"]
                 });
             navigate(`/main/${mode}`);
         }else{
