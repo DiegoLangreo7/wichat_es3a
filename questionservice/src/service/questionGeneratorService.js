@@ -9,7 +9,7 @@ const labelKeys = {
     science: "scientistLabel",
     flags: "countryLabel",
     cine: "personLabel",
-    animals: "animalLabel",
+    animals: "commonName", // actualizado
 };
 
 const wikidataCategoriesQueries = {   
@@ -57,14 +57,7 @@ const wikidataCategoriesQueries = {
         SELECT ?athlete ?athleteLabel ?image 
         WHERE {
         ?athlete wdt:P106 wd:Q937857
-
-        
-        # Datos adicionales
-        OPTIONAL { 
-            ?athlete wdt:P18 ?image.  # Imagen
-        }
-        
-        # Etiquetas en español con fallback a inglés
+        OPTIONAL { ?athlete wdt:P18 ?image. }
         SERVICE wikibase:label {
             bd:serviceParam wikibase:language "es,en".
         }
@@ -77,32 +70,27 @@ const wikidataCategoriesQueries = {
         SELECT ?person ?personLabel ?image
         WHERE {
         {
-            # Buscar actores (Q33999) y actrices (Q10800557)
             VALUES ?occupation {wd:Q10800557 }
             ?person wdt:P106 ?occupation.
         }
-        
-        # Obtener imagen (opcional)
         OPTIONAL { ?person wdt:P18 ?image. }
-        
-        # Obtener etiquetas en español o inglés
         SERVICE wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es,en".}
         } LIMIT 500
         `,
     }, 
     "animals": {
         query: `
-        SELECT ?animal ?animalLabel ?image
+        SELECT DISTINCT ?animal ?commonName ?image
         WHERE {
-        ?animal wdt:P31 wd:Q16521;    # Instancia de animal
-                wdt:P18 ?image;       # Tiene imagen
-                wdt:P171* wd:Q7377.   # Descendiente taxonómico de Mamíferos (Q7377)
-
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es,en". }
-        } LIMIT 500
+            ?animal wdt:P31 wd:Q16521.        # Taxón biológico
+            ?animal wdt:P105 wd:Q7432.        # Nivel taxonómico = especie
+            ?animal wdt:P1843 ?commonName.    # Nombre común
+            ?animal wdt:P18 ?image.           # Imagen obligatoria
+            FILTER(LANG(?commonName) = "es")  # Solo nombres comunes en español
+        }
+        LIMIT 500
         `,
     },
-
 };
 
 const titlesQuestionsCategories = {
@@ -110,13 +98,16 @@ const titlesQuestionsCategories = {
     "sports": "¿Quién es el futbolista de la imagen?",
     "science": "¿Quién es el científico en la imagen?",
     "flags": "¿A que país pertenece esta bandera?",
-    "cine": "¿Quién es el actor de esta imagen?",
-    "animals": "¿Qué animal se muestra en la imagen?"
+    "cine": "¿Quién es el actor o actriz de la imagen?",
+    "animals": "¿Qué animal o planta se muestra en la imagen?"
 };
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 
-// Obtener imágenes de una categoría en Wikidata
+function capitalizeFirstLetter(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 async function getImagesFromWikidata(category, numImages) {
     const categoryQueries = wikidataCategoriesQueries[category];
     console.log(`sparqlQuery: ${categoryQueries.query}`);
@@ -132,7 +123,7 @@ async function getImagesFromWikidata(category, numImages) {
             .filter(item => item.image && item[labelKey])  
             .map(item => ({
                 imageUrl: item.image.value,
-                label: item[labelKey].value
+                label: capitalizeFirstLetter(item[labelKey].value)
             }));
         return filteredImages;
 
@@ -141,7 +132,6 @@ async function getImagesFromWikidata(category, numImages) {
         return [];
     }
 }
-
 
 async function processQuestions(images, category) {
     console.log(`Processing ${images.length} images for category ${category}`);
@@ -159,7 +149,7 @@ async function processQuestions(images, category) {
 
         if (incorrectAnswers.length < 3) return;
 
-        const options = [image.label, ...incorrectAnswers].sort(() => 0.5 - Math.random());
+        const options = [image.label, ...incorrectAnswers.map(capitalizeFirstLetter)].sort(() => 0.5 - Math.random());
 
         allQuestions.push({
             question: titlesQuestionsCategories[category],
@@ -167,12 +157,10 @@ async function processQuestions(images, category) {
             correctAnswer: image.label,
             category,
             imageUrl: image.imageUrl
-          });
-
+        });
     }
     await dataService.saveQuestionsBatch(allQuestions);
 }
-
 
 async function fetchIncorrectOptionsForCategory(category) {
     const queries = {
@@ -190,7 +178,7 @@ async function fetchIncorrectOptionsForCategory(category) {
         } LIMIT 180
         `,
         "science": `
-            SELECT distinct ?scientistLabel
+            SELECT DISTINCT ?scientistLabel
         WHERE {
             ?scientist wdt:P106 wd:Q901. # Científico
             FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios       
@@ -207,7 +195,6 @@ async function fetchIncorrectOptionsForCategory(category) {
             SELECT DISTINCT ?personLabel
             WHERE {
             {
-                # Buscar actores (Q33999) y actrices (Q10800557)
                 VALUES ?occupation {wd:Q10800557 }
                 ?person wdt:P106 ?occupation.
             }  
@@ -215,13 +202,14 @@ async function fetchIncorrectOptionsForCategory(category) {
             } LIMIT 500
         `,
         "animals": `
-            SELECT DISTINCT ?animalLabel 
+            SELECT DISTINCT ?commonName 
             WHERE {
-            ?animal wdt:P31 wd:Q16521;    # Instancia de animal
-                    wdt:P171* wd:Q7377.   # Descendiente taxonómico de Mamíferos (Q7377)
-
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es,en". }
-            }LIMIT 500
+                ?animal wdt:P31 wd:Q16521.        # Taxón biológico
+                ?animal wdt:P105 wd:Q7432.        # Especie
+                ?animal wdt:P1843 ?commonName.    # Nombre común
+                FILTER(LANG(?commonName) = "es")
+            }
+            LIMIT 500
         `,
     };
 
@@ -242,17 +230,17 @@ async function fetchIncorrectOptionsForCategory(category) {
             .filter(label => {
                 if (!label) return false;
                 const isQId = /^Q\d+$/i.test(label);
-                return !isQId; // Filtrar QIDs
-            });
-        return [...new Set(options)]; // eliminar duplicados
+                return !isQId;
+            })
+            .map(capitalizeFirstLetter);
+
+        return [...new Set(options)];
     } catch (error) {
         console.error(`Error al obtener opciones incorrectas para ${category}:`, error.message);
         return [];
     }
 }
 
-
-// Generate questions
 async function generateQuestionsByCategory(category, quantity) {
     if (generating.has(category)) return;
     generating.add(category);

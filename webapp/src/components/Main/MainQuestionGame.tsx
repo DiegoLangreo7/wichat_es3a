@@ -70,7 +70,7 @@ const MainQuestionGame = () => {
         { value: "flags", label: "Banderas", icon: <FlagIcon  fontSize="small" /> },
         { value: "science", label: "Ciencia", icon: <ScienceIcon fontSize="small" /> },
         { value: "sports", label: "Futbol", icon: <SportsSoccerIcon  fontSize="small" /> },
-        { value: "animals", label: "Animales", icon: <PetsIcon fontSize="small" /> },
+        { value: "animals", label: "Flora y fauna", icon: <PetsIcon fontSize="small" /> },
         { value: "cine", label: "Cine", icon: <MovieIcon fontSize="small" /> },
     ];
 
