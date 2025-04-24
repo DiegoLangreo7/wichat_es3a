@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, Paper, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import axios from 'axios';

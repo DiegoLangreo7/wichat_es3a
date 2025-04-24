@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import {Container, Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
 import { ErrorResponse } from '../ErrorInterface';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
 import '../styles.css';
 

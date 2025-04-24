@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { AppBar, Typography, Box, Toolbar, Menu, MenuItem, Button, ClickAwayListener } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const NavBar: React.FC = () => {
     const [openUserMenu, setOpenUserMenu] = useState(false);
