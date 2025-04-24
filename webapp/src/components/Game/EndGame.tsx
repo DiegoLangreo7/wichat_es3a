@@ -12,7 +12,7 @@ interface RoundResult {
   correct: boolean;
   timeTaken: number;
   roundScore: number;
-  usedClue?: boolean; // Nueva propiedad para rastrear si se usó pista
+  usedClue?: boolean; 
 }
 
 interface EndGameProps {
@@ -23,6 +23,7 @@ interface EndGameProps {
   score: number;
   numCorrect: number;
   roundResults: RoundResult[];
+  gameMode: string; 
 }
 
 const EndGame: React.FC = () => {
@@ -36,13 +37,22 @@ const EndGame: React.FC = () => {
     themes,
     score,
     numCorrect,
-    roundResults
+    roundResults,
+    gameMode
   } = location.state as EndGameProps;
 
   const username = typeof rawUsername === 'string' ? rawUsername.replace(/^"|"$/g, '') : rawUsername;
 
   const handlePlayAgain = () => {
-    navigate('/game');
+    navigate("/game", {
+      state: {
+          username,
+          totalQuestions: 10,
+          timeLimit: timeLimit,
+          themes: themes,
+          gameMode: gameMode
+      }
+    });
   };
 
   const handleBackToMenu = () => {
@@ -89,7 +99,7 @@ const EndGame: React.FC = () => {
   const hasPenalizedRounds = roundResults.some(round => round.usedClue);
 
   return (
-    <Box
+    <Box id="end-game-container"
       component="main"
       sx={{
         minHeight: '100vh',
@@ -97,31 +107,32 @@ const EndGame: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         position: 'relative',
-        padding: '20px'
+        padding: '20px',
+        backgroundColor: '#202A25'
       }}
     >
-      <Box sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
+      <Box id="navbar-container" sx={{ width: "100%", position: "absolute", top: 0, left: 0 }}>
         <NavBar />
       </Box>
-      <Typography variant="h4" gutterBottom sx={{ mt: 8 }}>
+      <Typography id="game-over-title" variant="h4" gutterBottom sx={{ mt: 8, color: '#F7FFF7'}}>
         ¡Juego Terminado!
       </Typography>
-      <Typography variant="h6" gutterBottom>
-        {username}, tu puntaje total es: {score} puntos.
+      <Typography id="player-score-text" variant="h6" gutterBottom sx = {{ color: '#F7FFF7'}}>
+        {username}, tu puntuación final es de: {score} puntos.
       </Typography>
-      <Typography variant="body1" gutterBottom>
+      <Typography id="correct-answers-text" variant="body1" gutterBottom sx = {{ color: '#F7FFF7'}}>
         Respuestas correctas: {numCorrect} / {totalQuestions}
       </Typography>
-      <Paper sx={{ width: '90%', maxWidth: 600, mt: 3, p: 2 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h6">
+      <Paper id="results-summary-paper" sx={{ width: '90%', maxWidth: 600, mt: 3, p: 2, backgroundColor: '#5f4bb6' }}>
+        <Box id="summary-header" display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography id="summary-title" variant="h6" sx = {{ color: '#F7FFF7'}}>
             Resumen de la partida
           </Typography>
           
           {/* Leyenda de penalización */}
           {hasPenalizedRounds && (
-            <Box display="flex" alignItems="center">
-              <Box 
+            <Box id="penalty-legend" display="flex" alignItems="center">
+              <Box id="penalty-indicator"
                 component="span" 
                 sx={{ 
                   display: 'inline-block', 
@@ -132,41 +143,41 @@ const EndGame: React.FC = () => {
                   borderRadius: '2px'
                 }} 
               />
-              <Typography variant="body2" color="text.secondary">
+              <Typography id="penalty-text" variant="body2" color="text.secondary" sx = {{ color: '#F7FFF7'}}>
                 Puntuación con penalización del 50% por uso de IA
               </Typography>
-              <Tooltip title="Cuando se utiliza el chat de pistas, la puntuación de esa ronda se reduce a la mitad" arrow>
-                <InfoIcon fontSize="small" sx={{ ml: 0.5, color: 'text.secondary', cursor: 'help' }} />
+              <Tooltip id="penalty-tooltip" title="Cuando se utiliza el chat de pistas, la puntuación de esa ronda se reduce a la mitad" arrow>
+                <InfoIcon id="penalty-info-icon" fontSize="small" sx={{ ml: 0.5, color: 'text.secondary', cursor: 'help' }} />
               </Tooltip>
             </Box>
           )}
         </Box>
         
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Ronda</strong></TableCell>
-              <TableCell><strong>Resultado</strong></TableCell>
-              <TableCell><strong>Tiempo (s)</strong></TableCell>
-              <TableCell><strong>Puntos</strong></TableCell>
+        <Table id="results-table">
+          <TableHead id="table-header">
+            <TableRow id="header-row">
+              <TableCell id="round-header" sx = {{ color: '#F7FFF7'}}><strong>Ronda</strong></TableCell>
+              <TableCell id="result-header" sx = {{ color: '#F7FFF7'}}><strong>Resultado</strong></TableCell>
+              <TableCell id="time-header" sx = {{ color: '#F7FFF7'}}><strong>Tiempo (s)</strong></TableCell>
+              <TableCell id="points-header" sx = {{ color: '#F7FFF7'}}><strong>Puntos</strong></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody id="table-body">
             {roundResults.map((round) => (
-              <TableRow key={round.round}>
-                <TableCell>Ronda {round.round}</TableCell>
-                <TableCell>{round.correct ? 'Acertada' : 'Fallada'}</TableCell>
-                <TableCell>{round.timeTaken}</TableCell>
-                <TableCell 
+              <TableRow id={`round-${round.round}-row`} key={round.round}>
+                <TableCell id={`round-${round.round}-number`} sx = {{ color: '#F7FFF7'}}>Ronda {round.round}</TableCell>
+                <TableCell id={`round-${round.round}-result`} sx = {{ color: '#F7FFF7'}}>{round.correct ? 'Acertada' : 'Fallada'}</TableCell>
+                <TableCell id={`round-${round.round}-time`} sx = {{ color: '#F7FFF7'}}>{round.timeTaken}</TableCell>
+                <TableCell id={`round-${round.round}-points`}
                   sx={{ 
-                    color: round.usedClue ? 'warning.main' : 'inherit',
+                    color: round.usedClue ? 'warning.main' : '#F7FFF7',
                     fontWeight: round.usedClue ? 'bold' : 'inherit'
                   }}
                 >
                   {round.roundScore}
                   {round.usedClue && (
-                    <Tooltip title="Puntuación reducida al 50% por uso de IA" arrow>
-                      <InfoIcon fontSize="small" sx={{ ml: 0.5, color: 'warning.main', cursor: 'help' }} />
+                    <Tooltip id={`round-${round.round}-penalty-tooltip`} title="Puntuación reducida al 50% por uso de IA" arrow>
+                      <InfoIcon id={`round-${round.round}-penalty-icon`} fontSize="small" sx={{ ml: 0.5, color: 'warning.main', cursor: 'help' }} />
                     </Tooltip>
                   )}
                 </TableCell>
@@ -175,11 +186,11 @@ const EndGame: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
-      <Box mt={4} sx={{ display: 'flex', gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={handlePlayAgain}>
+      <Box id="action-buttons-container" mt={4} sx={{ display: 'flex', gap: 2 }}>
+        <Button id="play-again-button" variant="contained" color="primary" onClick={handlePlayAgain}>
           Volver a Jugar
         </Button>
-        <Button variant="contained" color="secondary" onClick={handleBackToMenu}>
+        <Button id="menu-button" variant="contained" color="secondary" onClick={handleBackToMenu}>
           Volver al Menú
         </Button>
       </Box>

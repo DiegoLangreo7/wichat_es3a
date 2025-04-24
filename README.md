@@ -4,12 +4,10 @@
 
 | Contributor | Profile |
 | ------------- | ------------- |
-| Begega Suarez, Fernando  | <a href="https://github.com/fernandoBegegaS"><img src="https://img.shields.io/badge/uo295286-Fernando Begega-FF0000"></a>  |
 | Fernández González, Sara  | <a href="https://github.com/holmess23"><img src="https://img.shields.io/badge/uo288195-Sara Fernández-00FF00"></a>  |
-| Rodríguez Granda, Yeray | <a href="https://github.com/uo284247"><img src="https://img.shields.io/badge/uo284247-Yeray Rodríguez-00FFFF"></a>  |
+| Rodríguez Granda, Yeray | <a href="https://github.com/yerayrdgzz"><img src="https://img.shields.io/badge/yerayrdgzz-Yeray Rodríguez-FF00FF"></a>  |
 | Álvarez Blanco, Daniel  | <a href="https://github.com/DanielAB95"><img src="https://img.shields.io/badge/uo290321-Daniel Álvarez-FFFF00"></a>  |
 | García González, Diego  | <a href="https://github.com/DiegoLangreo7"><img src="https://img.shields.io/badge/uo294255-Diego García-0000FF"></a>  |
-| Cabrera Moral, Carlos  | <a href="https://github.com/germandelallana"><img src="https://img.shields.io/badge/uo288595-Carlos Cabrera-FF00FF"></a>  |
 
 ##
 

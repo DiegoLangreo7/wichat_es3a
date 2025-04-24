@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import { Container, Typography, TextField, Button, Link, Box } from '@mui/material';
+import {Container, Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
 import { ErrorResponse } from '../ErrorInterface';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import '../styles.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [error, setError] = useState<{ username: string; password: string; general: string }>({ username: '', password: '', general: '' });
   const [loading, setLoading] = useState(false);
   const newSessionId = uuidv4();
@@ -79,12 +79,21 @@ const Login = () => {
 
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ marginTop: 6, textAlign: 'center' }}>
-      <Typography component="h1" variant="h5" gutterBottom>
-        Welcome to WICHAT
-      </Typography>
-      <Box sx={{ mt: 2 }}>
-        <TextField
+    <Box id="login-component" component="main" sx={{display: 'flex', justifyContent: 'center', backgroundColor: '#202A25', width: '100%' , height: '100vh' }}>
+
+      <Paper id="login-paper" elevation={3} sx={{
+        m: 20,
+        padding: "20px",
+        textAlign: "center",
+        width: "40%",
+        borderRadius: "10px",
+        backgroundColor: "#5f4bb6"
+      }}>
+        <Typography id="login-title" component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7'}}>
+          Welcome to WICHAT
+        </Typography>
+        <TextField id="login-username-field"
+          name="username"
           margin="normal"
           fullWidth
           label="Username"
@@ -92,8 +101,31 @@ const Login = () => {
           onChange={(e) => setUsername(e.target.value)}
           error={!!error.username}
           helperText={error.username}
+          sx={{
+            // Estilo cuando NO está enfocado (normal)
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#EDC9FF', // Color del borde normal
+              },
+            },
+            // Estilo cuando está enfocado
+            '& .MuiOutlinedInput-root.Mui-focused': {
+              '& fieldset': {
+                borderColor: '#EDC9FF', // Color del borde en focus
+              },
+            },
+            // Cambiar color de la etiqueta (label)
+            '& .MuiInputLabel-root': {
+              color: '#F7FFF7', // Color de la etiqueta normal
+            },
+            // Cambiar color de la etiqueta en focus
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#F7FFF7', // Color de la etiqueta en focus
+            },
+          }}
         />
-        <TextField
+        <TextField id="login-pwd-field"
+          name="password"
           margin="normal"
           fullWidth
           label="Password"
@@ -102,34 +134,58 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           error={!!error.password}
           helperText={error.password}
+          sx={{
+            // Estilo cuando NO está enfocado (normal)
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#EDC9FF', // Color del borde normal
+              },
+            },
+            // Estilo cuando está enfocado
+            '& .MuiOutlinedInput-root.Mui-focused': {
+              '& fieldset': {
+                borderColor: '#EDC9FF', // Color del borde en focus
+              },
+            },
+            // Cambiar color de la etiqueta (label)
+            '& .MuiInputLabel-root': {
+              color: '#F7FFF7', // Color de la etiqueta normal
+            },
+            // Cambiar color de la etiqueta en focus
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#F7FFF7', // Color de la etiqueta en focus
+            },
+          }}
         />
         {error.general && (
-          <Typography color="error" sx={{ mt: 1 }}>
+          <Typography id="login-error" color="error" sx={{ mt: 1 }}>
             {error.general}
           </Typography>
         )}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-          <Button 
+        <Box id="login-actions-container" sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end', // Alinea items a la derecha
+          mt: 2
+        }}>
+          <Button id="login-button"
             variant="contained" 
             color="primary" 
             onClick={loginUser} 
             disabled={loading} 
-            sx={{ width: '100%', transition: 'transform 0.2s ease-in-out',
+            sx={{ width: '40%', transition: 'transform 0.2s ease-in-out',
                   '&:hover': { transform: 'scale(1.05)' },
-                  '&:active': { transform: 'scale(0.95)' } }}>
+                  '&:active': { transform: 'scale(0.95)' }, backgroundColor: '#F7B801', color: '#202A25' }}>
             {loading ? 'Loading...' : 'Login'}
           </Button>
+          <Link id="singup-link" component="button" variant="body2" onClick={() => navigate('/register')} sx={{ mt: 2, display: 'block', color: '#EDC9FF' }}>
+            Don't have an account? Sign up here.
+          </Link>
         </Box>
-      </Box>
-      {message && (
-        <Typography color="primary" sx={{ mt: 2 }}>
-          {message}
-        </Typography>
-      )}
-      <Link component="button" variant="body2" onClick={() => navigate('/register')} sx={{ mt: 2, display: 'block' }}>
-        Don't have an account? Sign up here.
-      </Link>
-    </Container>
+
+      </Paper>
+
+    </Box>
   );
 };
 

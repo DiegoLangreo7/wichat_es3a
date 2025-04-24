@@ -34,6 +34,22 @@ module.exports = {
         }
     },
 
+    getExistingImages: async function(category){
+        const questions = await QuestionModel.find({ category }, { imageUrl: 1 });
+        const urls = new Set(questions.map(q => q.imageUrl));
+        return { urls };
+    },
+    saveQuestionsBatch: async function (questions) {
+        if (!Array.isArray(questions) || questions.length === 0) return;
+      
+        try {
+          await Question.insertMany(questions); // usando Mongoose, por ejemplo
+          console.log(`${questions.length} preguntas guardadas`);
+        } catch (error) {
+          console.error("Error guardando preguntas en lote:", error.message);
+        }
+    },
+
     /**
      * Deletes a question from the database.
      * @param {id} str - The id of the document to be removed
@@ -59,6 +75,20 @@ module.exports = {
             return question.length > 0 ? question[0] : null; 
         } catch (error) {
             console.error("Error fetching random question:", error);
+            throw new Error(error.message);
+        }
+    },
+    
+    /**
+     * Gets all questions from the database.
+     * @returns {Promise<Array>} - A promise that resolves to an array of all questions
+     */
+    getAllQuestions: async function() {
+        try {
+            const questions = await Question.find({}, { __v: 0 });
+            return questions;
+        } catch (error) {
+            console.error('Error getting all questions:', error);
             throw new Error(error.message);
         }
     }

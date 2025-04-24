@@ -1,6 +1,17 @@
 const axios = require('axios');
 const dataService = require('./questionSaverService');
 
+const generating = new Set(); 
+
+const labelKeys = {
+    country: "countryLabel",
+    sports: "athleteLabel",
+    science: "scientistLabel",
+    flags: "countryLabel",
+    cine: "personLabel",
+    animals: "commonName", // actualizado
+};
+
 const wikidataCategoriesQueries = {   
     "country": {  
         query: `
@@ -13,53 +24,108 @@ const wikidataCategoriesQueries = {
                 bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
             }
         }
-        ORDER BY RAND()
-        LIMIT ?limit
+        LIMIT 500
         `,
-    }   
+    },
+    "flags": {
+        query: `
+        SELECT ?country ?countryLabel ?image
+        WHERE {
+        ?country wdt:P31 wd:Q6256;
+                wdt:P41 ?image.
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
+        }
+        LIMIT 200
+        `,
+    },
+    "science": {
+        query: `
+        SELECT ?scientist ?scientistLabel ?image
+        WHERE {
+            ?scientist wdt:P106 wd:Q901. # Científico
+            FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios
+            OPTIONAL { ?scientist wdt:P18 ?image. }  # Imagen del científico (opcional)
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".
+            }
+        }
+        LIMIT 150
+        `,
+    },
+    "sports": {
+        query: `
+        SELECT ?athlete ?athleteLabel ?image 
+        WHERE {
+        ?athlete wdt:P106 wd:Q937857
+        OPTIONAL { ?athlete wdt:P18 ?image. }
+        SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "es,en".
+        }
+        }
+        LIMIT 180
+        `,
+    },
+    "cine": {
+        query: `
+        SELECT ?person ?personLabel ?image
+        WHERE {
+        {
+            VALUES ?occupation {wd:Q10800557 }
+            ?person wdt:P106 ?occupation.
+        }
+        OPTIONAL { ?person wdt:P18 ?image. }
+        SERVICE wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es,en".}
+        } LIMIT 500
+        `,
+    }, 
+    "animals": {
+        query: `
+        SELECT DISTINCT ?animal ?commonName ?image
+        WHERE {
+            ?animal wdt:P31 wd:Q16521.        # Taxón biológico
+            ?animal wdt:P105 wd:Q7432.        # Nivel taxonómico = especie
+            ?animal wdt:P1843 ?commonName.    # Nombre común
+            ?animal wdt:P18 ?image.           # Imagen obligatoria
+            FILTER(LANG(?commonName) = "es")  # Solo nombres comunes en español
+        }
+        LIMIT 500
+        `,
+    },
 };
 
 const titlesQuestionsCategories = {
-    "country": "¿A qué país pertenece esta imagen?"
+    "country": "¿A qué país pertenece esta imagen?",
+    "sports": "¿Quién es el futbolista de la imagen?",
+    "science": "¿Quién es el científico en la imagen?",
+    "flags": "¿A que país pertenece esta bandera?",
+    "cine": "¿Quién es el actor o actriz de la imagen?",
+    "animals": "¿Qué animal o planta se muestra en la imagen?"
 };
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 
-// Obtener imágenes de una categoría en Wikidata
+function capitalizeFirstLetter(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 async function getImagesFromWikidata(category, numImages) {
-    // Acceder directamente a la consulta correspondiente a la categoría dada
     const categoryQueries = wikidataCategoriesQueries[category];
-
-    
-    // Obtención de la consulta directamente de la categoría dada
-    const sparqlQuery = categoryQueries.query.replace('?limit', numImages);
-
+    console.log(`sparqlQuery: ${categoryQueries.query}`);
     try {
         const response = await axios.get(urlApiWikidata, {
-            params: {
-                query: sparqlQuery,
-                format: 'json'
-            },
-            headers: {
-                'User-Agent': 'QuestionGeneration/1.0',
-                'Accept': 'application/json'
-            }
+            params: { query: categoryQueries.query, format: 'json' },
+            headers: { 'User-Agent': 'QuestionGeneration/1.0' }
         });
 
+        const labelKey = labelKeys[category];
         const data = response.data.results.bindings;
-        if (data.length > 0) {
-            const filteredImages = data
-                .filter(item => item.cityLabel && item.image)  // Filtrar solo los elementos con ciudad e imagen
-                .slice(0, numImages)  // Limitar la cantidad de imágenes a `numImages`
-                .map(item => ({
-                    label: item.cityLabel.value,
-                    imageUrl: item.image.value,
-                    country: item.countryLabel.value
-                }));
-            
-            console.log("imagenes de paises");
-            return filteredImages;
-        }
+        const filteredImages = data
+            .filter(item => item.image && item[labelKey])  
+            .map(item => ({
+                imageUrl: item.image.value,
+                label: capitalizeFirstLetter(item[labelKey].value)
+            }));
+        return filteredImages;
 
     } catch (error) {
         console.error(`Error retrieving images: ${error.message}`);
@@ -67,70 +133,123 @@ async function getImagesFromWikidata(category, numImages) {
     }
 }
 
+async function processQuestions(images, category) {
+    console.log(`Processing ${images.length} images for category ${category}`);
+    const incorrectPool = await fetchIncorrectOptionsForCategory(category);
+    console.log(`Incorrect options for ${category}: ${incorrectPool.length}`);
+    if (incorrectPool.length < 3) return;
 
-// Obtener 3 países incorrectos aleatorios
-async function getIncorrectCountries(correctCountry) {
-    const sparqlQuery = `
-        SELECT DISTINCT ?countryLabel
+    const allQuestions = [];
+
+    for (const image of images) {
+        const incorrectAnswers = incorrectPool
+            .filter(opt => opt !== image.label)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3);
+
+        if (incorrectAnswers.length < 3) return;
+
+        const options = [image.label, ...incorrectAnswers.map(capitalizeFirstLetter)].sort(() => 0.5 - Math.random());
+
+        allQuestions.push({
+            question: titlesQuestionsCategories[category],
+            options,
+            correctAnswer: image.label,
+            category,
+            imageUrl: image.imageUrl
+        });
+    }
+    await dataService.saveQuestionsBatch(allQuestions);
+}
+
+async function fetchIncorrectOptionsForCategory(category) {
+    const queries = {
+        "country": `
+            SELECT DISTINCT ?countryLabel WHERE {
+                ?country wdt:P31 wd:Q6256.
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
+            } LIMIT 500
+        `,
+        "sports": `
+            SELECT DISTINCT ?athleteLabel 
         WHERE {
-            ?country wdt:P31 wd:Q6256.  # Q6256 = país
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
-        }
-        LIMIT 100
-    `;
+            ?athlete wdt:P106 wd:Q937857
+            SERVICE wikibase:label {bd:serviceParam wikibase:language "es,en".}
+        } LIMIT 180
+        `,
+        "science": `
+            SELECT DISTINCT ?scientistLabel
+        WHERE {
+            ?scientist wdt:P106 wd:Q901. # Científico
+            FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios       
+            SERVICE wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es".}
+        }LIMIT 150
+        `,
+        "flags": `
+            SELECT DISTINCT ?countryLabel WHERE {
+                ?country wdt:P31 wd:Q6256.
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
+            } LIMIT 500
+        `,
+        "cine": `
+            SELECT DISTINCT ?personLabel
+            WHERE {
+            {
+                VALUES ?occupation {wd:Q10800557 }
+                ?person wdt:P106 ?occupation.
+            }  
+                SERVICE wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],es,en".}
+            } LIMIT 500
+        `,
+        "animals": `
+            SELECT DISTINCT ?commonName 
+            WHERE {
+                ?animal wdt:P31 wd:Q16521.        # Taxón biológico
+                ?animal wdt:P105 wd:Q7432.        # Especie
+                ?animal wdt:P1843 ?commonName.    # Nombre común
+                FILTER(LANG(?commonName) = "es")
+            }
+            LIMIT 500
+        `,
+    };
+
+    const query = queries[category];
+    const labelKey = labelKeys[category];
 
     try {
         const response = await axios.get(urlApiWikidata, {
-            params: {
-                query: sparqlQuery,
-                format: 'json'
-            },
+            params: { query, format: 'json' },
             headers: {
                 'User-Agent': 'QuestionGeneration/1.0',
                 'Accept': 'application/json'
             }
         });
 
-        const data = response.data.results.bindings.map(item => item.countryLabel.value);
-        const incorrectOptions = data.filter(country => country !== correctCountry);
-        
-        // Seleccionamos aleatoriamente 3 opciones incorrectas
-        return incorrectOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
+        const options = response.data.results.bindings
+            .map(item => item[labelKey]?.value)
+            .filter(label => {
+                if (!label) return false;
+                const isQId = /^Q\d+$/i.test(label);
+                return !isQId;
+            })
+            .map(capitalizeFirstLetter);
+
+        return [...new Set(options)];
     } catch (error) {
-        console.error(`Error retrieving countries: ${error.message}`);
+        console.error(`Error al obtener opciones incorrectas para ${category}:`, error.message);
         return [];
     }
 }
 
-async function processQuestionsCountry(images,category) {
-    for (const image of images) {
-        const incorrectAnswers = await getIncorrectCountries(image.country);
-        if (incorrectAnswers.length < 3) continue; // Si no hay suficientes respuestas incorrectas, saltamos
+async function generateQuestionsByCategory(category, quantity) {
+    if (generating.has(category)) return;
+    generating.add(category);
 
-        // Crear opciones y mezclarlas
-        const options = [image.country, ...incorrectAnswers].sort(() => 0.5 - Math.random());
-
-        // Generar pregunta
-        const questionText = titlesQuestionsCategories[category]; 
-        
-        const newQuestion = {
-            question: questionText,
-            options: options,
-            correctAnswer: image.country,
-            category: category,
-            imageUrl: image.imageUrl
-        };
-        console.log(newQuestion);
-        await dataService.saveQuestion(newQuestion);
-    }
-
-}
-// Generate questions
-async function generateQuestionsByCategory(category, numImages) {
-    const images = await getImagesFromWikidata(category, numImages);
- 
-    if(category === 'country'){
-       await processQuestionsCountry(images, category);
+    try {
+        await getImagesFromWikidata(category, quantity)
+            .then(images => processQuestions(images, category));
+    } finally {
+        generating.delete(category);
     }
 }
 

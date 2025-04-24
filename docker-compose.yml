@@ -1,8 +1,10 @@
+version: "3.9"
+
 services:
   mongodb:
     container_name: mongodb-wichat_es3a
     image: mongo
-    profiles: ["dev", "prod"]
+    profiles: ["dev"]
     volumes:
       - mongodb_data:/data/db
     ports:
@@ -15,54 +17,52 @@ services:
     image: ghcr.io/arquisoft/wichat_es3a/authservice:latest
     profiles: ["dev", "prod"]
     build: ./users/authservice
-    depends_on:
-      - mongodb
     ports:
       - "8002:8002"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
 
   userservice:
     container_name: userservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/userservice:latest
     profiles: ["dev", "prod"]
     build: ./users/userservice
-    depends_on:
-      - mongodb
     ports:
       - "8001:8001"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
-
-  llmservice:
-  container_name: llmservice-wichat_es3a
-  image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
-  profiles: ["dev", "prod"]
-  build: ./llmservice
-  env_file:
-    - .env
-  ports:
-    - "8003:8003"
-  networks:
-    - mynetwork
-  environment:
-    LLM_API_KEY: ${LLM_API_KEY}  
+      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
 
   questionservice:
     container_name: questionservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
     profiles: ["dev", "prod"]
     build: ./questionservice
+    depends_on:
+      - mongodb
     ports:
       - "8004:8004"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb:27017/questiondb
+
+  llmservice:
+    container_name: llmservice-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
+    profiles: ["dev", "prod"]
+    build: ./llmservice
+    env_file:
+      - .env
+    ports:
+      - "8003:8003"
+    networks:
+      - mynetwork
+    environment:
+      LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
@@ -70,7 +70,6 @@ services:
     profiles: ["dev", "prod"]
     build: ./gatewayservice
     depends_on:
-      - mongodb
       - userservice
       - authservice
       - llmservice
@@ -84,21 +83,40 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
+      
+  gateway-api-service:
+    container_name: gateway-api-service-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest
+    profiles: ["dev", "prod"]
+    build: ./gateway-api-service
+    depends_on:
+      - mongodb
+      - userservice
+      - questionservice
+    ports:
+      - "8006:8006"
+    networks:
+      - mynetwork
+    environment:
+      USER_SERVICE_URL: http://userservice:8001
+      QUESTION_SERVICE_URL: http://questionservice:8004
 
   webapp:
     container_name: webapp-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/webapp:latest
     profiles: ["dev", "prod"]
-    build: 
+    build:
       context: ./webapp
       args:
-        LLM_API_KEY: ${LLM_API_KEY}
+        REACT_APP_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+        REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
     depends_on:
       - gatewayservice
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_API_ENDPOINT: http://localhost:8000
+      REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
+
 
   prometheus:
     image: prom/prometheus
@@ -111,9 +129,9 @@ services:
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
-    depends_on: 
+    depends_on:
       - gatewayservice
-      
+
   grafana:
     image: grafana/grafana
     container_name: grafana-wichat_es3a
@@ -124,20 +142,19 @@ services:
       - grafana_data:/var/lib/grafana
       - ./gatewayservice/monitoring/grafana/provisioning:/etc/grafana/provisioning
     environment:
-      - GF_SERVER_HTTP_PORT=9091
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      GF_SERVER_HTTP_PORT: 9091
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     ports:
       - "9091:9091"
-    depends_on: 
+    depends_on:
       - prometheus
-
 
 volumes:
   mongodb_data:
-  prometheus_data: 
-  grafana_data: 
+  prometheus_data:
+  grafana_data:
 
 networks:
   mynetwork:

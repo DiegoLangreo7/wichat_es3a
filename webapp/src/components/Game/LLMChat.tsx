@@ -6,10 +6,11 @@ import axios from 'axios';
 interface LLMChatProps {
   question: string;
   solution: string;
+  options: string[];
   onClueUsed: () => void; // Nuevo prop para notificar que se usó una pista
 }
 
-const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => {
+const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUsed }) => {
   const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'system' }[]>([
@@ -36,6 +37,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
         const response = await axios.post(`${apiEndpoint}/game-hint`, {
           question: question,
           solution: solution,
+          options: options,
           userMessage: userMessage
         });
         
@@ -68,32 +70,32 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
   };
 
   return (
-    <Box
+    <Box id="llm-chat-container"
       sx={{
-        mt: 3,
-        maxHeight: 300,
+        width: '100%', // Ancho fijo para la columna de chat
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: 'white',
+        bgcolor: '#202A25',
         borderRadius: 2,
         boxShadow: 3,
-        p: 2,
-        width: '100%',
-        margin: 2
-      }}
+        margin: 1,
+        height: 'calc(100% - 16px)', // Altura completa menos los márgenes
+        minHeight: '0' // Importante para que flex funcione correctamente
+    }}
     >
-      <Box 
+      <Box id="chat-messages-container"
         sx={{ 
           flexGrow: 1, 
           overflowY: 'auto', 
           mb: 2,
+          m: 1,
           minHeight: 180,
           display: 'flex',
           flexDirection: 'column'
         }}
       >
         {messages.map((message, index) => (
-          <Box
+          <Box id={`message-${index}-${message.sender}`}
             key={index}
             sx={{
               display: 'flex',
@@ -101,10 +103,10 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
               mb: 1,
             }}
           >
-            <Typography
+            <Typography id={`message-content-${index}`}
               sx={{
-                bgcolor: message.sender === 'user' ? 'primary.light' : 'grey.200',
-                color: message.sender === 'user' ? 'white' : 'black',
+                bgcolor: message.sender === 'user' ? '#5f4bb6' : '#F7FFF7',
+                color: message.sender === 'user' ? '#F7FFF7' : '#202A25',
                 p: 1.5,
                 borderRadius: 2,
                 maxWidth: '80%',
@@ -116,14 +118,14 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
           </Box>
         ))}
         {isLoading && (
-          <Box
+          <Box id="loading-indicator"
             sx={{
               display: 'flex',
               justifyContent: 'flex-start',
               mb: 1,
             }}
           >
-            <Typography
+            <Typography id="loading-text"
               sx={{
                 bgcolor: 'grey.200',
                 color: 'black',
@@ -136,24 +138,40 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, onClueUsed }) => 
           </Box>
         )}
       </Box>
-      <Box display="flex">
-        <TextField
+      <Box id="chat-input-container" display="flex">
+        <TextField id="message-input-field"
           fullWidth
           placeholder="Escribe tu mensaje..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           disabled={isLoading}
-          sx={{ mr: 1 }}
+          sx={{
+              m: 1,
+              '& .MuiInputBase-input': {
+                  color: '#F7FFF7', // Color del texto ingresado
+              },
+              '& .MuiInputLabel-root': {
+                  color: '#F7FFF7', // Color del placeholder
+              },
+              '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                      borderColor: '#F7FFF7', // Color del borde
+                  },
+                  '&:hover fieldset': {
+                      borderColor: '#F7FFF7', // Color del borde al hover
+                  },
+              },
+          }}
           variant="outlined"
           size="small"
         />
-        <IconButton 
-          color="primary" 
+        <IconButton id="send-message-button"
           onClick={handleSendMessage} 
           disabled={isLoading || newMessage.trim() === ''}
+
         >
-          <SendIcon />
+          <SendIcon id="send-icon" sx = {{ color: '#F7B801'}}/>
         </IconButton>
       </Box>
     </Box>

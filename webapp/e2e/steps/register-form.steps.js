@@ -11,10 +11,8 @@ defineFeature(feature, test => {
     beforeAll(async () => {
         browser = process.env.GITHUB_ACTIONS
             ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-            : await puppeteer.launch({ headless: false, slowMo: 100 });
+            : await puppeteer.launch({ headless: false, slowMo: 20 });
         page = await browser.newPage();
-        //Way of setting up the timeout
-        setDefaultOptions({ timeout: 10000 })
 
         await page
             .goto("http://localhost:3000", {
@@ -29,20 +27,68 @@ defineFeature(feature, test => {
         let password;
 
         given('An unregistered user', async () => {
-            username = "pablo"
+            username = "signInUser"
             password = "123456q@"
-            await expect(page).toClick("button", { text: "Don't have an account? Register here." });
+            await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
 
         when('I fill the data in the form and press submit', async () => {
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
-            await expect(page).toClick('button', { text: 'Add User' })
+            await expect(page).toClick('button', { text: 'Add User' });
         });
 
-        then('A confirmation message should be shown in the screen', async () => {
-            await expect(page).toMatchElement("div", { text: "User added successfully" });
+        then('The main page should be displayed', async () => {
+            await expect(page).toMatchElement("div", { text: username + ", ¿Listo para jugar?" });
+            await expect(page).toClick("button", { text: username });
+            await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
+    })
+
+    test('The user is already registered in the site', ({given,when,then}) => {
+
+        let username;
+        let password;
+
+        given('A registered user', async () => {
+            username = "signInUser"
+            password = "123456q@"
+            await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
+        });
+
+        when('I fill the data in the form and press submit', async () => {
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
+        });
+
+        then('An error message should be displayed', async () => {
+            await expect(page).toMatchElement("p", { text: "El usuario " + username +" ya existe" });
+        });
+
+    })
+
+    test('The user is not registered in the site and the password is not valid', ({given,when,then}) => {
+
+        let username;
+        let password;
+
+
+        given('An unregistered user', async () => {
+            username = "signInUser2"
+            password = "123456"
+        });
+
+        when('I fill the data in the form and press submit with an invalid password', async () => {
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
+        });
+
+        then('An error message should be displayed', async () => {
+            await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
+        });
+
     })
 
     afterAll(async ()=>{

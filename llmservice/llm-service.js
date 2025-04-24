@@ -60,7 +60,7 @@ app.post('/game-hint', async (req, res) => {
     
     validateRequiredFields(req, ['question', 'solution']);
     
-    const { question, solution, userMessage = '¿Me puedes dar una pista?' } = req.body;
+    const { question, solution, options, userMessage = '¿Me puedes dar una pista?' } = req.body;
     
     const apiKey = "AIzaSyCuaY0maosmIEIAadFa6IQtVUwlNMbIE7M";
     console.log("API Key length:", apiKey ? apiKey.length : 'undefined');
@@ -69,7 +69,6 @@ app.post('/game-hint', async (req, res) => {
       return res.status(400).json({ error: 'API key is missing. Check your .env file.' });
     }
     
-    // Build a specific prompt for giving hints without revealing the answer
     const prompt = `
     Contexto:
     - Pregunta original: "${question}"
@@ -79,7 +78,7 @@ app.post('/game-hint', async (req, res) => {
     Instrucciones para tu respuesta:
     1. OBJETIVO: Dar una pista que ayude al usuario respondiendo a la pregunta que ha realizado "${userMessage}" para adivinar la respuesta correcta ("${solution}")
     2. RESTRICCIONES:
-      - Si te preguntan directamente con una de las opciones para ver si es la correcta, NO puedes confirmar ni negar que sea la respuesta correcta
+      - No puedes responder ni SI ni NO ante una pregunta que tenga que ver con las opciones "${options.join(', ')}"
       - NO puedes mencionar la palabra "${solution}" directamente
       - NO puedes revelar la respuesta completa
     3. REQUISITOS:
