@@ -25,7 +25,6 @@ describe('Question Service', () => {
         const category = 'country';
 
         const response = await request(app).get(`/questions/${category}`);
-        console.log("Response: ", response);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('question');
         expect(response.body).toHaveProperty('options');

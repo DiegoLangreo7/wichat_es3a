@@ -29,8 +29,8 @@ describe('LLM Service', () => {
         userMessage: "Cual pais no es"
       });
 
-    expect(response.statusCode).toBe(400);
-    //expect(response.body.answer).toBe('llmanswer');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.answer).toBe('llmanswer');
   });
 
 });
