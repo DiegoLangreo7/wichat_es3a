@@ -21,11 +21,11 @@ afterAll(async () => {
 });
 
 describe('Question Service', () => {
-    it('should get a question by category on GET /getQuestionsDb/:category', async () => {
+    it('should get a question by category on GET /questions/:category', async () => {
         const category = 'country';
-        const numberOfQuestions = 10;
 
-        const response = await request(app).get(`/getQuestionsDb/${category}`);
+        const response = await request(app).get(`/questions/${category}`);
+        console.log("Response: ", response);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('question');
         expect(response.body).toHaveProperty('options');
