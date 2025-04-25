@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import axios from "axios";
 import Main from "./Main";
 import { MemoryRouter } from "react-router";
@@ -19,6 +19,18 @@ describe("Main Component", () => {
         mockNavigate.mockReset();
         localStorage.setItem("token", "test-token");
         localStorage.setItem("username", JSON.stringify("testUser"));
+        mockAxios.onGet('http://localhost:8000/stats/testUser').reply(200, {
+            timePlayed: 120,
+            gamesPlayed: 10,
+            correctAnswered: 50,
+            incorrectAnswered: 20,
+            puntuation: 200,
+        });
+        mockAxios.onGet('http://localhost:8000/getStats').reply(200, [
+            { username: "testUser", puntuation: 200 },
+            { username: "Player2", puntuation: 80 },
+            { username: "Player3", puntuation: 60 },
+        ]);
     });
 
     afterEach(() => {
@@ -26,120 +38,102 @@ describe("Main Component", () => {
         jest.clearAllMocks();
     });
 
-    it("should redirect to /login if there is no token", () => {
+    it("should redirect to /login if there is no token", async () => {
         localStorage.removeItem("token");
-        render(
-            <MemoryRouter>
-                <Main />
-            </MemoryRouter>
-        );
 
-        expect(mockNavigate).toHaveBeenCalledWith("/login");
+        await act(async () => {
+            render(
+                <MemoryRouter>
+                    <Main />
+                </MemoryRouter>
+            );
+        });
+
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith("/login");
+        });
     });
 
     it("should render the top 3 players and user statistics", async () => {
-        // Configura el mock de Axios antes de renderizar el componente
-        mockAxios.onGet('http://localhost:8000/stats/testUser').reply(200, {
-            data: {
-                timePlayed: 120,
-                gamesPlayed: 10,
-                correctAnswered: 50,
-                incorrectAnswered: 20,
-                puntuation: 200,
-            },
+        await act(async () => {
+            render(
+                <MemoryRouter>
+                    <Main />
+                </MemoryRouter>
+            );
         });
-
-        mockAxios.onGet('http://localhost:8000/getStats').reply(200, [
-            { username: "Player1", puntuation: 100 },
-            { username: "Player2", puntuation: 80 },
-            { username: "Player3", puntuation: 60 },
-        ]);
-
-        render(
-            <MemoryRouter>
-                <Main />
-            </MemoryRouter>
-        );
 
         // Espera a que los datos se rendericen correctamente
         await waitFor(() => {
-            expect(screen.getByText(/Top 3 Jugadores/i)).toBeInTheDocument();
             expect(screen.getByText(/Tus Estadísticas/i)).toBeInTheDocument();
             expect(screen.getByText(/Puntuación: 200/i)).toBeInTheDocument();
             expect(screen.getByText(/Partidas: 10/i)).toBeInTheDocument();
             expect(screen.getByText(/Aciertos: 50/i)).toBeInTheDocument();
+            expect(screen.getByText(/Top 3 Jugadores/i)).toBeInTheDocument();
+            expect(screen.getByText(/Puntos: 200/i)).toBeInTheDocument();
+            expect(screen.getByText(/Puntos: 80/i)).toBeInTheDocument();
+            expect(screen.getByText(/Puntos: 60/i)).toBeInTheDocument();
         });
     });
 
     it("should navigate to the question game mode", async () => {
-        // Configura el mock de Axios antes de renderizar el componente
-        mockAxios.onGet('http://localhost:8000/stats/testUser').reply(200, {
-            data: {
-                timePlayed: 120,
-                gamesPlayed: 10,
-                correctAnswered: 50,
-                incorrectAnswered: 20,
-                puntuation: 200,
-            },
-        });
-
-        mockAxios.onGet('http://localhost:8000/getStats').reply(200, [
-            { username: "Player1", puntuation: 100 },
-            { username: "Player2", puntuation: 80 },
-            { username: "Player3", puntuation: 60 },
-        ]);
-
         mockAxios.onPost("http://localhost:8000/initializeQuestionsDB").reply(200);
 
-        const { container } = render(
-            <MemoryRouter>
-                <Main />
-            </MemoryRouter>
-        );
+        let container : HTMLElement;
+        await act(async () => {
+            const rendered = render(
+                <MemoryRouter>
+                    <Main />
+                </MemoryRouter>
+            );
+            container = rendered.container;
+        });
 
         // Selecciona el botón por las clases necesarias
-        const playButton = container.querySelector(".MuiButtonBase-root.MuiButton-containedPrimary") as HTMLElement;
+        const playButton = await waitFor(() =>
+            container.querySelector(".MuiButtonBase-root.MuiButton-containedPrimary")
+        );
 
         // Simula el clic en el botón
-        fireEvent.click(playButton);
+        await act(async () => {
+            fireEvent.click(playButton as HTMLElement);
+        });
 
         // Verifica que se haya navegado a la ruta esperada
-        expect(mockNavigate).toHaveBeenCalledWith("/main/question");
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith("/main/question");
+        });
     });
 
     it("should navigate to the card game mode", async () => {
-        // Configura el mock de Axios antes de renderizar el componente
-        mockAxios.onGet('http://localhost:8000/stats/testUser').reply(200, {
-            data: {
-                timePlayed: 120,
-                gamesPlayed: 10,
-                correctAnswered: 50,
-                incorrectAnswered: 20,
-                puntuation: 200,
-            },
+        let container: HTMLElement;
+
+        await act(async () => {
+            const rendered = render(
+                <MemoryRouter>
+                    <Main/>
+                </MemoryRouter>
+            );
+            container = rendered.container;
         });
 
-        mockAxios.onGet('http://localhost:8000/getStats').reply(200, [
-            { username: "Player1", puntuation: 100 },
-            { username: "Player2", puntuation: 80 },
-            { username: "Player3", puntuation: 60 },
-        ]);
-
-        const { container } = render(
-            <MemoryRouter>
-                <Main />
-            </MemoryRouter>
+        // Asegúrate de que los botones estén presentes antes de interactuar
+        const nextButton = await waitFor(() =>
+            container.querySelector(".MuiButtonBase-root.MuiIconButton-root.MuiIconButton-sizeMedium")
         );
+        await act(async () => {
+            fireEvent.click(nextButton as HTMLElement);
+        });
+        const playButton = await waitFor(() =>
+            container.querySelector(".MuiButtonBase-root.MuiButton-containedPrimary")
+        );
+        await act(async () => {
+            fireEvent.click(playButton as HTMLElement);
+        });
 
-        // Selecciona el botón por las clases necesarias
-        const nextButton = container.querySelector(".MuiSvgIcon-root.MuiSvgIcon-fontSizeLarge.css-uks7c6-MuiSvgIcon-root");
-        const playButton = container.querySelector(".MuiButtonBase-root.MuiButton-containedPrimary");
-
-        // Simula el clic en el botón
-        fireEvent.click(nextButton as HTMLElement);
-        fireEvent.click(playButton as HTMLElement);
-
-        // Verifica que se haya navegado a la ruta esperada
-        expect(mockNavigate).toHaveBeenCalledWith("/cards");
+        // Verifica la navegación
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith("/cards");
+        });
     });
 });

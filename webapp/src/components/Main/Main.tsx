@@ -85,7 +85,6 @@ const Main = () => {
     };
 
     const navigateToGameMode = (mode: string) => {
-        console.log("////////////////////////////////////////////////////////////Navigating to game mode:", mode);
         if (mode == "question"){
             axios.post(`${apiEndpoint}/initializeQuestionsDB`, 
                 {
