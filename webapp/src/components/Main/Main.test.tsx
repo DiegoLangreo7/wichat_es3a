@@ -119,7 +119,7 @@ describe("Main Component", () => {
 
         // Asegúrate de que los botones estén presentes antes de interactuar
         const nextButton = await waitFor(() =>
-            container.querySelector(".MuiButtonBase-root.MuiIconButton-root.MuiIconButton-sizeMedium")
+            screen.getByTestId("next-slide")
         );
         await act(async () => {
             fireEvent.click(nextButton as HTMLElement);
@@ -132,8 +132,6 @@ describe("Main Component", () => {
         });
 
         // Verifica la navegación
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/cards");
-        });
+        expect(mockNavigate).toHaveBeenCalledWith("/cards");
     });
 });

@@ -301,6 +301,7 @@ const Main = () => {
 
                         <IconButton
                             onClick={nextSlide}
+                            data-testid="next-slide"
                             sx={{
                                 position: "absolute",
                                 right: -40,
