@@ -66,7 +66,6 @@ const Login = () => {
             } else {
                 newErrors.general = 'Error al enviar la solicitud';
             }
-            console.log(error);
             setError(newErrors);
         } finally {
             setLoading(false);
