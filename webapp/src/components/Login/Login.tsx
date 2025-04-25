@@ -49,28 +49,25 @@ const Login = () => {
 
             if (error.response) {
                 // El servidor respondió con un código de estado fuera del rango 2xx
-                if (error.response.status === 400) {
-                    const errorData = error.response.data.error;
-                    if (Array.isArray(errorData)){
-                        newErrors.general = errorData.map((e) => e.msg).join(' ');
-                    } else{
-                        newErrors.general = errorData || 'Error desconocido';
-                    }
-                    setError(newErrors);
-                } else if (error.response.status === 401) {
+                const status = error.response.status;
+                const errorData = error.response.data.error;
+
+                if (status === 400) {
+                    newErrors.general = Array.isArray(errorData)
+                        ? errorData.map((e) => e.msg).join(' ')
+                        : errorData || 'Error desconocido';
+                } else if (status === 401) {
                     newErrors.general = 'Usuario o contraseña incorrectos';
-                    setError(newErrors);
                 } else {
                     newErrors.general = 'Error desconocido en el servidor';
-                    setError(newErrors);
                 }
             } else if (error.request) {
                 newErrors.general = 'No se recibió respuesta del servidor';
-                setError(newErrors);
             } else {
                 newErrors.general = 'Error al enviar la solicitud';
-                setError(newErrors);
             }
+            console.log(error);
+            setError(newErrors);
         } finally {
             setLoading(false);
         }
