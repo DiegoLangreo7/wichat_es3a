@@ -3,9 +3,7 @@ import { render, fireEvent, screen, waitFor, act } from '@testing-library/react'
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
-import App from "../../App";
 import { MemoryRouter } from "react-router";
-import { useNavigate } from 'react-router';
 
 const mockAxios = new MockAdapter(axios);
 const mockNavigate = jest.fn();
@@ -41,7 +39,7 @@ describe('Login component', () => {
             fireEvent.click(loginButton);
         });
 
-        // Verify that the user information is displayed
+        // Verify that the main page is displayed
         expect(mockNavigate).toHaveBeenCalledWith('/main');
     });
 

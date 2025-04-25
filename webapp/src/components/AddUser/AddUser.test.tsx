@@ -1,53 +1,63 @@
 import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import {render, fireEvent, screen, waitFor, act} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import AddUser from './AddUser';
+import { MemoryRouter } from "react-router";
+import Login from "../Login/Login";
 
-test('renders welcome message', () => {
-
-});
-
-/*
 const mockAxios = new MockAdapter(axios);
+const mockNavigate = jest.fn();
+
+jest.mock('react-router', () => ({
+    ...jest.requireActual('react-router'),
+    useNavigate: () => mockNavigate,
+}));
 
 describe('AddUser component', () => {
     beforeEach(() => {
         mockAxios.reset();
+        mockNavigate.mockReset();
     });
 
     it('should add user successfully', async () => {
-        render(<AddUser />);
+        render(
+            <MemoryRouter>
+                <AddUser />
+            </MemoryRouter>
+        );
 
         const usernameInput = screen.getByLabelText(/Username/i);
         const passwordInput = screen.getByLabelText(/Password/i);
         const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
         // Mock the axios.post request to simulate a successful response
-        mockAxios.onPost('http://localhost:8000/adduser').reply(200);
+        mockAxios.onPost('http://localhost:8000/adduser').reply(200, { token: 'mockToken' });
 
         // Simulate user input
-        fireEvent.change(usernameInput, { target: { value: 'testUser' } });
-        fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
-
-        // Trigger the add user button click
-        fireEvent.click(addUserButton);
-
-        // Wait for the Snackbar to be open
-        await waitFor(() => {
-            expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
+        await act(async () => {
+            fireEvent.change(usernameInput, { target: { value: 'signInTestUser' } });
+            fireEvent.change(passwordInput, { target: { value: '123456@q' } });
+            fireEvent.click(addUserButton);
         });
+
+        // Verify that the main page is displayed
+        expect(mockNavigate).toHaveBeenCalledWith('/main');
     });
 
     it('should handle error when adding user', async () => {
-        render(<AddUser />);
+        render(
+            <MemoryRouter>
+                <AddUser />
+            </MemoryRouter>
+        );
 
         const usernameInput = screen.getByLabelText(/Username/i);
         const passwordInput = screen.getByLabelText(/Password/i);
         const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
         // Mock the axios.post request to simulate an error response
-        mockAxios.onPost('http://localhost:8000/adduser').reply(500, { error: 'Internal Server Error' });
+        mockAxios.onPost('http://localhost:8000/adduser').reply(400, { error: 'Internal Server Error' });
 
         // Simulate user input
         fireEvent.change(usernameInput, { target: { value: 'testUser' } });
@@ -58,9 +68,9 @@ describe('AddUser component', () => {
 
         // Wait for the error Snackbar to be open
         await waitFor(() => {
-            expect(screen.getByText(/Error: Internal Server Error/i)).toBeInTheDocument();
+            expect(screen.getByText(/Internal Server Error/i)).toBeInTheDocument();
         });
     });
 });
-*/
+
 
