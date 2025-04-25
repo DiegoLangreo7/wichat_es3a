@@ -1,10 +1,9 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor, act } from '@testing-library/react';
 import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import { MemoryRouter } from "react-router";
-import AddUser from "../AddUser/AddUser";
+import MockAdapter from 'axios-mock-adapter';
 
 const mockAxios = new MockAdapter(axios);
 const mockNavigate = jest.fn();
