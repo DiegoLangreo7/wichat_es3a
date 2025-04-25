@@ -41,7 +41,7 @@ const EndGame: React.FC = () => {
     gameMode
   } = location.state as EndGameProps;
 
-  const username = typeof rawUsername === 'string' ? rawUsername.replace(/^"|"$/g, '') : rawUsername;
+  const username = typeof rawUsername === 'string' ? rawUsername.replace(/(^"|"$)/g, '') : rawUsername;
 
   const handlePlayAgain = () => {
     navigate("/game", {
