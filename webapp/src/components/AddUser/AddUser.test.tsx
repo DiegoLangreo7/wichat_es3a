@@ -71,6 +71,38 @@ describe('AddUser component', () => {
             expect(screen.getByText(/Internal Server Error/i)).toBeInTheDocument();
         });
     });
+
+    it('should show validation error when fields are empty', async () => {
+        render(
+            <MemoryRouter>
+                <AddUser />
+            </MemoryRouter>
+        );
+
+        const addUserButton = screen.getByRole('button', { name: /Add User/i });
+
+        // Trigger the add user button click without filling the fields
+        fireEvent.click(addUserButton);
+
+        // Wait for the validation error messages to be displayed
+        await waitFor(() => {
+            expect(screen.getByText(/Nombre de usuario obligatorio/i)).toBeInTheDocument();
+            expect(screen.getByText(/Contraseña obligatoria/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should redirect to login page when the link is clicked', () => {
+        render(
+            <MemoryRouter>
+                <AddUser />
+            </MemoryRouter>
+        );
+
+        const loginLink = screen.getByText("Already have an account? Login here.");
+        fireEvent.click(loginLink);
+
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+    });
 });
 
 
