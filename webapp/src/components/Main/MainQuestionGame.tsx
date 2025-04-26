@@ -263,6 +263,7 @@ const MainQuestionGame = () => {
 
                 <Button
                     onClick={handleButtonClick}
+                    data-testid="play-button"
                     sx={{
                         backgroundColor: "#5f4bb6",
                         color: "white",
