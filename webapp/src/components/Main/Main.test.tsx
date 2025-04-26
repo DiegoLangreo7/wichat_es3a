@@ -134,4 +134,39 @@ describe("Main Component", () => {
         // Verifica la navegación
         expect(mockNavigate).toHaveBeenCalledWith("/cards");
     });
+
+    it("should handle error when fetching user statistics", async () => {
+        // Simula un error 500 en la llamada inicial al endpoint de estadísticas
+        mockAxios.onGet('http://localhost:8000/stats/testUser').reply(500);
+
+        // Simula una respuesta exitosa al intentar crear las estadísticas
+        mockAxios.onPost('http://localhost:8000/stats').reply(201, {
+            timePlayed: 0,
+            gamesPlayed: 0,
+            correctAnswered: 0,
+            incorrectAnswered: 0,
+            puntuation: 0,
+        });
+
+        await act(async () => {
+            render(
+                <MemoryRouter>
+                    <Main />
+                </MemoryRouter>
+            );
+        });
+
+        // Verifica que se haya llamado al endpoint de creación
+        await waitFor(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe('http://localhost:8000/stats');
+        });
+
+        // Verifica que las estadísticas creadas se hayan manejado correctamente
+        await waitFor(() => {
+            expect(screen.getByText(/Tus Estadísticas/i)).toBeInTheDocument();
+            expect(screen.getByText(/Puntuación: 0/i)).toBeInTheDocument();
+            expect(screen.getByText(/Partidas: 0/i)).toBeInTheDocument();
+        });
+    });
 });
