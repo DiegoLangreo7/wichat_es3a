@@ -43,7 +43,7 @@ describe("LLMChat Component", () => {
 
         await act(async ()=> {
             fireEvent.change(input, {target: {value: "Hola"}});
-            fireEvent.click(sendButton);
+            fireEvent.click(sendButton as HTMLElement);
         });
         // Verifica que el botón esté deshabilitado mientras se espera la respuesta
         expect(sendButton).toBeDisabled();
@@ -63,7 +63,7 @@ describe("LLMChat Component", () => {
 
         await act(async () => {
             fireEvent.change(input, { target: { value: "Dame una pista" } });
-            fireEvent.click(sendButton);
+            fireEvent.click(sendButton as HTMLElement);
         });
 
         expect(screen.getByText("Dame una pista")).toBeInTheDocument();
@@ -71,6 +71,33 @@ describe("LLMChat Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("La capital de Francia es París.")).toBeInTheDocument();
+        });
+    });
+
+    it("sends a message when Enter is pressed", async () => {
+        (axios.post as jest.Mock).mockResolvedValueOnce({
+            data: { answer: "La capital de Francia es París." },
+        });
+
+        await act(async () => {
+            render(<LLMChat {...defaultProps} />);
+        });
+
+        const input = screen.getByPlaceholderText("Escribe tu mensaje...");
+
+        // Simula escribir un mensaje y presionar Enter
+        await act(async () => {
+            fireEvent.change(input, {target: {value: "Hola"}});
+            fireEvent.keyPress(input, {key: "Enter", code: "Enter", charCode: 13});
+        });
+        // Verifica que el mensaje del usuario se haya agregado al chat
+        expect(screen.getByText("Hola")).toBeInTheDocument();
+
+        // Verifica que se haya llamado a la API
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+                userMessage: "Hola",
+            }));
         });
     });
 
@@ -86,7 +113,7 @@ describe("LLMChat Component", () => {
 
         await act(async () => {
             fireEvent.change(input, { target: { value: "Dame una pista" } });
-            fireEvent.click(sendButton);
+            fireEvent.click(sendButton as HTMLElement);
         });
 
         expect(screen.getByText("Dame una pista")).toBeInTheDocument();
@@ -112,7 +139,7 @@ describe("LLMChat Component", () => {
 
         await act(async () => {
             fireEvent.change(input, { target: { value: "Dame una pista" } });
-            fireEvent.click(sendButton);
+            fireEvent.click(sendButton as HTMLElement);
         });
 
         await waitFor(() => {
