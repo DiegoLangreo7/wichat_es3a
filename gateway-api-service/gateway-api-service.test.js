@@ -55,4 +55,38 @@ describe('Gateway Service', () => {
 
     });
 
+    // Test /api/users endpoint server error
+    it('should return an error message for /api/users on server error', async () => {
+        axios.get.mockRejectedValueOnce({
+            response: {
+                status: 500,
+                data: { error: 'Error Interno' },
+            },
+        });
+
+        const response = await request(app).get('/api/users');
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            error: 'Error Interno',
+        });
+    });
+
+    // Test /api/questions endpoint server error
+    it('should return an error message for /api/questions on server error', async () => {
+        axios.get.mockRejectedValueOnce({
+            response: {
+                status: 500,
+                data: { error: 'Error Interno' },
+            },
+        });
+
+        const response = await request(app).get('/api/questions');
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            error: 'Error Interno',
+        });
+    });
+
 });
