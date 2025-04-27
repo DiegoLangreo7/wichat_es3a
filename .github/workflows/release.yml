@@ -172,5 +172,6 @@ jobs:
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             export LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
             export MONGO_URI="${{ secrets.MONGO_URI }}"
+            docker compose --profile prod pull
             docker compose --profile prod down
-            docker compose --profile prod up -d --build
+            docker compose --profile prod up -d
