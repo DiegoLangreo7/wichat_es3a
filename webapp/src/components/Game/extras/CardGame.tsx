@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
     Typography,
     Button,
@@ -25,11 +26,7 @@ const CardGame: React.FC = () => {
     const [isPaused, setIsPaused] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-
-    const cardValues = [
-        '🏰', '🌲', '🏔️', '🌊', '🏜️', '🌋',
-        '🏰', '🌲', '🏔️', '🌊', '🏜️', '🌋'
-    ];
+    const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
     // Inicializar el juego
     useEffect(() => {
@@ -47,10 +44,15 @@ const CardGame: React.FC = () => {
         return () => clearInterval(interval);
     }, [isPaused, gameComplete, loading]);
 
-    const initializeGame = () => {
+    const initializeGame = async () => {
         setLoading(true);
+        const response = await axios.get(`${apiEndpoint}/cardValues`);
+        const images = response.data.images;
+        const cardValues = images.map();
+        const shuffledCardValues = [...cardValues, ...cardValues]
 
-        // Barajar las cartas
+        // Mezclar las cartas
+        /*
         const shuffledCards = [...cardValues]
             .sort(() => Math.random() - 0.5)
             .map((value, index) => ({
@@ -59,8 +61,9 @@ const CardGame: React.FC = () => {
                 flipped: false,
                 matched: false
             }));
-
-        setCards(shuffledCards);
+        */
+    
+        setCards(shuffledCardValues);
         setFlippedCards([]);
         setMoves(0);
         setTimer(0);
