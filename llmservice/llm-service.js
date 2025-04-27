@@ -73,7 +73,6 @@ app.post('/game-hint', async (req, res) => {
     Contexto:
     - Pregunta original: "${question}"
     - Respuesta correcta: "${solution}"
-    - Opciones incorrectas: "${incorrectOptions.join(', ')}"
     - El usuario ha preguntado: "${userMessage}"
 
     Instrucciones para tu respuesta:

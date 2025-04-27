@@ -21,15 +21,17 @@ interface HistoricProps {
 }
 
 interface Question {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    answer: string;
-    imageUrl?: string;
-    time: number;
+    options: [string],
+    correctAnswer: string,
+    answer: string,
+    category: string,
+    imageUrl: string,
+    user: string,
+    time: number
 }
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+const historicEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
 
 const Historic: React.FC = () => {
     const user: string = localStorage.getItem("username") || "Usuario";
@@ -41,6 +43,8 @@ const Historic: React.FC = () => {
         incorrectAnswered: 0,
         puntuation: 0
     });
+    const [questions, setQuestions] = useState<Question[]>([]);
+
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -62,11 +66,27 @@ const Historic: React.FC = () => {
 
         fetchStats();
     }, []);
-  const [questions, setQuestions] = useState<Question[]>([]);
+
+    useEffect(() => {
+        // Función para obtener usuarios
+        const fetchQuestions = async () => {
+            try {
+                console.log("Sacando historial");
+                const response = await axios.get(`${historicEndpoint}/historic/${username}`);
+                setQuestions(response.data);
+            } catch (err: any) {
+                console.error('Error fetching users:', err);
+
+            }
+
+    };
+        fetchQuestions();}, []);
+
+
 
     return (
         <ThemeProvider theme={theme}>
-            <Box 
+            <Box id="historic-page-container"
                 sx={{
                     backgroundColor: '#202A25',
                     minHeight: '100vh',
@@ -75,7 +95,8 @@ const Historic: React.FC = () => {
                 }}
             >
                 <NavBar />
-                <Box 
+                <Box
+                    id="historic-container"
                     display='flex' 
                     flexDirection='column' 
                     justifyContent="flex-start" 
@@ -89,7 +110,8 @@ const Historic: React.FC = () => {
                     }}
                 >
                     {/* 🔹 Sección de estadísticas */}
-                    <Paper 
+                    <Paper
+                        id="statistics-paper"
                         elevation={3} 
                         sx={{
                             padding: "20px",
@@ -101,7 +123,8 @@ const Historic: React.FC = () => {
                             marginBottom: 4
                         }}
                     >
-                        <Typography 
+                        <Typography
+                            id="statistics-title"
                             variant="h5" 
                             sx={{ 
                                 fontWeight: "bold", 
@@ -112,25 +135,26 @@ const Historic: React.FC = () => {
                         >
                             📊 Estadísticas
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography id="statistics-time" variant="body1">
                             <b>Tiempo Jugado:</b> {stats.timePlayed} segundos
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography id="statistics-games" variant="body1">
                             <b>Partidas Jugadas:</b> {stats.gamesPlayed}
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography id="statistics-score" variant="body1">
                             <b>Puntuacion total:</b> {stats.puntuation}
                         </Typography>
-                        <Typography variant="body1" sx={{ color: "#4CAF50" }}>
+                        <Typography id="statistics-right-answers" variant="body1" sx={{ color: "#4CAF50" }}>
                             <b>Preguntas acertadas:</b> {stats.correctAnswered}
                         </Typography>
-                        <Typography variant="body1" sx={{ color: "#F44336" }}>
+                        <Typography id="statistics-wrong-answers" variant="body1" sx={{ color: "#F44336" }}>
                             <b>Preguntas falladas:</b> {stats.incorrectAnswered}
                         </Typography>
                     </Paper>
                     
                     {/* Contenedor para la lista de preguntas */}
-                    <Box 
+                    <Box
+                        id="questions-container"
                         sx={{
                             width: '100%',
                             maxWidth: '600px',
@@ -144,7 +168,8 @@ const Historic: React.FC = () => {
                                 <QuestionStat key={index} question={q} />
                             ))
                         ) : (
-                            <Paper 
+                            <Paper
+                                id="no-questions-paper"
                                 elevation={2} 
                                 sx={{
                                     padding: "15px",
@@ -153,7 +178,7 @@ const Historic: React.FC = () => {
                                     borderRadius: "10px"
                                 }}
                             >
-                                <Typography variant="body1" color="textSecondary">
+                                <Typography id="no-questions-text" variant="body1" color="textSecondary">
                                     No hay historial de preguntas disponible
                                 </Typography>
                             </Paper>
