@@ -88,7 +88,7 @@ const Game: React.FC = () => {
 
   const fetchQuestion = async (): Promise<Question | null> => {
     try{
-      const gameMode = location.state?.gameMode || "country";
+      const gameMode = location.state?.gameMode;
       console.log("petición de preguntas");
       const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
       let question = response.data;
@@ -299,7 +299,7 @@ const Game: React.FC = () => {
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer, isPaused, isLoading, clueOpen]); // Agregamos clueOpen como dependencia
+  }, [timer, isPaused, isLoading, clueOpen]); 
 
   useEffect(() => {
     if (finished && round >= TOTAL_ROUNDS) {
@@ -311,7 +311,8 @@ const Game: React.FC = () => {
           totalQuestions,
           timeLimit,
           themes,
-          roundResults
+          roundResults,
+          gameMode: location.state?.gameMode || "country" // Añadir el gameMode
         }
       });
     }

@@ -23,6 +23,7 @@ interface EndGameProps {
   score: number;
   numCorrect: number;
   roundResults: RoundResult[];
+  gameMode: string; 
 }
 
 const EndGame: React.FC = () => {
@@ -36,7 +37,8 @@ const EndGame: React.FC = () => {
     themes,
     score,
     numCorrect,
-    roundResults
+    roundResults,
+    gameMode
   } = location.state as EndGameProps;
 
   const username = typeof rawUsername === 'string' ? rawUsername.replace(/^"|"$/g, '') : rawUsername;
@@ -47,9 +49,10 @@ const EndGame: React.FC = () => {
           username,
           totalQuestions: 10,
           timeLimit: timeLimit,
-          themes: { geografía: true, historia: false }
+          themes: themes,
+          gameMode: gameMode
       }
-  });
+    });
   };
 
   const handleBackToMenu = () => {
@@ -115,7 +118,7 @@ const EndGame: React.FC = () => {
         ¡Juego Terminado!
       </Typography>
       <Typography id="player-score-text" variant="h6" gutterBottom sx = {{ color: '#F7FFF7'}}>
-        {username}, tu puntaje total es: {score} puntos.
+        {username}, tu puntuación final es de: {score} puntos.
       </Typography>
       <Typography id="correct-answers-text" variant="body1" gutterBottom sx = {{ color: '#F7FFF7'}}>
         Respuestas correctas: {numCorrect} / {totalQuestions}
