@@ -153,28 +153,28 @@ jobs:
           workdir: gateway-api-service
 
   deploy:
-  runs-on: ubuntu-latest
-  needs: [
-    docker-push-userservice,
-    docker-push-authservice,
-    docker-push-llmservice,
-    docker-push-questionservice,
-    docker-push-gatewayservice,
-    docker-push-gateway-api-service,
-    docker-push-webapp
-  ]
-  steps:
-    - name: Deploy over SSH
-      uses: fifsky/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        user: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        command: |
-          cd wichat_es3a
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          export LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
-          export MONGO_URI="${{ secrets.MONGO_URI }}"
+    runs-on: ubuntu-latest
+    needs: [
+      docker-push-userservice,
+      docker-push-authservice,
+      docker-push-llmservice,
+      docker-push-questionservice,
+      docker-push-gatewayservice,
+      docker-push-gateway-api-service,
+      docker-push-webapp
+    ]
+    steps:
+      - name: Deploy over SSH
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          command: |
+            cd wichat_es3a
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            export LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
+            export MONGO_URI="${{ secrets.MONGO_URI }}"
             docker compose --profile prod pull
-            docker compose --profile prod down
-            docker compose --profile prod up -d
+			docker compose --profile prod down
+            docker compose --profile prod up -d 
