@@ -75,7 +75,6 @@ app.get('/getStats', async (req, res) => {
 // Endpoint: Obtener preguntas por categoría
 app.get('/questions/:category', async (req, res) => {
     try{
-        sleep(500); // Simular un retraso de 1 segundo
         console.log(`Gateway - Solicitando preguntas para categoría: ${req.params.category}`);
         console.log(`Gateway - URL completa: ${questionServiceUrl}/questions/${req.params.category}`);
         
