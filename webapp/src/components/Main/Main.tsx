@@ -53,12 +53,12 @@ const Main = () => {
                 const sorted = rankingResponse.data.sort((a: StatEntry, b: StatEntry) => b.puntuation - a.puntuation);
                 setTopRanking(sorted.slice(0, 3));
             } catch (error) {
-                console.error("Error fetching data:", error);
+                //console.error("Error fetching data:", error);
                 try {
                     const createResponse = await axios.post(`${apiEndpoint}/stats`, { username });
                     setStats(createResponse.data);
                 } catch (createError) {
-                    console.error("Error creando stats:", createError);
+                    //console.error("Error creando stats:", createError);
                 }
             }
         };

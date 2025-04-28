@@ -27,20 +27,22 @@ describe("Game Component", () => {
         Object.defineProperty(global, 'Image', {
             writable: true,
             value: class {
-                // @ts-ignore
-                src = '';
+                private _src = '';
                 onload = () => {};
                 onerror = () => {};
-                // @ts-ignore
+
+                get src() {
+                    return this._src;
+                }
+
                 set src(value: string) {
-                    // @ts-ignore
                     this._src = value;
                     // Simula que la imagen se carga correctamente
                     setTimeout(() => {
                         if (this.onload) this.onload();
                     }, 100);
                 }
-            },
+            }
         });
     });
 
