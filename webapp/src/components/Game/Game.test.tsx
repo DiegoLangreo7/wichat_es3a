@@ -27,10 +27,13 @@ describe("Game Component", () => {
         Object.defineProperty(global, 'Image', {
             writable: true,
             value: class {
+                // @ts-ignore
                 src = '';
                 onload = () => {};
                 onerror = () => {};
+                // @ts-ignore
                 set src(value: string) {
+                    // @ts-ignore
                     this._src = value;
                     // Simula que la imagen se carga correctamente
                     setTimeout(() => {

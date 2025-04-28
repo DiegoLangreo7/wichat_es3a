@@ -89,7 +89,7 @@ const Game: React.FC = () => {
     const fetchQuestion = async (): Promise<Question | null> => {
         try{
             const gameMode = location.state?.gameMode;
-            console.log("petición de preguntas");
+            //console.log("petición de preguntas");
             const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
             let question = response.data;
             if (question!) {
@@ -106,7 +106,7 @@ const Game: React.FC = () => {
             }
             return question;
         } catch (error) {
-            console.error("Error fetching question:", error);
+            //console.error("Error fetching question:", error);
             setFetchError(true);
             setIsLoading(false);
             setErrorMessage("No se pudieron cargar preguntas para esta categoría.");
@@ -194,7 +194,7 @@ const Game: React.FC = () => {
         setRoundResults(prev => [...prev, roundResult]);
 
         try {
-            console.log("mandando a historial")
+            //console.log("mandando a historial")
             await axios.post(`${historicEndpoint}/historic/addQuestion`, {
                 user: username,
                 type: currentQuestion?.category,
@@ -206,7 +206,7 @@ const Game: React.FC = () => {
                 imageUrl: currentQuestion?.imageUrl
             });
         } catch (error) {
-            console.error("Error al guardar en el historial:", error);
+            //error("Error al guardar en el historial:", error);
         }
 
         setGuessed(false);
@@ -258,9 +258,9 @@ const Game: React.FC = () => {
         const setupInitialQuestions = async () => {
             setIsLoading(true);
             const first = await fetchQuestion();
-            console.log("primera pregunta", first);
+            //console.log("primera pregunta", first);
             const second = await fetchQuestion();
-            console.log("segunda pregunta", second);
+            //console.log("segunda pregunta", second);
             if (first) setCurrentQuestion(first);
             if (second) setNextQuestion(second);
             setIsLoading(false);

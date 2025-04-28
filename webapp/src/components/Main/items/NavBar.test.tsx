@@ -42,14 +42,14 @@ describe('NavBar redirections', () => {
     it("should redirect to /main/question when clicking on Preguntas", () => {
         const { getByText } = setup();
         fireEvent.click(getByText("Jugar"));
-        fireEvent.click(getByText("Preguntas"));
+        fireEvent.click(getByText("Preguntas y respuestas"));
         expect(mockNavigate).toHaveBeenCalledWith("/main/question");
     });
 
     it("should redirect to /cards when clicking on Memory", () => {
         const { getByText } = setup();
         fireEvent.click(getByText("Jugar"));
-        fireEvent.click(getByText("Memory"));
+        fireEvent.click(getByText("Juego de memoria"));
         expect(mockNavigate).toHaveBeenCalledWith("/cards");
     });
 
@@ -59,6 +59,7 @@ describe('NavBar redirections', () => {
         fireEvent.click(getByText("Historial"));
         expect(mockNavigate).toHaveBeenCalledWith("/historic");
     });
+
 
     it("should redirect to /logout when clicking on Cerrar sesión", () => {
         const { getByText } = setup();
