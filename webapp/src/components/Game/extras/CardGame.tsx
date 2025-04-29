@@ -52,7 +52,7 @@ const CardGame: React.FC = () => {
             const images = response.data.images || [];
 
             // Crear pares de cartas y mezclarlas
-            const cardValues = images.flatMap((image: any) => [image, image]) // Duplica cada imagen para hacer pares
+            const cardValues = images.flatMap((image: any) => [image]) // Duplica cada imagen para hacer pares
                 .sort(() => Math.random() - 0.5) // Mezcla las cartas
                 .map((value: any, index: any) => ({
                     id: index,
@@ -152,29 +152,28 @@ const CardGame: React.FC = () => {
                     <CircularProgress id="loading-spinner" sx={{ color: '#F7B801' }} />
                 </Box>
             ) : (
-                <Box id="game-content-container" display='flex' flexDirection='column' p={3} sx={{
+                <Box id="game-content-container" display='flex' flexDirection='column' p={2} sx={{
                     backgroundColor: '#5f4bb6',
                     borderRadius: 2,
                     boxShadow: 3,
-                    width: '80%',
-                    maxWidth: '600px'
+                    width: '90%',
+                    maxWidth: '440px'
                 }}>
-                    <Box id="game-header" display="flex" justifyContent="space-between" mb={3}>
-                        <Typography variant="h6" sx={{ color: '#F7B801' }}>
+                    <Box id="game-header" display="flex" justifyContent="space-between" mb={2}>
+                        <Typography variant="h6" sx={{ color: '#F7B801', fontSize: '1rem' }}>
                             Movimientos: {moves}
                         </Typography>
-                        <Typography variant="h6" sx={{ color: '#F7B801' }}>
+                        <Typography variant="h6" sx={{ color: '#F7B801', fontSize: '1rem' }}>
                             Tiempo: {formatTime(timer)}
                         </Typography>
                     </Box>
 
-                    {/* Contenedor principal compacto */}
+                    {/* Contenedor de cartas compacto */}
                     <Box sx={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
                         gap: '4px',
-                        width: '96%',
-                        maxWidth: '320px',
+                        width: '100%',
                         margin: '0 auto',
                         padding: '4px'
                     }}>
@@ -188,23 +187,20 @@ const CardGame: React.FC = () => {
                                     aspectRatio: '1/1',
                                     perspective: '1000px',
                                     cursor: !card.matched && !isPaused ? 'pointer' : 'default',
-                                    opacity: card.matched ? 0.7 : 1
+                                    opacity: card.matched ? 0.7 : 1,
+                                    margin: '0 auto'
                                 }}
                             >
-                                {/* Contenedor de la animación */}
+                                {/* Contenedor de animación */}
                                 <Box sx={{
                                     width: '100%',
                                     height: '100%',
-                                    position: 'absolute', // Añade esto
+                                    position: 'absolute',
                                     transformStyle: 'preserve-3d',
                                     transition: 'transform 0.5s',
-                                    transform: card.flipped
-                                        ? 'rotateY(180deg) translateX(-3px)'  // Ajusta el valor (2px) según necesidad
-                                        : 'rotateY(0deg) translateX(0px)',
-                                    perspective: '1000px', // Añade perspectiva al contenedor padre
-                                    transformOrigin: 'center', // Asegura que la rotación sea desde el centro
+                                    transform: card.flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
                                 }}>
-                                    {/* Parte trasera - clickeable */}
+                                    {/* Parte trasera */}
                                     <Box sx={{
                                         position: 'absolute',
                                         width: '100%',
@@ -214,46 +210,51 @@ const CardGame: React.FC = () => {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         backgroundColor: '#F7B801',
-                                        borderRadius: '8px',
-                                        border: '2px solid #202A25',
-                                        fontSize: 'clamp(24px, 8vw, 32px)',
+                                        borderRadius: '6px',
+                                        border: '1px solid #202A25',
+                                        fontSize: '1.5rem',
                                         fontWeight: 'bold',
-                                        userSelect: 'none'
                                     }}>
                                         ?
                                     </Box>
 
-                                    {/* Parte frontal */}
+                                    {/* Parte frontal con imagen */}
                                     <Box sx={{
                                         position: 'absolute',
                                         width: '100%',
                                         height: '100%',
                                         backfaceVisibility: 'hidden',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
                                         backgroundColor: '#F7FFF7',
-                                        borderRadius: '8px',
-                                        border: '2px solid #5f4bb6',
+                                        borderRadius: '6px',
+                                        border: '1px solid #5f4bb6',
                                         transform: 'rotateY(180deg)',
-                                        fontSize: 'clamp(24px, 8vw, 32px)',
-                                        fontWeight: 'bold',
-                                        userSelect: 'none'
+                                        overflow: 'hidden',
                                     }}>
-                                        {card.value}
+                                        <CardMedia
+                                            component="img"
+                                            image={card.value}
+                                            alt="Card content"
+                                            sx={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                            }}
+                                        />
                                     </Box>
                                 </Box>
                             </Box>
                         ))}
                     </Box>
 
-                    <Box id="game-controls" display="flex" justifyContent="center" mt={3}>
+                    <Box id="game-controls" display="flex" justifyContent="center" mt={2}>
                         <Button
                             variant="contained"
                             onClick={initializeGame}
                             sx={{
                                 backgroundColor: "#F7B801",
                                 color: "#202A25",
+                                fontSize: '0.8rem',
+                                padding: '6px 12px',
                                 '&:hover': {
                                     backgroundColor: "#EDC9FF",
                                 }

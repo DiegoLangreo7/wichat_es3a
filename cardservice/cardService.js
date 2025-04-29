@@ -66,7 +66,7 @@ app.get('/cardValues', (req, res) => {
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
     getImages(randomCategory)
         .then(images => {
-            const selectedImages = images.slice(0, 5);
+            const selectedImages = images.slice(0, 8);
             const duplicatedImages = [...selectedImages, ...selectedImages]; // Duplicate the images
             res.json({images: duplicatedImages });
         })
