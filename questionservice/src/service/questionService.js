@@ -4,30 +4,45 @@ const generateService = require('./questionGeneratorService');
 const app = express();
 const port = 8004;
 
-const MIN_QUESTIONS = 5; // Reducido para facilitar el inicio rápido
+const MIN_QUESTIONS = 20; // Reducido para facilitar el inicio rápido
 const GENERATE_BATCH = 15;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
 
 app.get('/questions/:category', async (req, res) => {
-    try{
+    try {
         console.log("Question service: " + req.params.category);
         const category = req.params.category;
-        const numberQuestions = await dataService.getNumberQuestionsByCategory(category);
+
+        let numberQuestions = await dataService.getNumberQuestionsByCategory(category);
         console.log("Numero de preguntas " + numberQuestions + " category " + category);
-        if(numberQuestions < MIN_QUESTIONS){
+
+        if (numberQuestions < MIN_QUESTIONS) {
             console.log("Generando preguntas...");
             await generateService.generateQuestionsByCategory(category, GENERATE_BATCH);
             console.log("Preguntas generadas correctamente");
+
+            // Esperar hasta que haya preguntas disponibles
+            const waitForQuestions = async () => {
+                while (numberQuestions < MIN_QUESTIONS) {
+                    console.log("Esperando a que se generen preguntas...");
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar 1 segundo
+                    numberQuestions = await dataService.getNumberQuestionsByCategory(category);
+                }
+            };
+
+            await waitForQuestions();
         }
+
         const question = await dataService.getRandomQuestionByCategory(category);
         console.log("Pregunta generada: " + question);
+
         if (!question) {
             return res.status(404).json({ message: "There are no more questions available." });
         }
-        await dataService.deleteQuestionById(question._id);
 
+        await dataService.deleteQuestionById(question._id);
         res.json(question);
     } catch (error) {
         console.log("Error en la petición:", error);
