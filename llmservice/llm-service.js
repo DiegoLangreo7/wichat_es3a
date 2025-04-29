@@ -1,7 +1,8 @@
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
+const apiKey = process.env.LLM_API_KEY;
 
 const app = express();
 const port = 8003;
@@ -62,7 +63,6 @@ app.post('/game-hint', async (req, res) => {
     
     const { question, solution, options, userMessage = '¿Me puedes dar una pista?' } = req.body;
     
-    const apiKey = "AIzaSyCuaY0maosmIEIAadFa6IQtVUwlNMbIE7M";
     console.log("API Key length:", apiKey ? apiKey.length : 'undefined');
     
     if (!apiKey) {
