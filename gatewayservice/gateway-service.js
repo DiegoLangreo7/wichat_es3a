@@ -14,6 +14,7 @@ const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8004';
+const cardServiceUrl = process.env.CARD_SERVICE_URL || 'http://localhost:8008';
 
 app.use(cors());
 app.use(express.json());
@@ -141,6 +142,18 @@ app.post('/game-hint', async (req, res) => {
         console.error("Error in game-hint endpoint:", error);
         res.status(error?.response?.status || 500).json({
             error: error?.response?.data?.error || error.message || 'Error interno al procesar la pista'
+        });
+    }
+});
+
+app.get('/cardValues', async (req, res) => {
+    try {
+        console.log(`Gateway - Solicitando valores de tarjetas`);
+        const cardResponse = await axios.get(`${cardServiceUrl}/cardValues`);
+        res.json(cardResponse.data);
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
         });
     }
 });

@@ -56,11 +56,11 @@ const wikidataCategoriesQueries = {
         query: `
         SELECT ?athlete ?athleteLabel ?image 
         WHERE {
-        ?athlete wdt:P106 wd:Q937857
-        OPTIONAL { ?athlete wdt:P18 ?image. }
-        SERVICE wikibase:label {
-            bd:serviceParam wikibase:language "es,en".
-        }
+            ?athlete wdt:P106 wd:Q937857
+            OPTIONAL { ?athlete wdt:P18 ?image. }
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "es,en".
+            }
         }
         LIMIT 180
         `,
