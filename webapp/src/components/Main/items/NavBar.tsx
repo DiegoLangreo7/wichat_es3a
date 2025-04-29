@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { AppBar, Typography, Box, Toolbar, Menu, MenuItem, Button, ClickAwayListener } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const NavBar: React.FC = () => {
     const [openUserMenu, setOpenUserMenu] = useState(false);
@@ -84,23 +84,6 @@ const NavBar: React.FC = () => {
                         Ranking Global
                     </Button>
 
-                    <Button id="api-button"
-                            onClick={handleApi}
-                            sx={{
-                                color: "white",
-                                fontSize: "1rem",
-                                textTransform: "none",
-                                padding: "6px 12px",
-                                borderRadius: "8px",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                                    transform: "scale(1.05)"
-                                },
-                            }}
-                    >
-                        API Platform
-                    </Button>
                     <ClickAwayListener onClickAway={handlePlayMenuClose}>
                         <Box id="play-menu-container" sx={{ display: "flex", alignItems: "center" }}>
                             <Button id="play-menu-button"
@@ -144,14 +127,31 @@ const NavBar: React.FC = () => {
                                   }}
                             >
                                 <MenuItem id="play-menu-questions" onClick={handleQuestions} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
-                                    Preguntas
+                                    Preguntas y respuestas
                                 </MenuItem>
                                 <MenuItem id="play-menu-cards" onClick={handleCards} sx={{ color: "#F7FFF7", "&:hover": {color: "#202A25", backgroundColor: "#EDC9FF" } }}>
-                                    Memory
+                                    Juego de memoria
                                 </MenuItem>
                             </Menu>
                         </Box>
                     </ClickAwayListener>
+                    <Button id="api-button"
+                            onClick={handleApi}
+                            sx={{
+                                color: "white",
+                                fontSize: "1rem",
+                                textTransform: "none",
+                                padding: "6px 12px",
+                                borderRadius: "8px",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": {
+                                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                    transform: "scale(1.05)"
+                                },
+                            }}
+                    >
+                        API Platform
+                    </Button>
                 </Box>
 
                 <ClickAwayListener onClickAway={handleUserMenuClose}>

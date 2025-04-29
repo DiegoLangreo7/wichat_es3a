@@ -27,12 +27,15 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK' });
 });
 
+// Login endpoint
 app.post('/login', async (req, res) => {
     try {
-        const authResponse = await axios.post(authServiceUrl+'/login', req.body);
+        const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
         res.json(authResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
@@ -106,18 +109,6 @@ app.post('/initializeQuestionsDB', async (req, res) => {
     } catch(error){
         console.error(`Gateway - Error al inicializar la base de datos de preguntas:`, error.message);
     }
-});
-
-// Login endpoint
-app.post('/login', async (req, res) => {
-  try {
-      const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
-      res.json(authResponse.data);
-  } catch (error) {
-      res.status(error?.response?.status || 500).json({
-          error: error?.response?.data?.error || error.message || 'Error interno'
-      });
-  }
 });
 
 // Add user endpoint

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import {Container, Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -53,10 +53,6 @@ const AddUser = () => {
             setLoading(false);
         }
     };
-
-									 
-						   
-	
 
     return (
         <Box id="add-user-main-container" component="main" sx={{display: 'flex', justifyContent: 'center', backgroundColor: '#202A25', width: '100%' , height: '100vh' }}>

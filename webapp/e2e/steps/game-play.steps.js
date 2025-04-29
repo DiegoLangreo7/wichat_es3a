@@ -11,7 +11,7 @@ defineFeature(feature, test => {
     beforeAll(async () => {
         browser = process.env.GITHUB_ACTIONS
             ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-            : await puppeteer.launch({headless: false, slowMo: 10});
+            : await puppeteer.launch({headless: false, slowMo: 25});
         page = await browser.newPage();
 
         await page
@@ -30,13 +30,18 @@ defineFeature(feature, test => {
         given('I am on the main page', async () => {
             username = "gamePlayUser"
             password = "123456q@"
-            await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
+            await page.waitForSelector("#singup-link", { timeout: 3000 });
+            await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
         });
 
         when('I click on the "Play" button', async () => {
+            await page.waitForSelector('#play-menu-container', { timeout: 30000 });
+            await expect(page).toClick('button', { text: 'Jugar' });
+            await page.waitForSelector('#play-menu-questions', { timeout: 30000 });
+            await expect(page).toClick('li', { text: 'Preguntas' });
             await expect(page).toClick('button', { text: '🎮 JUGAR' });
         });
 
