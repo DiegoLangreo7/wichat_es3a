@@ -43,18 +43,28 @@ const Question: React.FC<QuestionProps> = ({ question, onAnswer, isTransitioning
 
     return (
         <Container id="question-container" maxWidth="lg" >
-            <Box id="question-image-container" display="flex" justifyContent="center" sx={{ mb: 2}}>
+            <Box id="question-image-container" display="flex" justifyContent="center" sx={{
+                mb: 2,
+                maxHeight: '300px', // Altura máxima para contener la imagen
+                width: '100%',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
                 {question.imageUrl && (
                     <img  id="question-image"
                         src={question.imageUrl} 
-                        alt="Imagen" 
-                        style={{ 
-                            width: '500px',
-                            aspectRatio: '3/2',  
-                            borderRadius: '8px', 
-                            objectFit: 'cover',   
-                        }} 
-                        loading="lazy"
+                        alt="Imagen"
+                          style={{
+                              maxWidth: '500px',
+                              maxHeight: '300px',
+                              height: 'auto',
+                              width: 'auto',
+                              borderRadius: '8px',
+                              objectFit: 'contain', // Cambiado de 'cover' a 'contain' para mostrar toda la imagen
+                          }}
+                          loading="lazy"
                     />
                 )}
             </Box>

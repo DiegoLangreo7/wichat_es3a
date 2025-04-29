@@ -9,7 +9,7 @@ const labelKeys = {
     science: "scientistLabel",
     flags: "countryLabel",
     cine: "personLabel",
-    animals: "commonName", // actualizado
+    animals: "commonName",
 };
 
 const wikidataCategoriesQueries = {   
@@ -56,11 +56,11 @@ const wikidataCategoriesQueries = {
         query: `
         SELECT ?athlete ?athleteLabel ?image 
         WHERE {
-        ?athlete wdt:P106 wd:Q937857
-        OPTIONAL { ?athlete wdt:P18 ?image. }
-        SERVICE wikibase:label {
-            bd:serviceParam wikibase:language "es,en".
-        }
+            ?athlete wdt:P106 wd:Q937857
+            OPTIONAL { ?athlete wdt:P18 ?image. }
+            SERVICE wikibase:label {
+                bd:serviceParam wikibase:language "es,en".
+            }
         }
         LIMIT 180
         `,
@@ -99,7 +99,7 @@ const titlesQuestionsCategories = {
     "science": "¿Quién es el científico en la imagen?",
     "flags": "¿A que país pertenece esta bandera?",
     "cine": "¿Quién es el actor o actriz de la imagen?",
-    "animals": "¿Qué animal o planta se muestra en la imagen?"
+    "animals": "¿Qué especie se muestra en la imagen?"
 };
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
