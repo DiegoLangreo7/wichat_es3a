@@ -27,6 +27,7 @@ const CardGame: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+    const cardsEndpoint: string = process.env.REACT_APP_CARDS_ENDPOINT || 'http://localhost:8008';
 
     // Inicializar el juego
     useEffect(() => {
@@ -46,29 +47,30 @@ const CardGame: React.FC = () => {
 
     const initializeGame = async () => {
         setLoading(true);
-        const response = await axios.get(`${apiEndpoint}/cardValues`);
-        const images = response.data.images;
-        const cardValues = images.map();
-        const shuffledCardValues = [...cardValues, ...cardValues]
+        try {
+            const response = await axios.get(`${cardsEndpoint}/cardValues`);
+            const images = response.data.images || [];
 
-        // Mezclar las cartas
-        /*
-        const shuffledCards = [...cardValues]
-            .sort(() => Math.random() - 0.5)
-            .map((value, index) => ({
-                id: index,
-                value,
-                flipped: false,
-                matched: false
-            }));
-        */
-    
-        setCards(shuffledCardValues);
-        setFlippedCards([]);
-        setMoves(0);
-        setTimer(0);
-        setGameComplete(false);
-        setLoading(false);
+            // Crear pares de cartas y mezclarlas
+            const cardValues = images.flatMap((image: any) => [image, image]) // Duplica cada imagen para hacer pares
+                .sort(() => Math.random() - 0.5) // Mezcla las cartas
+                .map((value: any, index: any) => ({
+                    id: index,
+                    value,
+                    flipped: false,
+                    matched: false
+                }));
+
+            setCards(cardValues);
+            setFlippedCards([]);
+            setMoves(0);
+            setTimer(0);
+            setGameComplete(false);
+        } catch (error) {
+            console.error("Error al inicializar el juego:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCardClick = (id: number) => {

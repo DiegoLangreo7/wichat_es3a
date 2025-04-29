@@ -1,9 +1,11 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const cors = require('cors');
 const port = 8008;
 
 app.use(express.json());
+app.use(cors({ origin: 'http://localhost:3000' }));
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 
@@ -64,7 +66,7 @@ app.get('/cardValues', (req, res) => {
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
     getImages(randomCategory)
         .then(images => {
-            const selectedImages = images.slice(0, 6); // Select 6 images
+            const selectedImages = images.slice(0, 5);
             const duplicatedImages = [...selectedImages, ...selectedImages]; // Duplicate the images
             res.json({images: duplicatedImages });
         })
