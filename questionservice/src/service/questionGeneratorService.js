@@ -9,7 +9,7 @@ const labelKeys = {
     science: "scientistLabel",
     flags: "countryLabel",
     cine: "personLabel",
-    animals: "commonName", // actualizado
+    animals: "commonName",
 };
 
 const wikidataCategoriesQueries = {   
@@ -99,7 +99,7 @@ const titlesQuestionsCategories = {
     "science": "¿Quién es el científico en la imagen?",
     "flags": "¿A que país pertenece esta bandera?",
     "cine": "¿Quién es el actor o actriz de la imagen?",
-    "animals": "¿Qué animal o planta se muestra en la imagen?"
+    "animals": "¿Qué especie se muestra en la imagen?"
 };
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
