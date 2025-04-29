@@ -365,7 +365,8 @@ const Game: React.FC = () => {
                 <Box id="game-content-container" display='flex' flexDirection='row' p={1} bgcolor='gray.100' borderRadius={2} boxShadow={3} sx={{
                     transform: 'scale(0.80)',
                     transformOrigin: 'center',
-                    backgroundColor: '#5f4bb6'
+                    backgroundColor: '#5f4bb6',
+                  maxHeight: '800px'
                 }}>
                     <Box id="question-section" display='flex' flexDirection='column' justifyContent="center" alignItems="center">
                         <Typography sx = {{ color: '#F7B801', gap: 50, fontSize: 32}}><strong>Ronda: {round}</strong></Typography>
