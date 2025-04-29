@@ -12,6 +12,7 @@ jest.mock('react-router', () => ({
     ...jest.requireActual('react-router'),
     useNavigate: () => mockNavigate,
 }));
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 const mockQuestion = {
     _id: "1",

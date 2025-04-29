@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import axios from 'axios';
 import {
     Typography,
@@ -14,6 +14,7 @@ import {
     Alert
 } from '@mui/material';
 import NavBar from "../../Main/items/NavBar";
+
 
 const CardGame: React.FC = () => {
     const navigate = useNavigate();
