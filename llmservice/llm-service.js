@@ -1,7 +1,8 @@
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
+const apiKey = process.env.LLM_API_KEY;
 
 const app = express();
 const port = 8003;
@@ -55,21 +56,21 @@ async function sendQuestionToGemini(question, apiKey) {
 
 // Game hint endpoint - needed for the LLMChat component
 app.post('/game-hint', async (req, res) => {
-    try {
-        console.log("Request body for game-hint:", req.body);
 
-        validateRequiredFields(req, ['question', 'solution']);
-
-        const { question, solution, options, userMessage = '¿Me puedes dar una pista?' } = req.body;
-
-        const apiKey = "AIzaSyCuaY0maosmIEIAadFa6IQtVUwlNMbIE7M";
-        console.log("API Key length:", apiKey ? apiKey.length : 'undefined');
-
-        if (!apiKey) {
-            return res.status(400).json({ error: 'API key is missing. Check your .env file.' });
-        }
-
-        const prompt = `
+  try {
+    console.log("Request body for game-hint:", req.body);
+    
+    validateRequiredFields(req, ['question', 'solution']);
+    
+    const { question, solution, options, userMessage = '¿Me puedes dar una pista?' } = req.body;
+    
+    console.log("API Key length:", apiKey ? apiKey.length : 'undefined');
+    
+    if (!apiKey) {
+      return res.status(400).json({ error: 'API key is missing. Check your .env file.' });
+    }
+    
+    const prompt = `
     Contexto:
     - Pregunta original: "${question}"
     - Respuesta correcta: "${solution}"
