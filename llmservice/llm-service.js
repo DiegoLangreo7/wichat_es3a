@@ -13,49 +13,50 @@ app.use(cors());
 
 // Define configuration for Gemini API
 const geminiConfig = {
-  url: (apiKey) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-  transformRequest: (question) => ({
-    contents: [{ parts: [{ text: question }] }]
-  }),
-  transformResponse: (response) => response.data.candidates[0]?.content?.parts[0]?.text
+    url: (apiKey) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    transformRequest: (question) => ({
+        contents: [{ parts: [{ text: question }] }]
+    }),
+    transformResponse: (response) => response.data.candidates[0]?.content?.parts[0]?.text
 };
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
-      throw new Error(`Missing required field: ${field}`);
+    for (const field of requiredFields) {
+        if (!(field in req.body)) {
+            throw new Error(`Missing required field: ${field}`);
+        }
     }
-  }
 }
 
 // Function to send questions to Gemini
 async function sendQuestionToGemini(question, apiKey) {
-  try {
-    console.log(`Sending question to Gemini: "${question.substring(0, 50)}..."`);
-    
-    const url = geminiConfig.url(apiKey);
-    const requestData = geminiConfig.transformRequest(question);
-    const headers = { 'Content-Type': 'application/json' };
+    try {
+        console.log(`Sending question to Gemini: "${question.substring(0, 50)}..."`);
 
-    const response = await axios.post(url, requestData, { headers });
-    const answer = geminiConfig.transformResponse(response);
-    
-    console.log(`Received answer: "${answer?.substring(0, 50)}..."`);
-    return answer;
+        const url = geminiConfig.url(apiKey);
+        const requestData = geminiConfig.transformRequest(question);
+        const headers = { 'Content-Type': 'application/json' };
 
-  } catch (error) {
-    console.error(`Error sending question to Gemini:`, error.message || error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
+        const response = await axios.post(url, requestData, { headers });
+        const answer = geminiConfig.transformResponse(response);
+
+        console.log(`Received answer: "${answer?.substring(0, 50)}..."`);
+        return answer;
+
+    } catch (error) {
+        console.error(`Error sending question to Gemini:`, error.message || error);
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+        }
+        return null;
     }
-    return null;
-  }
 }
 
 // Game hint endpoint - needed for the LLMChat component
 app.post('/game-hint', async (req, res) => {
+
   try {
     console.log("Request body for game-hint:", req.body);
     
@@ -87,23 +88,23 @@ app.post('/game-hint', async (req, res) => {
       - Breve (1-2 oraciones)
       - Natural (como una conversación)
     `;
-    
-    const answer = await sendQuestionToGemini(prompt, apiKey);
-    
-    if (answer === null) {
-      return res.status(500).json({ error: 'Failed to get hint from LLM service' });
+
+        const answer = await sendQuestionToGemini(prompt, apiKey);
+
+        if (answer === null) {
+            return res.status(500).json({ error: 'Failed to get hint from LLM service' });
+        }
+
+        res.json({ answer });
+
+    } catch (error) {
+        console.error('Error in /game-hint endpoint:', error);
+        res.status(400).json({ error: error.message });
     }
-    
-    res.json({ answer });
-    
-  } catch (error) {
-    console.error('Error in /game-hint endpoint:', error);
-    res.status(400).json({ error: error.message });
-  }
 });
 
 const server = app.listen(port, () => {
-  console.log(`LLM Service listening at http://localhost:${port}`);
+    console.log(`LLM Service listening at http://localhost:${port}`);
 });
 
 module.exports = server;

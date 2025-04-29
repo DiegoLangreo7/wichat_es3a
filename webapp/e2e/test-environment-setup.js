@@ -5,6 +5,8 @@ let userservice;
 let authservice;
 let llmservice;
 let questionservice;
+let historicservice;
+let gatewayapiservice;
 let gatewayservice;
 
 async function startServer() {
@@ -16,7 +18,9 @@ async function startServer() {
     authservice = await require("../../users/authservice/auth-service");
     llmservice = await require("../../llmservice/llm-service");
     questionservice = await require("../../questionservice/src/service/questionService");
+    historicservice = await require("../../historicservice/historicService");
     gatewayservice = await require("../../gatewayservice/gateway-service");
+    gatewayapiservice = await require("../../gateway-api-service/gateway-api-service");
 }
 
 startServer();

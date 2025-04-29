@@ -1,5 +1,5 @@
 import router from '../src/router/AppRouter';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router';
 import React from "react";
 
 const App: React.FC = () => {

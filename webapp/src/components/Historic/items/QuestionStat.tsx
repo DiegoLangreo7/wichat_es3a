@@ -7,7 +7,7 @@ interface QuestionStatProps {
 }
 
 interface Question {
-    options: [string],
+    options: string[],
     correctAnswer: string,
     answer: string,
     category: string,
@@ -55,6 +55,7 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                 <Box id="question-image-container" display="flex" justifyContent="center" sx={{ mb: 2}}>
                     {question.imageUrl && (
                         <img  id="question-image"
+                              data-testid="question-image"
                               src={question.imageUrl}
                               alt="Imagen"
                               style={{
