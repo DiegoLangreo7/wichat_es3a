@@ -13,6 +13,22 @@ jest.mock('react-router', () => ({
     useNavigate: () => mockNavigate,
 }));
 
+const renderApiComponent = async () => {
+    await act(async () => {
+        render(
+            <MemoryRouter>
+                <Api />
+            </MemoryRouter>
+        );
+    });
+};
+
+const clickTab = async (tabText: string) => {
+    await act(async () => {
+        fireEvent.click(screen.getByText(new RegExp(tabText, "i")));
+    });
+};
+
 describe("Api Component", () => {
     beforeEach(() => {
         mockAxios.reset();
@@ -26,13 +42,7 @@ describe("Api Component", () => {
     });
 
     it("should render the component correctly", async () => {
-        await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
-        });
+        await renderApiComponent();
 
         expect(screen.getByText(/API Explorer/i)).toBeInTheDocument();
         expect(screen.getByText(/Visualización de datos desde los endpoints de la API/i)).toBeInTheDocument();
@@ -41,13 +51,7 @@ describe("Api Component", () => {
     it("should display an error message if fetching users fails", async () => {
         mockAxios.onGet('http://localhost:8006/api/users').reply(500, { error: "Error al cargar usuarios" });
 
-        await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
-        });
+        await renderApiComponent();
 
         await waitFor(() => {
             expect(screen.getByText(/Error al cargar usuarios/i)).toBeInTheDocument();
@@ -57,13 +61,8 @@ describe("Api Component", () => {
     it("should display an error message if fetching questions fails", async () => {
         mockAxios.onGet('http://localhost:8006/api/questions').reply(500, { error: "Error al cargar preguntas" });
 
-        await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
-        });
+        await renderApiComponent();
+        await clickTab("Preguntas");
 
         await waitFor(() => {
             expect(screen.getByText(/Error al cargar preguntas/i)).toBeInTheDocument();
@@ -76,13 +75,7 @@ describe("Api Component", () => {
         ];
         mockAxios.onGet('http://localhost:8006/api/users').reply(200, mockUsers);
 
-        await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
-        });
+        await renderApiComponent();
 
         await waitFor(() => {
             expect(screen.getByText(/Usuario1/i)).toBeInTheDocument();
@@ -97,13 +90,8 @@ describe("Api Component", () => {
         ];
         mockAxios.onGet('http://localhost:8006/api/questions').reply(200, mockQuestions);
 
-        await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
-        });
+        await renderApiComponent();
+        await clickTab("Preguntas");
 
         await waitFor(() => {
             expect(screen.getByText(/¿Cuál es la capital de Francia?/i)).toBeInTheDocument();
@@ -119,24 +107,30 @@ describe("Api Component", () => {
         mockAxios.onGet('http://localhost:8006/api/users').reply(200, mockUsers);
         mockAxios.onGet('http://localhost:8006/api/questions').reply(200, mockQuestions);
 
+        await renderApiComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/Usuario1/i)).toBeInTheDocument();
+        });
+
+        await clickTab("Preguntas");
+
+        await waitFor(() => {
+            expect(screen.getByText(/¿Cuál es la capital de Francia?/i)).toBeInTheDocument();
+        });
+
         await act(async () => {
-            render(
-                <MemoryRouter>
-                    <Api />
-                </MemoryRouter>
-            );
+            fireEvent.click(screen.getByText(/Actualizar datos/i));
         });
 
         await waitFor(() => {
-            expect(screen.getByText(/Usuario1/i)).toBeInTheDocument();
             expect(screen.getByText(/¿Cuál es la capital de Francia?/i)).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByText(/Actualizar datos/i));
+        await clickTab("Usuarios");
 
         await waitFor(() => {
             expect(screen.getByText(/Usuario1/i)).toBeInTheDocument();
-            expect(screen.getByText(/¿Cuál es la capital de Francia?/i)).toBeInTheDocument();
         });
     });
 });
