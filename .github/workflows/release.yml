@@ -33,6 +33,7 @@ jobs:
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
+          API_REST_ENDPOINT: http://wichatdeluxe.duckdns.org:8006
         with:
           name: arquisoft/wichat_es3a/webapp
           username: ${{ github.actor }}
@@ -42,6 +43,7 @@ jobs:
           buildargs: |
             LLM_API_KEY
             REACT_APP_API_ENDPOINT=${{ env.API_ENDPOINT }}
+            REACT_APP_API_REST_ENDPOINT=${{ env.API_REST_ENDPOINT }}
 
   docker-push-authservice:
     runs-on: ubuntu-latest

@@ -54,7 +54,7 @@ const Api: React.FC = () => {
     questions: null
   });
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8006';
+  const apiEndpoint = process.env.REACT_APP_API_REST_ENDPOINT || 'http://localhost:8006';
 
   useEffect(() => {
     // Función para obtener usuarios
