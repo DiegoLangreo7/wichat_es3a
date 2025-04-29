@@ -33,3 +33,4 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
