@@ -26,6 +26,8 @@ jobs:
     - run: npm --prefix users/userservice test -- --coverage
     - run: npm --prefix questionservice test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
+      env:
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
     - run: npm --prefix gatewayservice test -- --coverage
     - run: npm --prefix gateway-api-service test -- --coverage
     - run: npm --prefix webapp test -- --coverage
@@ -33,4 +35,3 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
