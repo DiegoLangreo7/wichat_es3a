@@ -53,8 +53,8 @@ function validateFormatOfFields(username, password) {
 app.post('/adduser', async (req, res) => {
     try {
         validateRequiredFields(req, ['username', 'password']);
-
-        const user = await User.findOne({ username: req.body.username });
+        let username = String(req.body.username).trim();
+        const user = await User.findOne({ username });
         if (user) throw new Error(`El usuario ${req.body.username} ya existe`);
 
         validateFormatOfFields(req.body.username, req.body.password);
@@ -76,7 +76,7 @@ app.post('/adduser', async (req, res) => {
 // Endpoint para obtener estadísticas
 app.get('/stats/:username', async (req, res) => {
     try {
-        const username = req.params.username;
+        const username = String(req.params.username).trim();
         let ranking = await Ranking.findOne({ username });
         if (!ranking) {
             ranking = new Ranking({
