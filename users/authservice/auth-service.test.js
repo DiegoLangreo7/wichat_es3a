@@ -42,4 +42,30 @@ describe('Auth Service', () => {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('username', 'testuser');
     });
+
+    it('Should not perform a login operation and send a 401 error', async () => {
+        const user = {
+            username: 'name',
+            password: 'wrongpassword',
+        };
+        const response = await request(app).post('/login').send(user);
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('error', 'Campos incorrectos');
+    });
+
+    it('Should not perform a login operation and send a 500 error', async () => {
+        jest.spyOn(User, 'findOne').mockImplementationOnce(() => {
+            throw new Error('Simulated server error');
+        });
+        const response = await request(app).post('/login').send(user);
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty('error', 'Internal Server Error');
+    });
+
+    it('Should not perform a login operation and send a 400 error', async () => {
+        const user = {};
+        const response = await request(app).post('/login').send(user);
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('error');
+    });
 });
