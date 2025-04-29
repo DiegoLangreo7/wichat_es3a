@@ -17,14 +17,14 @@ const queries = {
             ?city wdt:P31 wd:Q515;   # Es una ciudad (Q515)
             wdt:P18 ?image.     # Tiene una imagen (P18)
         }
-        LIMIT 10`,
+        LIMIT 100`,
     "flags":
         `SELECT ?image
         WHERE {
                 ?country wdt:P31 wd:Q6256;
                 wdt:P41 ?image.
         }
-        LIMIT 10`,
+        LIMIT 100`,
     "science":
         `SELECT ?image
         WHERE {
@@ -32,14 +32,14 @@ const queries = {
             FILTER NOT EXISTS { ?scientist wdt:P31/wdt:P279* wd:Q15632617. } # Excluir personajes ficticios
             ?scientist wdt:P18 ?image.
         }
-        LIMIT 10`,
+        LIMIT 100`,
     "sports":
         `SELECT ?athlete ?athleteLabel ?image 
         WHERE {
             ?athlete wdt:P106 wd:Q937857;
                 wdt:P18 ?image.
         }
-        LIMIT 10`,
+        LIMIT 100`,
     "cine":
         `SELECT ?image
         WHERE 
@@ -48,7 +48,7 @@ const queries = {
             ?person wdt:P106 ?occupation.
             ?person wdt:P18 ?image. 
         }
-        LIMIT 10`,
+        LIMIT 100`,
     "animals":
         `SELECT DISTINCT ?image
         WHERE {
@@ -57,7 +57,7 @@ const queries = {
             ?animal wdt:P1843 ?commonName.    # Nombre común
             ?animal wdt:P18 ?image.           # Imagen obligatoria
         }
-        LIMIT 10`,
+        LIMIT 100`,
 }
 
 app.get('/cardValues', (req, res) => {
@@ -66,8 +66,7 @@ app.get('/cardValues', (req, res) => {
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
     getImages(randomCategory)
         .then(images => {
-            const selectedImages = images.slice(0, 8);
-            const duplicatedImages = [...selectedImages, ...selectedImages]; // Duplicate the images
+            const duplicatedImages = [...images, ...images]; // Duplicate the images
             res.json({images: duplicatedImages });
         })
         .catch(error => {
@@ -86,8 +85,11 @@ async function getImages(category) {
         });
         const data = response.data.results.bindings;
         const images = data.map(item => item.image.value);
-        console.log(`Data: ${JSON.stringify(images)}`)
-        return images;
+        const shuffledImages = images.sort(() => Math.random() - 0.5);
+
+        // Seleccionar las primeras 8 imágenes
+        const randomImages = shuffledImages.slice(0, 8);
+        return randomImages;
     } catch (error) {
         console.error('Error fetching data from Wikidata:', error);
         throw new Error('Error fetching data from Wikidata');
