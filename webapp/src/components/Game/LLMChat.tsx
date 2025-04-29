@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Box, TextField, IconButton, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
@@ -69,113 +69,137 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
     }
   };
 
-  return (
-    <Box id="llm-chat-container"
-      sx={{
-        width: '100%', // Ancho fijo para la columna de chat
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: '#202A25',
-        borderRadius: 2,
-        boxShadow: 3,
-        margin: 1,
-        height: 'calc(100% - 16px)', // Altura completa menos los márgenes
-        minHeight: '0' // Importante para que flex funcione correctamente
-    }}
-    >
-      <Box id="chat-messages-container"
-        sx={{ 
-          flexGrow: 1, 
-          overflowY: 'auto', 
-          mb: 2,
-          m: 1,
-          minHeight: 180,
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-        {messages.map((message, index) => (
-          <Box id={`message-${index}-${message.sender}`}
-            key={index}
-            sx={{
-              display: 'flex',
-              justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-              mb: 1,
-            }}
-          >
-            <Typography id={`message-content-${index}`}
-              sx={{
-                bgcolor: message.sender === 'user' ? '#5f4bb6' : '#F7FFF7',
-                color: message.sender === 'user' ? '#F7FFF7' : '#202A25',
-                p: 1.5,
-                borderRadius: 2,
-                maxWidth: '80%',
-                wordBreak: 'break-word'
-              }}
-            >
-              {message.text}
-            </Typography>
-          </Box>
-        ))}
-        {isLoading && (
-          <Box id="loading-indicator"
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              mb: 1,
-            }}
-          >
-            <Typography id="loading-text"
-              sx={{
-                bgcolor: 'grey.200',
-                color: 'black',
-                p: 1.5,
-                borderRadius: 2,
-              }}
-            >
-              Pensando...
-            </Typography>
-          </Box>
-        )}
-      </Box>
-      <Box id="chat-input-container" display="flex">
-        <TextField id="message-input-field"
-          fullWidth
-          placeholder="Escribe tu mensaje..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          disabled={isLoading}
-          sx={{
-              m: 1,
-              '& .MuiInputBase-input': {
-                  color: '#F7FFF7', // Color del texto ingresado
-              },
-              '& .MuiInputLabel-root': {
-                  color: '#F7FFF7', // Color del placeholder
-              },
-              '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                      borderColor: '#F7FFF7', // Color del borde
-                  },
-                  '&:hover fieldset': {
-                      borderColor: '#F7FFF7', // Color del borde al hover
-                  },
-              },
-          }}
-          variant="outlined"
-          size="small"
-        />
-        <IconButton id="send-message-button"
-          onClick={handleSendMessage} 
-          disabled={isLoading || newMessage.trim() === ''}
+  const messagesEndRef = useRef<HTMLDivElement>(null); // Especifica el tipo como HTMLDivElement
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, isLoading]);
+
+    return (
+        <Box id="llm-chat-container"
+             sx={{
+                 width: '100%',
+                 display: 'flex',
+                 flexDirection: 'column',
+                 bgcolor: '#202A25',
+                 borderRadius: 2,
+                 boxShadow: 3,
+                 margin: 1,
+                 height: 'calc(100% - 16px)', // Altura completa menos márgenes
+                 minHeight: 0, // Importante para flexbox en algunos navegadores
+             }}
         >
-          <SendIcon id="send-icon" sx = {{ color: '#F7B801'}}/>
-        </IconButton>
-      </Box>
-    </Box>
-  );
+            {/* Contenedor de mensajes con scroll */}
+            <Box id="chat-messages-container"
+                 sx={{
+                     flex: 1, // Ocupa el espacio disponible
+                     overflowY: 'auto', // Habilita scroll vertical
+                     px: 1, // Padding horizontal
+                     py: 1, // Padding vertical
+                     display: 'flex',
+                     flexDirection: 'column',
+                     gap: 1, // Espacio entre mensajes
+                     // Estilos personalizados para la barra de scroll
+                     '&::-webkit-scrollbar': {
+                         width: '6px',
+                     },
+                     '&::-webkit-scrollbar-track': {
+                         background: '#2E3A34',
+                         borderRadius: '3px',
+                     },
+                     '&::-webkit-scrollbar-thumb': {
+                         background: '#5f4bb6',
+                         borderRadius: '3px',
+                     },
+                 }}
+            >
+                {/* Mensajes */}
+                {messages.map((message, index) => (
+                    <Box
+                        key={index}
+                        sx={{
+                            alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                            maxWidth: '80%',
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                bgcolor: message.sender === 'user' ? '#5f4bb6' : '#F7FFF7',
+                                color: message.sender === 'user' ? '#F7FFF7' : '#202A25',
+                                p: 1.5,
+                                borderRadius: 2,
+                                wordBreak: 'break-word',
+                            }}
+                        >
+                            {message.text}
+                        </Typography>
+                    </Box>
+                ))}
+
+                {/* Indicador de carga */}
+                {isLoading && (
+                    <Box sx={{ alignSelf: 'flex-start' }}>
+                        <Typography
+                            sx={{
+                                bgcolor: 'grey.200',
+                                color: 'black',
+                                p: 1.5,
+                                borderRadius: 2,
+                            }}
+                        >
+                            Pensando...
+                        </Typography>
+                    </Box>
+                )}
+
+                {/* Elemento invisible para scroll automático */}
+                <div ref={messagesEndRef} />
+            </Box>
+
+            {/* Área de entrada */}
+            <Box id="chat-input-container"
+                 sx={{
+                     display: 'flex',
+                     p: 1,
+                     gap: 1,
+                 }}
+            >
+                <TextField
+                    fullWidth
+                    placeholder="Escribe tu mensaje..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    disabled={isLoading}
+                    sx={{
+                        '& .MuiInputBase-input': {
+                            color: '#F7FFF7',
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#F7FFF7',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: '#F7FFF7',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#F7FFF7',
+                            },
+                        },
+                    }}
+                    variant="outlined"
+                    size="small"
+                />
+                <IconButton
+                    onClick={handleSendMessage}
+                    disabled={isLoading || newMessage.trim() === ''}
+                    sx={{ color: '#F7B801' }}
+                >
+                    <SendIcon />
+                </IconButton>
+            </Box>
+        </Box>
+    );
 };
 
 export default LLMChat;

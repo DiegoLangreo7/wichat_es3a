@@ -14,11 +14,12 @@ const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8004';
+const cardServiceUrl = process.env.CARD_SERVICE_URL || 'http://localhost:8008';
 
 app.use(cors());
 app.use(express.json());
 
-const metricsMiddleware = promBundle({ includeMethod: true });
+const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
 // NO BORREIS ESTO QUE ES PARA LOS TESTS DE ACEPTACION GRACIAS BESUS DANI
@@ -26,12 +27,15 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK' });
 });
 
+// Login endpoint
 app.post('/login', async (req, res) => {
     try {
-        const authResponse = await axios.post(authServiceUrl+'/login', req.body);
+        const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
         res.json(authResponse.data);
     } catch (error) {
-        res.status(error.response.status).json({ error: error.response.data.error });
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
     }
 });
 
@@ -107,18 +111,6 @@ app.post('/initializeQuestionsDB', async (req, res) => {
     }
 });
 
-// Login endpoint
-app.post('/login', async (req, res) => {
-  try {
-      const authResponse = await axios.post(`${authServiceUrl}/login`, req.body);
-      res.json(authResponse.data);
-  } catch (error) {
-      res.status(error?.response?.status || 500).json({
-          error: error?.response?.data?.error || error.message || 'Error interno'
-      });
-  }
-});
-
 // Add user endpoint
 app.post('/adduser', async (req, res) => {
   try {
@@ -150,6 +142,18 @@ app.post('/game-hint', async (req, res) => {
         console.error("Error in game-hint endpoint:", error);
         res.status(error?.response?.status || 500).json({
             error: error?.response?.data?.error || error.message || 'Error interno al procesar la pista'
+        });
+    }
+});
+
+app.get('/cardValues', async (req, res) => {
+    try {
+        console.log(`Gateway - Solicitando valores de tarjetas`);
+        const cardResponse = await axios.get(`${cardServiceUrl}/cardValues`);
+        res.json(cardResponse.data);
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
         });
     }
 });

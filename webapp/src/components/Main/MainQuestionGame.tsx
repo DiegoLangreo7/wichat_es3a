@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, Paper, Slider, Grid } from "@mui/material";
 import NavBar from "./items/NavBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import PublicIcon from '@mui/icons-material/Public';
 import HistoryIcon from '@mui/icons-material/History';
@@ -95,12 +95,19 @@ const MainQuestionGame = () => {
                  flexDirection: "column",
                  alignItems: "center",
                  backgroundColor: "#202A25",
-                 padding: "0 8px",
                  overflow: "hidden",
                  boxSizing: "border-box"
              }}
         >
-            <Box sx={{ width: "100%", position: "sticky", top: 0, zIndex: 1000 }}>
+            {/* NavBar con ancho completo */}
+            <Box sx={{
+                width: "100vw",  // Cambiado a 100vw para asegurar el ancho de la vista
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+                left: 0,         // Asegura que empiece desde el borde izquierdo
+                right: 0         // Asegura que llegue hasta el borde derecho
+            }}>
                 <NavBar />
             </Box>
 
@@ -263,6 +270,7 @@ const MainQuestionGame = () => {
 
                 <Button
                     onClick={handleButtonClick}
+                    data-testid="play-button"
                     sx={{
                         backgroundColor: "#5f4bb6",
                         color: "white",
