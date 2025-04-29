@@ -19,7 +19,7 @@ const cardServiceUrl = process.env.CARD_SERVICE_URL || 'http://localhost:8008';
 app.use(cors());
 app.use(express.json());
 
-const metricsMiddleware = promBundle({ includeMethod: true });
+const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
 // NO BORREIS ESTO QUE ES PARA LOS TESTS DE ACEPTACION GRACIAS BESUS DANI

@@ -67,39 +67,61 @@ const AddUser = () => {
                 <Typography id="add-user-title" component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7'}}>
                     Create an account
                 </Typography>
-                    <TextField
-                        id="username-input"
-                        name="username"
-                        margin="normal"
-                        fullWidth
-                        label="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        error={!!error.username}
-                        helperText={error.username}
-                        sx={{
-                            // Estilo cuando NO está enfocado (normal)
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: '#EDC9FF', // Color del borde normal
-                                },
+                <TextField
+                    id="username-input"
+                    name="username"
+                    margin="normal"
+                    fullWidth
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    error={!!error.username}
+                    helperText={error.username}
+                    sx={{
+                        // Estilo normal (sin error)
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: '#EDC9FF', // Borde normal
                             },
-                            // Estilo cuando está enfocado
-                            '& .MuiOutlinedInput-root.Mui-focused': {
-                                '& fieldset': {
-                                    borderColor: '#EDC9FF', // Color del borde en focus
-                                },
+                            '&:hover fieldset': {
+                                borderColor: '#EDC9FF', // Borde al pasar el mouse
                             },
-                            // Cambiar color de la etiqueta (label)
-                            '& .MuiInputLabel-root': {
-                                color: '#F7FFF7', // Color de la etiqueta normal
+                        },
+                        // Estilo cuando está enfocado (sin error)
+                        '& .MuiOutlinedInput-root.Mui-focused': {
+                            '& fieldset': {
+                                borderColor: '#EDC9FF', // Borde en focus
                             },
-                            // Cambiar color de la etiqueta en focus
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: '#F7FFF7', // Color de la etiqueta en focus
+                        },
+                        // Estilo cuando hay error (sobrescribe los estilos anteriores)
+                        '& .MuiOutlinedInput-root.Mui-error': {
+                            '& fieldset': {
+                                borderColor: '#F7B801', // Borde en error
                             },
-                        }}
-                    />
+                            '&:hover fieldset': {
+                                borderColor: '#F7B801', // Borde en error + hover
+                            },
+                        },
+                        // Estilo del label normal
+                        '& .MuiInputLabel-root': {
+                            color: '#F7FFF7', // Label normal
+                        },
+                        // Label en focus (sin error)
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: '#F7FFF7',
+                        },
+                        // Label cuando hay error
+                        '& .MuiInputLabel-root.Mui-error': {
+                            color: '#F7B801', // Label en error
+                        },
+                        // Helper text (mensaje de error)
+                        '& .MuiFormHelperText-root': {
+                            '&.Mui-error': {
+                                color: '#F7B801', // Texto de error en morado oscuro
+                            },
+                        },
+                    }}
+                />
                     <TextField
                         id="password-input"
                         name="password"
@@ -112,30 +134,52 @@ const AddUser = () => {
                         error={!!error.password}
                         helperText={error.password}
                         sx={{
-                            // Estilo cuando NO está enfocado (normal)
+                            // Estilo normal (sin error)
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    borderColor: '#EDC9FF', // Color del borde normal
+                                    borderColor: '#EDC9FF', // Borde normal
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: '#EDC9FF', // Borde al pasar el mouse
                                 },
                             },
-                            // Estilo cuando está enfocado
+                            // Estilo cuando está enfocado (sin error)
                             '& .MuiOutlinedInput-root.Mui-focused': {
                                 '& fieldset': {
-                                    borderColor: '#EDC9FF', // Color del borde en focus
+                                    borderColor: '#EDC9FF', // Borde en focus
                                 },
                             },
-                            // Cambiar color de la etiqueta (label)
-                            '& .MuiInputLabel-root': {
-                                color: '#F7FFF7', // Color de la etiqueta normal
+                            // Estilo cuando hay error (sobrescribe los estilos anteriores)
+                            '& .MuiOutlinedInput-root.Mui-error': {
+                                '& fieldset': {
+                                    borderColor: '#F7B801', // Borde en error
+                                },
+                                '&:hover fieldset': {
+                                    borderColor: '#F7B801', // Borde en error + hover
+                                },
                             },
-                            // Cambiar color de la etiqueta en focus
+                            // Estilo del label normal
+                            '& .MuiInputLabel-root': {
+                                color: '#F7FFF7', // Label normal
+                            },
+                            // Label en focus (sin error)
                             '& .MuiInputLabel-root.Mui-focused': {
-                                color: '#F7FFF7', // Color de la etiqueta en focus
+                                color: '#F7FFF7',
+                            },
+                            // Label cuando hay error
+                            '& .MuiInputLabel-root.Mui-error': {
+                                color: '#F7B801', // Label en error
+                            },
+                            // Helper text (mensaje de error)
+                            '& .MuiFormHelperText-root': {
+                                '&.Mui-error': {
+                                    color: '#F7B801', // Texto de error en morado oscuro
+                                },
                             },
                         }}
                     />
                     {error.general && (
-                        <Typography id="error-message" color="error" sx={{ mt: 1 }}>
+                        <Typography id="error-message" sx={{ mt: 1 , color: '#F7B801'}}>
                             {error.general.split('\n').map((line, index) => (
                                 <React.Fragment key={index}>
                                     {line}
