@@ -95,12 +95,19 @@ const MainQuestionGame = () => {
                  flexDirection: "column",
                  alignItems: "center",
                  backgroundColor: "#202A25",
-                 padding: "0 8px",
                  overflow: "hidden",
                  boxSizing: "border-box"
              }}
         >
-            <Box sx={{ width: "100%", position: "sticky", top: 0, zIndex: 1000 }}>
+            {/* NavBar con ancho completo */}
+            <Box sx={{
+                width: "100vw",  // Cambiado a 100vw para asegurar el ancho de la vista
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+                left: 0,         // Asegura que empiece desde el borde izquierdo
+                right: 0         // Asegura que llegue hasta el borde derecho
+            }}>
                 <NavBar />
             </Box>
 
