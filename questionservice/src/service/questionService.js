@@ -69,22 +69,6 @@ app.get('/getDBQuestions', async (req, res) => {
     }
 });
 
-// Endpoint para obtener preguntas por categoría (sin eliminarlas)
-app.get('/viewQuestions/:category', async (req, res) => {
-    try {
-        const category = req.params.category;
-        const questions = await dataService.getQuestionsByCategory(category);
-        res.json({
-            category,
-            count: questions.length,
-            questions
-        });
-    } catch (error) {
-        console.log("Error en la petición:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // Endpoint para verificar el estado del servicio
 app.get('/health', (req, res) => {
     const generatingCategories = Array.from(generating);
