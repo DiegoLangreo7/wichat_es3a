@@ -14,6 +14,7 @@ const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8004';
+const historicUrl = process.env.HISTORIC_SERVICE_URL || 'http://localhost:8007';
 const cardServiceUrl = process.env.CARD_SERVICE_URL || 'http://localhost:8008';
 
 app.use(cors());
@@ -151,6 +152,43 @@ app.get('/cardValues', async (req, res) => {
         console.log(`Gateway - Solicitando valores de tarjetas`);
         const cardResponse = await axios.get(`${cardServiceUrl}/cardValues`);
         res.json(cardResponse.data);
+    } catch (error) {
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno'
+        });
+    }
+});
+
+app.post('/historic/addQuestion', async (req, res) => {
+    try {
+        const { user, type, options, correctAnswer, category, answer, time, imageUrl } = req.body;
+        console.log("Request to historic:", req.body);
+
+        // Reenviar la solicitud directamente al servicio historial
+        const response = await axios.post(`${historicUrl}/historic/addQuestion`, {
+            user,
+            type,
+            options,
+            correctAnswer,
+            category,
+            answer,
+            time,
+            imageUrl });
+
+        res.json(response.data);
+    } catch (error) {
+        console.error("Error in historic endpoint:", error);
+        res.status(error?.response?.status || 500).json({
+            error: error?.response?.data?.error || error.message || 'Error interno al añadir a historial'
+        });
+    }
+});
+
+app.get('/historic/:username', async (req, res) => {
+    try {
+        console.log(`Gateway - Solicitando historial para usuario: ${req.params.username}`);
+        const historic = await axios.get(`${historicUrl}/historic/:username`);
+        res.json(historic.data);
     } catch (error) {
         res.status(error?.response?.status || 500).json({
             error: error?.response?.data?.error || error.message || 'Error interno'
