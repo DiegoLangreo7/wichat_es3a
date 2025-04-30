@@ -43,7 +43,7 @@ describe('Gateway Service', () => {
 
     it('should forward login request to auth service', async () => {
         mockAxios('post', '/login', { data: { token: 'mockedToken' } });
-        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 200, { token: 'mockedToken' });
+        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 200, { token: 'mockedToken' }); //NOSONAR
     });
 
     it('should resend the error 500 on login from the auth service', async () => {

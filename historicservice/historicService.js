@@ -19,7 +19,9 @@ mongoose.connect(mongoUri);
 
 app.post('/historic/addQuestion', async (req, res) => {
     try {
-
+        if(!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).json({ error: 'No data provided' });
+        }
         const questionUser = new QuestionUser({
             user: req.body.user,
             type: req.body.type,
@@ -30,7 +32,7 @@ app.post('/historic/addQuestion', async (req, res) => {
             time: req.body.time,
             imageUrl: req.body.imageUrl,
         })
-
+        console.log(questionUser);
         await questionUser.save();
         res.json(questionUser);
     } catch (error) {
