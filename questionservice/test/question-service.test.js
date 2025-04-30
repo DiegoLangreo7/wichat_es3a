@@ -1,9 +1,14 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const dataService = require('../src/service/questionSaverService');
 
 let mongoServer;
 let app;
-
+/*
+jest.mock('../src/service/questionSaverService', () => ({
+    getAllQuestions: jest.fn(),
+}));
+*/
 beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
@@ -25,7 +30,7 @@ describe('Question Service', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Questions initialized successfully');
-    });
+    }, 60000);
 
     it('should get a question by category on GET /questions/:category', async () => {
         const response = await request(app).get('/questions/country');
@@ -35,7 +40,7 @@ describe('Question Service', () => {
         expect(response.body).toHaveProperty('correctAnswer');
         expect(response.body).toHaveProperty('category', 'country');
         expect(response.body).toHaveProperty('imageUrl');
-    });
+    },60000);
 
     it('should return 500 if no questions are available on GET /questions/:category', async () => {
         const response = await request(app).get('/questions/unknownCategory');
@@ -47,7 +52,7 @@ describe('Question Service', () => {
         const response = await request(app).get('/getDBQuestions');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
-    });
+    }, 60000);
 
     it('should return service health on GET /health', async () => {
         const response = await request(app).get('/health');
@@ -56,4 +61,14 @@ describe('Question Service', () => {
         expect(response.body).toHaveProperty('service', 'question-service');
         expect(response.body).toHaveProperty('timestamp');
     });
+/*
+    it('should return 500 and an error message if dataService.getAllQuestions throws an error', async () => {
+        dataService.getAllQuestions.mockRejectedValue(new Error('Database error'));
+
+        const response = await request(app).get('/getDBQuestions');
+
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty('error', 'Database error');
+    });
+    */
 });

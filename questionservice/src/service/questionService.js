@@ -1,6 +1,7 @@
 const express = require('express');
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
+const mongoose = require("mongoose");
 const app = express();
 const port = 8004;
 app.disable('x-powered-by');
@@ -83,6 +84,10 @@ app.get('/health', (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
+});
+
+server.on('close', () => {
+    mongoose.connection.close();
 });
 
 module.exports = server;
