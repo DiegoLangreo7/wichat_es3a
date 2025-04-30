@@ -8,9 +8,9 @@ afterAll(async () => {
 
 jest.mock('axios');
 
-// Helper function to mock axios responses
-const mockAxiosPost = (url, response, isError = false) => {
-    axios.post.mockImplementationOnce((reqUrl) => {
+// Helper functions
+const mockAxios = (method, url, response, isError = false) => {
+    axios[method].mockImplementationOnce((reqUrl) => {
         if (reqUrl.endsWith(url)) {
             if (isError) {
                 return Promise.reject({
@@ -25,289 +25,148 @@ const mockAxiosPost = (url, response, isError = false) => {
     });
 };
 
-const mockAxiosGet = (url, response, isError = false) => {
-    axios.get.mockImplementationOnce((reqUrl) => {
-        if (reqUrl.endsWith(url)) {
-            if (isError) {
-                return Promise.reject({
-                    response: {
-                        status: response.status,
-                        data: response.data,
-                    },
-                });
-            }
-            return Promise.resolve({ data: response.data });
-        }
-    });
+const testEndpoint = async (method, endpoint, payload, expectedStatus, expectedResponse) => {
+    const response = await request(app)[method](endpoint).send(payload);
+    expect(response.statusCode).toBe(expectedStatus);
+    expect(response.body).toEqual(expectedResponse);
 };
 
 describe('Gateway Service', () => {
     it('should forward login request to auth service', async () => {
-        mockAxiosPost('/login', { data: { token: 'mockedToken' } });
-
-        const response = await request(app)
-            .post('/login')
-            .send({ username: 'testuser', password: 'testpassword' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.token).toBe('mockedToken');
+        mockAxios('post', '/login', { data: { token: 'mockedToken' } });
+        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 200, { token: 'mockedToken' });
     });
 
     it('should resend the error 500 on login from the auth service', async () => {
-        mockAxiosPost('/login', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .post('/login')
-            .send({ username: 'testuser', password: 'testpassword' });
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('post', '/login', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' });
     });
 
     it('should forward stats/:username request to user service', async () => {
-        mockAxiosGet('/stats/testUser', { data: { stats: { punctuation: '100'} } });
-
-        const response = await request(app)
-            .get('/stats/testUser');
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.stats.punctuation).toBe('100');
+        mockAxios('get', '/stats/testUser', { data: { stats: { punctuation: '100' } } });
+        await testEndpoint('get', '/stats/testUser', null, 200, { stats: { punctuation: '100' } });
     });
 
     it('should resend the error 500 on stats/:username from the user service', async () => {
-        mockAxiosGet('/stats/testUser', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .get('/stats/testUser');
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('get', '/stats/testUser', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('get', '/stats/testUser', null, 500, { error: 'Internal Server Error' });
     });
 
     it('should forward stats request to user service', async () => {
-        mockAxiosPost('/stats', { data: { success: 'OK' } });
-
-        const response = await request(app)
-            .post('/stats')
-            .send({ punctuation: '200' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.success).toBe('OK');
+        mockAxios('post', '/stats', { data: { success: 'OK' } });
+        await testEndpoint('post', '/stats', { punctuation: '200' }, 200, { success: 'OK' });
     });
 
     it('should resend the error 500 on stats from the user service', async () => {
-        mockAxiosPost('/stats', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .post('/stats')
-            .send({ punctuation: '200' });
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('post', '/stats', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('post', '/stats', { punctuation: '200' }, 500, { error: 'Internal Server Error' });
     });
 
     it('should forward getStats request to user service', async () => {
-        mockAxiosGet('/getStats', { data: { stats: { punctuation: '100'} } });
-
-        const response = await request(app)
-            .get('/getStats');
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.stats.punctuation).toBe('100');
+        mockAxios('get', '/getStats', { data: { stats: { punctuation: '100' } } });
+        await testEndpoint('get', '/getStats', null, 200, { stats: { punctuation: '100' } });
     });
 
     it('should resend the error 500 on getStats from the user service', async () => {
-        mockAxiosGet('/getStats', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .get('/getStats');
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('get', '/getStats', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('get', '/getStats', null, 500, { error: 'Internal Server Error' });
     });
 
     it('should return questions for a valid category', async () => {
-        mockAxiosGet('/questions/science', { data: { question: 'What is the speed of light?' } });
-
-        const response = await request(app)
-            .get('/questions/science');
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.question).toBe('What is the speed of light?');
+        mockAxios('get', '/questions/science', { data: { question: 'What is the speed of light?' } });
+        await testEndpoint('get', '/questions/science', null, 200, { question: 'What is the speed of light?' });
     });
 
     it('should return 500 if the question service fails', async () => {
-        mockAxiosGet('/questions/science', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .get('/questions/science');
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('get', '/questions/science', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('get', '/questions/science', null, 500, { error: 'Internal Server Error' });
     });
 
     it('should return 404 if the category is not found', async () => {
-        mockAxiosGet('/questions/unknown', { status: 404, data: { error: 'Category not found' } }, true);
-
-        const response = await request(app)
-            .get('/questions/unknown');
-
-        expect(response.status).toBe(404);
-        expect(response.body.error).toBe('Category not found');
+        mockAxios('get', '/questions/unknown', { status: 404, data: { error: 'Category not found' } }, true);
+        await testEndpoint('get', '/questions/unknown', null, 404, { error: 'Category not found' });
     });
 
     it('should return 400 if the category is invalid', async () => {
-        mockAxiosGet('/questions/invalid', { status: 400, data: { error: 'Invalid category' } }, true);
-
-        const response = await request(app)
-            .get('/questions/invalid');
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid category');
+        mockAxios('get', '/questions/invalid', { status: 400, data: { error: 'Invalid category' } }, true);
+        await testEndpoint('get', '/questions/invalid', null, 400, { error: 'Invalid category' });
     });
 
     it('should forward add user request to user service', async () => {
-        mockAxiosPost('/adduser', { data: { userId: 'mockedUserId' } });
-
-        const response = await request(app)
-            .post('/adduser')
-            .send({ username: 'newuser', password: 'newpassword' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.userId).toBe('mockedUserId');
+        mockAxios('post', '/adduser', { data: { userId: 'mockedUserId' } });
+        await testEndpoint('post', '/adduser', { username: 'newuser', password: 'newpassword' }, 200, { userId: 'mockedUserId' });
     });
 
     it('should resend the error 500 on adduser from the user service', async () => {
-        mockAxiosPost('/adduser', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .post('/adduser')
-            .send({ username: 'testuser', password: 'testpassword' });
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('post', '/adduser', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('post', '/adduser', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' });
     });
 
     it('should initialize the questions database successfully', async () => {
-        mockAxiosPost('/initializeQuestionsDB', { data: { message: 'Preguntas inicializadas correctamente' } });
-
-        const response = await request(app)
-            .post('/initializeQuestionsDB')
-            .send({ someData: 'example' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Preguntas inicializadas correctamente');
+        mockAxios('post', '/initializeQuestionsDB', { data: { message: 'Preguntas inicializadas correctamente' } });
+        await testEndpoint('post', '/initializeQuestionsDB', { someData: 'example' }, 200, { message: 'Preguntas inicializadas correctamente' });
     });
 
     it('should forward game-hint request to the llm service', async () => {
-        mockAxiosPost('/game-hint', { data: { answer: 'llmanswer' } });
-
-        const response = await request(app)
-            .post('/game-hint')
-            .send({ question: 'question', apiKey: 'apiKey', model: 'gemini' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.answer).toBe('llmanswer');
+        mockAxios('post', '/game-hint', { data: { answer: 'llmanswer' } });
+        await testEndpoint('post', '/game-hint', { question: 'question', apiKey: 'apiKey', model: 'gemini' }, 200, { answer: 'llmanswer' });
     });
 
     it('should resend the error 500 on game-hint from the llm service', async () => {
-        mockAxiosPost('/game-hint', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .post('/game-hint')
-            .send({ question: 'question', apiKey: 'apiKey', model: 'gemini' });
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('post', '/game-hint', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('post', '/game-hint', { question: 'question', apiKey: 'apiKey', model: 'gemini' }, 500, { error: 'Internal Server Error' });
     });
 
     it('should return card values successfully', async () => {
-        mockAxiosGet('/cardValues', { data: { values: ['Ace', 'King', 'Queen'] } });
-
-        const response = await request(app)
-            .get('/cardValues');
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.values).toEqual(['Ace', 'King', 'Queen']);
+        mockAxios('get', '/cardValues', { data: { values: ['Ace', 'King', 'Queen'] } });
+        await testEndpoint('get', '/cardValues', null, 200, { values: ['Ace', 'King', 'Queen'] });
     });
 
     it('should return 500 if the card service fails', async () => {
-        mockAxiosGet('/cardValues', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .get('/cardValues');
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('get', '/cardValues', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('get', '/cardValues', null, 500, { error: 'Internal Server Error' });
     });
 
     it('should add a question to the historic successfully', async () => {
-        mockAxiosPost('/historic/addQuestion', { data: { message: 'Pregunta añadida al historial correctamente' } });
-
-        const response = await request(app)
-            .post('/historic/addQuestion')
-            .send({
-                user: 'testUser',
-                type: 'multiple-choice',
-                options: ['A', 'B', 'C', 'D'],
-                correctAnswer: 'A',
-                category: 'science',
-                answer: 'A',
-                time: 30,
-                imageUrl: 'http://example.com/image.png'
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Pregunta añadida al historial correctamente');
+        mockAxios('post', '/historic/addQuestion', { data: { message: 'Pregunta añadida al historial correctamente' } });
+        await testEndpoint('post', '/historic/addQuestion', {
+            user: 'testUser',
+            type: 'multiple-choice',
+            options: ['A', 'B', 'C', 'D'],
+            correctAnswer: 'A',
+            category: 'science',
+            answer: 'A',
+            time: 30,
+            imageUrl: 'http://example.com/image.png',
+        }, 200, { message: 'Pregunta añadida al historial correctamente' });
     });
 
     it('should return 500 if the historic service fails', async () => {
-        mockAxiosPost('/historic/addQuestion', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .post('/historic/addQuestion')
-            .send({
-                user: 'testUser',
-                type: 'multiple-choice',
-                options: ['A', 'B', 'C', 'D'],
-                correctAnswer: 'A',
-                category: 'science',
-                answer: 'A',
-                time: 30,
-                imageUrl: 'http://example.com/image.png'
-            });
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('post', '/historic/addQuestion', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('post', '/historic/addQuestion', {
+            user: 'testUser',
+            type: 'multiple-choice',
+            options: ['A', 'B', 'C', 'D'],
+            correctAnswer: 'A',
+            category: 'science',
+            answer: 'A',
+            time: 30,
+            imageUrl: 'http://example.com/image.png',
+        }, 500, { error: 'Internal Server Error' });
     });
 
     it('should return the historic data for a valid username', async () => {
-        mockAxiosGet('/historic/testUser', { data: { history: ['Question1', 'Question2'] } });
-
-        const response = await request(app)
-            .get('/historic/testUser');
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.history).toEqual(['Question1', 'Question2']);
+        mockAxios('get', '/historic/testUser', { data: { history: ['Question1', 'Question2'] } });
+        await testEndpoint('get', '/historic/testUser', null, 200, { history: ['Question1', 'Question2'] });
     });
 
     it('should return 500 if the historic service fails', async () => {
-        mockAxiosGet('/historic/testUser', { status: 500, data: { error: 'Internal Server Error' } }, true);
-
-        const response = await request(app)
-            .get('/historic/testUser');
-
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Internal Server Error');
+        mockAxios('get', '/historic/testUser', { status: 500, data: { error: 'Internal Server Error' } }, true);
+        await testEndpoint('get', '/historic/testUser', null, 500, { error: 'Internal Server Error' });
     });
 
     it('should return 404 if the username is not found', async () => {
-        mockAxiosGet('/historic/unknownUser', { status: 404, data: { error: 'User not found' } }, true);
-
-        const response = await request(app)
-            .get('/historic/unknownUser');
-
-        expect(response.status).toBe(404);
-        expect(response.body.error).toBe('User not found');
+        mockAxios('get', '/historic/unknownUser', { status: 404, data: { error: 'User not found' } }, true);
+        await testEndpoint('get', '/historic/unknownUser', null, 404, { error: 'User not found' });
     });
 });
