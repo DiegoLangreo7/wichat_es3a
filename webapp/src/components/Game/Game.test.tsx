@@ -12,6 +12,7 @@ jest.mock('react-router', () => ({
     ...jest.requireActual('react-router'),
     useNavigate: () => mockNavigate,
 }));
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 const mockQuestion = {
     _id: "1",
@@ -50,7 +51,7 @@ describe("Game Component", () => {
         mockAxios.reset();
         mockNavigate.mockReset();
         mockAxios.onGet('http://localhost:8000/questions/undefined').reply(200, mockQuestion);
-        mockAxios.onPost('http://localhost:8007/historic/addQuestion').reply(200);
+        mockAxios.onPost('http://localhost:8000/historic/addQuestion').reply(200);
     });
 
     afterEach(() => {

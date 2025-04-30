@@ -75,7 +75,7 @@ services:
     networks:
       - mynetwork
     environment:
-      LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+      LLM_API_KEY: ${LLM_API_KEY}
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
@@ -123,7 +123,7 @@ services:
     build:
       context: ./webapp
       args:
-        REACT_APP_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+        REACT_APP_LLM_API_KEY: ${LLM_API_KEY}
         REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
     depends_on:
       - gatewayservice

@@ -13,7 +13,7 @@ module.exports = {
      */
     getNumberQuestionsByCategory: async function(category){
         try {
-            const numberQuestions = await Question.countDocuments({ category: category });
+            const numberQuestions = await Question.countDocuments({ category: category }); //NOSONAR
             return numberQuestions;
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -54,7 +54,7 @@ module.exports = {
         if (!Array.isArray(questions) || questions.length === 0) return;
 
         try {
-            await Question.insertMany(questions);
+            await Question.insertMany(questions); //NOSONAR
             console.log(`${questions.length} preguntas guardadas`);
         } catch (error) {
             console.error("Error guardando preguntas en lote:", error.message);

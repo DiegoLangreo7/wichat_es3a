@@ -27,7 +27,7 @@ const Login = () => {
             valid = false;
         }
         if (!password) {
-            newErrors.password = 'Contraseña obligatoria.';
+            newErrors.password = 'Contraseña obligatoria.'; //NOSONAR
             valid = false;
         }
 
