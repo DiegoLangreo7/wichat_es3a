@@ -10,7 +10,7 @@ jest.mock('axios');
 
 // Helper functions
 const mockAxios = (method, url, response, isError = false) => {
-    axios[method].mockImplementationOnce((reqUrl) => {
+    axios[method].mockImplementation((reqUrl) => {
         if (reqUrl.endsWith(url)) {
             if (isError) {
                 return Promise.reject({
@@ -32,6 +32,15 @@ const testEndpoint = async (method, endpoint, payload, expectedStatus, expectedR
 };
 
 describe('Gateway Service', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
+    it('should return 200 on health check', async () => {
+        mockAxios('get', '/health', { status: 200, data: { status: 'OK' } });
+        await testEndpoint('get', '/health', null, 200, { status: 'OK' });
+    });
+
     it('should forward login request to auth service', async () => {
         mockAxios('post', '/login', { data: { token: 'mockedToken' } });
         await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 200, { token: 'mockedToken' });
@@ -80,6 +89,18 @@ describe('Gateway Service', () => {
     it('should return 500 if the question service fails', async () => {
         mockAxios('get', '/questions/science', { status: 500, data: { error: 'Internal Server Error' } }, true);
         await testEndpoint('get', '/questions/science', null, 500, { error: 'Internal Server Error' });
+    });
+
+    it('should handle no response from the server', async () => {
+        axios.get.mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                reject({ request: {} });
+            });
+        });
+
+        const response = await request(app).get('/questions/science');
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Error interno');
     });
 
     it('should return 404 if the category is not found', async () => {
