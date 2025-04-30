@@ -31,10 +31,10 @@ endif::arc42help[]
 
 |===
 |Quality|Description|Scenario
-| _Usability_ | _The application must be easy to learn to use by design._ | __
-| _Performance_ | _The application should have a waiting time of no more than 5 seconds between actions._ | __
-| _Persistence_ | _The system should prevent any possible lose of user information._ | __
-| _Integrity_ | _The system should grant confidentiality to the user's data._ | __
+| _Usability_ | _The application must be easy to learn to use by design._ | SC1
+| _Performance_ | _The application should have a waiting time of no more than 5 seconds between actions._ | SC2
+| _Persistence_ | _The system should prevent any possible lose of user information._ | SC3
+| _Integrity_ | _The system should grant confidentiality to the user's data._ | SC4
 |===
 
 ifdef::arc42help[]
@@ -59,6 +59,21 @@ In any case the tree should include links to the scenarios of the following sect
 endif::arc42help[]
 
 === Quality Scenarios
+
+|===
+| ID | Scenario Description
+| SC1
+| A first-time user interacts with the application and finds all functionalities self-explanatory.
+
+| SC2
+| When answering a question the user experiences a maximum delay of 5 seconds.
+
+| SC3
+| After an unexpected shutdown, the system restores all user data (e.g., achievements, preferences) without corruption.
+
+| SC4
+| Sensitive user data (e.g., login credentials, payment info) is securely stored and never exposed in logs or APIs.
+|===
 
 ifdef::arc42help[]
 [role="arc42help"]

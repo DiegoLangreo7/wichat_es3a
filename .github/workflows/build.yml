@@ -1,4 +1,5 @@
 name: Build
+
 on:
   push:
     branches:
@@ -7,8 +8,9 @@ on:
     types: [opened, synchronize, reopened]
   release:
     types: [published]
+
 jobs:
-  unit-tests:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
