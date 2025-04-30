@@ -39,7 +39,7 @@ describe('Gateway Service', () => {
 
     it('should resend the error 500 on login from the auth service', async () => {
         mockAxios('post', '/login', { status: 500, data: { error: 'Internal Server Error' } }, true);
-        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' });
+        await testEndpoint('post', '/login', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' }); //NOSONAR
     });
 
     it('should forward stats/:username request to user service', async () => {
@@ -94,12 +94,12 @@ describe('Gateway Service', () => {
 
     it('should forward add user request to user service', async () => {
         mockAxios('post', '/adduser', { data: { userId: 'mockedUserId' } });
-        await testEndpoint('post', '/adduser', { username: 'newuser', password: 'newpassword' }, 200, { userId: 'mockedUserId' });
+        await testEndpoint('post', '/adduser', { username: 'newuser', password: 'newpassword' }, 200, { userId: 'mockedUserId' }); //NOSONAR
     });
 
     it('should resend the error 500 on adduser from the user service', async () => {
         mockAxios('post', '/adduser', { status: 500, data: { error: 'Internal Server Error' } }, true);
-        await testEndpoint('post', '/adduser', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' });
+        await testEndpoint('post', '/adduser', { username: 'testuser', password: 'testpassword' }, 500, { error: 'Internal Server Error' }); //NOSONAR
     });
 
     it('should initialize the questions database successfully', async () => {
