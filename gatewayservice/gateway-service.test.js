@@ -98,9 +98,7 @@ describe('Gateway Service', () => {
             });
         });
 
-        const response = await request(app).get('/questions/science');
-        expect(response.statusCode).toBe(500);
-        expect(response.body.error).toBe('Error interno');
+        await testEndpoint('get', '/questions/science', null, 500, { error: 'Error interno' });
     });
 
     it('should return 404 if the category is not found', async () => {
