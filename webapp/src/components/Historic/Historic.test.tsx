@@ -35,7 +35,7 @@ describe('Historic Component', () => {
             incorrectAnswered: 0,
             puntuation: 0
         });
-        mockAxios.onGet('http://localhost:8007/historic/testUser').reply(historicResponse.status, historicResponse.data);
+        mockAxios.onGet('http://localhost:8000/historic/testUser').reply(historicResponse.status, historicResponse.data);
     };
 
     const verifyStatistics = async (stats: any) => {

@@ -75,7 +75,7 @@ const Game: React.FC = () => {
 
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-    const historicEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
+    //const historicEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
 
     const preloadImage = (src: string): Promise<void> => {
         return new Promise((resolve, reject) => {
@@ -196,7 +196,7 @@ const Game: React.FC = () => {
 
         try {
             //console.log("mandando a historial")
-            await axios.post(`${historicEndpoint}/historic/addQuestion`, {
+            await axios.post(`${apiEndpoint}/historic/addQuestion`, {
                 user: username,
                 type: currentQuestion?.category,
                 options: currentQuestion?.options,

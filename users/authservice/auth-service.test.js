@@ -46,7 +46,7 @@ describe('Auth Service', () => {
     it('Should not perform a login operation and send a 401 error', async () => {
         const user = {
             username: 'name',
-            password: 'wrongpassword',
+            password: 'wrongpassword', //NOSONAR
         };
         const response = await request(app).post('/login').send(user);
         expect(response.status).toBe(401);
