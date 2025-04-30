@@ -21,9 +21,12 @@ describe('NavBar redirections', () => {
         </MemoryRouter>
     );
 
-    const clickAndAssert = (text: string, expectedRoute: string) => {
+    const clickAndAssert = (text: string, expectedRoute: string, twice = false, text2 = '') => {
         const { getByText } = setup();
         fireEvent.click(getByText(text));
+        if (twice) {
+            fireEvent.click(getByText(text2));
+        }
         expect(mockNavigate).toHaveBeenCalledWith(expectedRoute);
     };
 
@@ -40,31 +43,18 @@ describe('NavBar redirections', () => {
     });
 
     it("should redirect to /main/question when clicking on Preguntas", () => {
-        const { getByText } = setup();
-        fireEvent.click(getByText("Jugar"));
-        fireEvent.click(getByText("Preguntas y respuestas"));
-        expect(mockNavigate).toHaveBeenCalledWith("/main/question");
+        clickAndAssert("Jugar", "/main/question", true, "Preguntas y respuestas");
     });
 
     it("should redirect to /cards when clicking on Memory", () => {
-        const { getByText } = setup();
-        fireEvent.click(getByText("Jugar"));
-        fireEvent.click(getByText("Juego de memoria"));
-        expect(mockNavigate).toHaveBeenCalledWith("/cards");
+        clickAndAssert("Jugar", "/cards", true, "Juego de memoria");
     });
 
     it("should redirect to /historic when clicking on Historial", () => {
-        const { getByText } = setup();
-        fireEvent.click(getByText("Usuario"));
-        fireEvent.click(getByText("Historial"));
-        expect(mockNavigate).toHaveBeenCalledWith("/historic");
+        clickAndAssert("Usuario", "/historic", true, "Historial");
     });
 
-
     it("should redirect to /logout when clicking on Cerrar sesión", () => {
-        const { getByText } = setup();
-        fireEvent.click(getByText("Usuario"));
-        fireEvent.click(getByText("Cerrar sesión"));
-        expect(mockNavigate).toHaveBeenCalledWith("/logout");
+        clickAndAssert("Usuario", "/logout", true, "Cerrar sesión");
     });
 });
