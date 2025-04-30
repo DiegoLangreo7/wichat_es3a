@@ -140,7 +140,6 @@ app.post('/game-hint', async (req, res) => {
         
         res.json(response.data);
     } catch (error) {
-        console.error("Error in game-hint endpoint:", error);
         res.status(error?.response?.status || 500).json({
             error: error?.response?.data?.error || error.message || 'Error interno al procesar la pista'
         });
@@ -187,7 +186,8 @@ app.post('/historic/addQuestion', async (req, res) => {
 app.get('/historic/:username', async (req, res) => {
     try {
         console.log(`Gateway - Solicitando historial para usuario: ${req.params.username}`);
-        const historic = await axios.get(`${historicUrl}/historic/:username`);
+        const username = req.params.username;
+        const historic = await axios.get(`${historicUrl}/historic/${username}`);
         res.json(historic.data);
     } catch (error) {
         res.status(error?.response?.status || 500).json({
