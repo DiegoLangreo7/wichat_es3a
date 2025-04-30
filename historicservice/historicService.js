@@ -7,6 +7,7 @@ const Question = require('../questionservice/src/model/question');
 const QuestionUser = require('./questionUser');
 
 const app = express();
+app.disable('x-powered-by');
 const port = 8007;
 
 app.use(cors({ origin: 'http://localhost:3000' }));

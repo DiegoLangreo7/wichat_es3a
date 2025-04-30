@@ -3,7 +3,7 @@ const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
 const app = express();
 const port = 8004;
-
+app.disable('x-powered-by');
 const MIN_QUESTIONS = 5; // Reducido para facilitar el inicio rápido
 const GENERATE_BATCH = 15;
 
