@@ -34,13 +34,13 @@ defineFeature(feature, test => {
         }, 3000);
 
         when('I fill the data in the form and press submit', async () => {
+            await page.waitForSelector("#username-input", { timeout: 3000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
         }, 3000);
 
         then('The main page should be displayed', async () => {
-            //await expect(page).toMatchElement("div", { text: username + ", ¿Listo para jugar?" });
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         }, 3000);
@@ -55,17 +55,19 @@ defineFeature(feature, test => {
             username = "signInUser"
             password = "123456q@"
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
-        }, 3000);
+        });
 
         when('I fill the data in the form and press submit', async () => {
+            await page.waitForSelector("#username-input", { timeout: 4000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
-        }, 3000);
+        });
 
         then('An error message should be displayed', async () => {
+            await page.waitForSelector("#error-message", { timeout: 4000 });
             await expect(page).toMatchElement("p", { text: "El usuario " + username +" ya existe" });
-        }, 3000);
+        });
 
     }, 20000)
 
@@ -81,12 +83,14 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data in the form and press submit with an invalid password', async () => {
+            await page.waitForSelector("#username-input", { timeout: 3000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
         } ,3000);
 
         then('An error message should be displayed', async () => {
+            await page.waitForSelector("#error-message", { timeout: 4000 });
             await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
         } ,3000);
 
