@@ -21,6 +21,7 @@ jobs:
     - run: npm --prefix users/userservice ci
     - run: npm --prefix questionservice ci
     - run: npm --prefix historicservice ci
+    - run: npm --prefix cardservice ci
     - run: npm --prefix llmservice ci
     - run: npm --prefix gatewayservice ci
     - run: npm --prefix gateway-api-service ci
@@ -29,6 +30,7 @@ jobs:
     - run: npm --prefix users/userservice test -- --coverage
     - run: npm --prefix questionservice test -- --coverage
     - run: npm --prefix historicservice test -- --coverage
+    - run: npm --prefix cardservice test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
       env:
         LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
