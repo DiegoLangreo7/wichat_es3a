@@ -63,6 +63,16 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/questiondb
 
+  cardservice:
+    container_name: cardservice-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/cardservice:latest
+    profiles: ["dev", "prod"]
+    build: ./cardservice
+    ports:
+      - "8008:8008"
+    networks:
+      - mynetwork
+
   llmservice:
     container_name: llmservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest

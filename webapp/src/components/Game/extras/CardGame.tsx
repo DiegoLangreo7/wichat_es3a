@@ -46,11 +46,27 @@ const CardGame: React.FC = () => {
         return () => clearInterval(interval);
     }, [isPaused, gameComplete, loading]);
 
+    const preloadImages = (images: string[]): Promise<void[]> => {
+        return Promise.all(
+            images.map((image) => {
+                return new Promise<void>((resolve, reject) => {
+                    const img = new Image();
+                    img.src = image;
+                    img.onload = () => resolve();
+                    img.onerror = () => reject(new Error(`Error loading image: ${image}`));
+                });
+            })
+        );
+    };
+
     const initializeGame = async () => {
         setLoading(true);
         try {
             const response = await axios.get(`${cardsEndpoint}/cardValues`);
             const images = response.data.images || [];
+
+            // Preload all images
+            await preloadImages(images);
 
             // Crear pares de cartas y mezclarlas
             const cardValues = images.flatMap((image: any) => [image]) // Duplica cada imagen para hacer pares
