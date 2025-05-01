@@ -6,9 +6,6 @@ import axios from "axios";
 import PublicIcon from '@mui/icons-material/Public';
 import HistoryIcon from '@mui/icons-material/History';
 import ScienceIcon from '@mui/icons-material/Science';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import PetsIcon from '@mui/icons-material/Pets';
-import PaletteIcon from '@mui/icons-material/Palette';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -85,7 +82,7 @@ const Main = () => {
     };
 
     const navigateToGameMode = (mode: string) => {
-        if (mode == "question"){
+        if (mode === "question"){
             axios.post(`${apiEndpoint}/initializeQuestionsDB`, 
                 {
                     categories: ["country", "cine", "science", "sports", "animals", "flags"]
@@ -280,7 +277,7 @@ const Main = () => {
                                     }}>
                                         {mode.label}
                                     </Typography>
-                                    {mode.value != "" && (
+                                    {mode.value !== "" && (
                                         <Button
                                             variant="contained"
                                             sx={{

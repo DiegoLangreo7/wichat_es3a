@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import {Container, Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
+import {Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
 import { ErrorResponse } from '../ErrorInterface';
 import { useNavigate } from 'react-router';
-import { v4 as uuidv4 } from 'uuid';
 import '../styles.css';
 
 const Login = () => {
@@ -11,13 +10,10 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<{ username: string; password: string; general: string }>({ username: '', password: '', general: '' });
     const [loading, setLoading] = useState(false);
-    const newSessionId = uuidv4();
 
 
     const navigate = useNavigate();
     const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-    const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
-
     const validateFields = () => {
         let valid = true;
         const newErrors = { username: '', password: '', general: '' };

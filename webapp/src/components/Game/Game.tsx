@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router';
 import axios from 'axios';
-import {
-    Typography,
-    Button,
-    Box,
-    CircularProgress,
-    Snackbar,
-    Alert
-} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Snackbar, Typography} from '@mui/material';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
@@ -51,10 +44,10 @@ const Game: React.FC = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [fetchError, setFetchError] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [, setErrorMessage] = useState<string>("");
     const [clueOpen, setClueOpen] = useState<boolean>(false);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null>(null);
+    const [, setIsCorrectAnswer] = useState<boolean | null>(null);
     const [timer, setTimer] = useState<number>(timeLimitFixed);
     const [finished, setFinished] = useState<boolean>(false);
     const [score, setScore] = useState<number>(0);
@@ -71,7 +64,7 @@ const Game: React.FC = () => {
     const [isPauseIconVisible, setIsPauseIconVisible] = useState<boolean>(true);
     const [clueUsed, setClueUsed] = useState<boolean>(false); // Nuevo estado para rastrear si se usó una pista
     const [showScoreAlert, setShowScoreAlert] = useState<boolean>(false); // Para mostrar alerta cuando se usa una pista
-    const [usedImageUrls, setUsedImageUrls] = useState<Set<string>>(new Set());
+    const [usedImageUrls, ] = useState<Set<string>>(new Set());
 
 
     const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -148,8 +141,7 @@ const Game: React.FC = () => {
         const roundTimeTaken = timeLimitFixed - currentTimer;
 
         if (currentQuestion?._id === nextQuestion?._id) {
-            let next = await fetchQuestion();
-            upcomingQuestion = next;
+            upcomingQuestion = await fetchQuestion();
         } else{
             if (nextQuestion) {
                 upcomingQuestion = nextQuestion;

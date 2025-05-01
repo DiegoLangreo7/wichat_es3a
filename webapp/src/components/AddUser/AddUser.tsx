@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import {Container, Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
+import { Typography, TextField, Button, Link, Box, Paper} from '@mui/material';
 import { useNavigate } from 'react-router';
-import { v4 as uuidv4 } from 'uuid';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -45,7 +44,7 @@ const AddUser = () => {
 							  
         } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            if (axiosError.response?.status == 400) {
+            if (axiosError.response?.status === 400) {
                 setError({ username: '', password: '', general: axiosError.response.data.error });
             }
 													  

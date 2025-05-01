@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import axios from 'axios';
 import {
     Typography,
     Button,
     Box,
     CircularProgress,
-    Card,
     CardMedia,
-    CardActionArea,
-    Grid,
     Snackbar,
     Alert
 } from '@mui/material';
@@ -17,7 +13,6 @@ import NavBar from "../../Main/items/NavBar";
 
 
 const CardGame: React.FC = () => {
-    const navigate = useNavigate();
     const [cards, setCards] = useState<Array<{id: number, value: string, flipped: boolean, matched: boolean}>>([]);
     const [flippedCards, setFlippedCards] = useState<number[]>([]);
     const [moves, setMoves] = useState(0);
@@ -27,13 +22,9 @@ const CardGame: React.FC = () => {
     const [isPaused, setIsPaused] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
     const cardsEndpoint: string = process.env.REACT_APP_CARDS_ENDPOINT || 'http://localhost:8008';
 
-    // Inicializar el juego
-    useEffect(() => {
-        initializeGame();
-    }, []);
+
 
     // Temporizador
     useEffect(() => {
@@ -89,6 +80,11 @@ const CardGame: React.FC = () => {
             setLoading(false);
         }
     };
+
+    // Inicializar el juego
+    useEffect(() => {
+        initializeGame();
+    }, [initializeGame]);
 
     const handleCardClick = (id: number) => {
         // No hacer nada si la carta ya está volteada o emparejada, o si ya hay 2 cartas volteadas
