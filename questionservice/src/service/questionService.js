@@ -3,9 +3,9 @@ const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
 const app = express();
 const port = 8004;
+
 app.disable('x-powered-by');
 const MIN_QUESTIONS = 20; // Reducido para facilitar el inicio rápido
-const GENERATE_BATCH = 15;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -20,7 +20,7 @@ app.get('/questions/:category', async (req, res) => {
 
         if (numberQuestions < MIN_QUESTIONS) {
             console.log("Generando preguntas...");
-            await generateService.generateQuestionsByCategory(category, GENERATE_BATCH);
+            await generateService.generateQuestionsByCategory(category);
             console.log("Preguntas generadas correctamente");
 
             // Esperar hasta que haya preguntas disponibles

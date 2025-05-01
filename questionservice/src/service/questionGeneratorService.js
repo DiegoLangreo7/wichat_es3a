@@ -108,7 +108,7 @@ function capitalizeFirstLetter(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-async function getImagesFromWikidata(category, numImages) {
+async function getImagesFromWikidata(category) {
     const categoryQueries = wikidataCategoriesQueries[category];
     console.log(`sparqlQuery: ${categoryQueries.query}`);
     try {
@@ -241,12 +241,12 @@ async function fetchIncorrectOptionsForCategory(category) {
     }
 }
 
-async function generateQuestionsByCategory(category, quantity) {
+async function generateQuestionsByCategory(category) {
     if (generating.has(category)) return;
     generating.add(category);
 
     try {
-        await getImagesFromWikidata(category, quantity)
+        await getImagesFromWikidata(category)
             .then(images => processQuestions(images, category));
     } finally {
         generating.delete(category);
