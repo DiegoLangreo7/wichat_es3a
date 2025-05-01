@@ -1,9 +1,4 @@
-const mongoose = require('mongoose');
 const Question = require('../model/question');
-
-// Conexión a la base de datos MongoDB.
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/questiondb';
-mongoose.connect(mongoUri);
 
 module.exports = {
     /**
@@ -40,7 +35,7 @@ module.exports = {
      * @returns {Promise<{ urls: Set<string> }>} - Conjunto de URLs encontradas.
      */
     getExistingImages: async function(category){
-        const questions = await QuestionModel.find({ category }, { imageUrl: 1 });
+        const questions = await Question.find({ category }, { imageUrl: 1 });
         const urls = new Set(questions.map(q => q.imageUrl));
         return { urls };
     },

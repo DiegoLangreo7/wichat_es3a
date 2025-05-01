@@ -1,15 +1,19 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
-const mongoose = require("mongoose");
-const app = express();
-const port = 8004;
-app.disable('x-powered-by');
+
 const MIN_QUESTIONS = 5; // Reducido para facilitar el inicio rápido
 const GENERATE_BATCH = 15;
 
-// Middleware to parse JSON in request body
+const app = express();
+const port = 8004;
+app.disable('x-powered-by');
+
 app.use(express.json());
+
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/questiondb';
+mongoose.connect(mongoUri);
 
 app.get('/questions/:category', async (req, res) => {
     try{
