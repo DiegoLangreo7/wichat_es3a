@@ -3,7 +3,7 @@ const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
 const app = express();
 const port = 8004;
-
+app.disable('x-powered-by');
 const MIN_QUESTIONS = 20; // Reducido para facilitar el inicio rápido
 const GENERATE_BATCH = 15;
 
@@ -78,22 +78,6 @@ app.get('/getDBQuestions', async (req, res) => {
     try {
         const questions = await dataService.getAllQuestions();
         res.json(questions);
-    } catch (error) {
-        console.log("Error en la petición:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Endpoint para obtener preguntas por categoría (sin eliminarlas)
-app.get('/viewQuestions/:category', async (req, res) => {
-    try {
-        const category = req.params.category;
-        const questions = await dataService.getQuestionsByCategory(category);
-        res.json({
-            category,
-            count: questions.length,
-            questions
-        });
     } catch (error) {
         console.log("Error en la petición:", error);
         res.status(500).json({ error: error.message });

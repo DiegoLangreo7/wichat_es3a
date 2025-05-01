@@ -4,6 +4,7 @@ import axios from "axios";
 import LLMChat from "./LLMChat";
 
 jest.mock("axios");
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe("LLMChat Component", () => {
     const mockOnClueUsed = jest.fn();

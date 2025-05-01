@@ -24,7 +24,7 @@ const AddUser = () => {
             valid = false;
         }
         if (!password.trim()) {
-            newErrors.password = 'Contraseña obligatoria';
+            newErrors.password = 'Contraseña obligatoria'; //NOSONAR
             valid = false;
         }
 

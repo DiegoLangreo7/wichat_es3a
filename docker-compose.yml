@@ -4,7 +4,7 @@ services:
   mongodb:
     container_name: mongodb-wichat_es3a
     image: mongo
-    profiles: ["dev"]
+    profiles: ["dev", "prod"]
     volumes:
       - mongodb_data:/data/db
     ports:
@@ -15,32 +15,45 @@ services:
   authservice:
     container_name: authservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/authservice:latest
-    profiles: ["dev", "prod"]
     build: ./users/authservice
+    profiles: ["dev", "prod"]
     ports:
       - "8002:8002"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
+      MONGODB_URI: ${MONGO_URI}
 
   userservice:
     container_name: userservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/userservice:latest
-    profiles: ["dev", "prod"]
     build: ./users/userservice
+    profiles: ["dev", "prod"]
     ports:
       - "8001:8001"
     networks:
       - mynetwork
     environment:
+      MONGODB_URI: ${MONGO_URI}
+
+  historic:
+    container_name: historic-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/historic:latest
+    profiles: ["dev", "prod"]
+    build: ./historicservice
+    ports:
+      - "8007:8007"
+    networks:
+      - mynetwork
+    environment:
       MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
+
 
   questionservice:
     container_name: questionservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
-    profiles: ["dev", "prod"]
     build: ./questionservice
+    profiles: ["dev", "prod"]
     depends_on:
       - mongodb
     ports:
@@ -63,27 +76,26 @@ services:
   llmservice:
     container_name: llmservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/llmservice:latest
-    profiles: ["dev", "prod"]
     build: ./llmservice
-    env_file:
-      - .env
+    profiles: ["dev", "prod"]
     ports:
       - "8003:8003"
     networks:
       - mynetwork
     environment:
-      LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+      LLM_API_KEY: ${LLM_API_KEY}
 
   gatewayservice:
     container_name: gatewayservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gatewayservice:latest
-    profiles: ["dev", "prod"]
     build: ./gatewayservice
+    profiles: ["dev", "prod"]
     depends_on:
       - userservice
       - authservice
       - llmservice
       - questionservice
+      - historic
     ports:
       - "8000:8000"
     networks:
@@ -93,12 +105,13 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
+      HISTORIC_SERVICE_URL: http://historic:8007
       
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest
-    profiles: ["dev", "prod"]
     build: ./gateway-api-service
+    profiles: ["dev", "prod"]
     depends_on:
       - mongodb
       - userservice
@@ -114,19 +127,19 @@ services:
   webapp:
     container_name: webapp-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/webapp:latest
-    profiles: ["dev", "prod"]
     build:
       context: ./webapp
       args:
-        REACT_APP_LLM_API_KEY: sk-Y2vZDFGd10RPfZ3NWEu9yw
+        REACT_APP_LLM_API_KEY: ${LLM_API_KEY}
         REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
+    profiles: ["dev", "prod"]
     depends_on:
       - gatewayservice
     ports:
       - "3000:3000"
     environment:
+      REACT_APP_LLM_API_KEY: ${LLM_API_KEY}
       REACT_APP_API_ENDPOINT: http://wichatdeluxe.duckdns.org:8000
-
 
   prometheus:
     image: prom/prometheus

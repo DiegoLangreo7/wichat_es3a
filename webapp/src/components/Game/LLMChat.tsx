@@ -191,6 +191,7 @@ const LLMChat: React.FC<LLMChatProps> = ({ question, solution, options, onClueUs
                     size="small"
                 />
                 <IconButton
+                    id="send-message-button"
                     onClick={handleSendMessage}
                     disabled={isLoading || newMessage.trim() === ''}
                     sx={{ color: '#F7B801' }}

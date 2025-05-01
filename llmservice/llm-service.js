@@ -2,7 +2,7 @@ const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config({ path: '../.env' });
-const apiKey = process.env.LLM_API_KEY;
+const apiKey = process.env.LLM_API_KEY
 
 const app = express();
 const port = 8003;
