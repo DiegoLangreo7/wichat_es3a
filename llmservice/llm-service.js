@@ -54,6 +54,26 @@ async function sendQuestionToGemini(question, apiKey) {
     }
 }
 
+function buildPrompt(question, solution, options, userMessage) {
+    return `
+    Contexto:
+    - Pregunta original: "${question}"
+    - Respuesta correcta: "${solution}"
+    - Mensaje del usuario: "${userMessage}"
+    - Opciones disponibles: ${options.join(', ')}
+
+    Instrucciones:
+    1. Objetivo:
+       - Proporcionar una pista útil que acerque al usuario a la respuesta correcta ("${solution}").
+    2. Restricciones:
+       - No puedes revelar la respuesta completa ni mencionar directamente "${solution}".
+       - Si el usuario pregunta por una opción específica (${options.join(', ')}), evita confirmar o negar si es correcta.
+    3. Requisitos:
+       - La pista debe ser breve (1-2 oraciones), útil y natural.
+       - Usa un tono conversacional y amigable.
+    `;
+}
+
 // Game hint endpoint - needed for the LLMChat component
 app.post('/game-hint', async (req, res) => {
 
@@ -70,26 +90,8 @@ app.post('/game-hint', async (req, res) => {
       return res.status(400).json({ error: 'API key is missing. Check your .env file.' });
     }
     
-    const prompt = `
-    Contexto:
-    - Pregunta original: "${question}"
-    - Respuesta correcta: "${solution}"
-    - El usuario ha preguntado: "${userMessage}"
-
-    Instrucciones para tu respuesta:
-    1. OBJETIVO: Dar una pista que ayude al usuario respondiendo a la pregunta que ha realizado "${userMessage}" para adivinar la respuesta correcta ("${solution}")
-    2. RESTRICCIONES:
-      - No puedes responder ni SI ni NO ante una pregunta que tenga que ver con las opciones "${options.join(', ')}"
-      - NO puedes mencionar la palabra "${solution}" directamente
-      - NO puedes revelar la respuesta completa
-    3. REQUISITOS:
-      - La pista debe ser útil pero no obvia
-    4. FORMATO:
-      - Breve (1-2 oraciones)
-      - Natural (como una conversación)
-    `;
-
-        const answer = await sendQuestionToGemini(prompt, apiKey);
+    const prompt = buildPrompt(question, solution, options, userMessage);
+    const answer = await sendQuestionToGemini(prompt, apiKey);
 
         if (answer === null) {
             return res.status(500).json({ error: 'Failed to get hint from LLM service' });
