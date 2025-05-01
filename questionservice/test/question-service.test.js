@@ -1,36 +1,58 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose');
-const Question = require('../src/model/question');
 
 let mongoServer;
 let app;
 
-beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    process.env.MONGODB_URI = mongoUri;
-    app = require('../src/service/questionService');
-    await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
-});
-
-afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
-    app.close();
-});
-
 describe('Question Service', () => {
-    it('should get a question by category on GET /getQuestionsDb/:category', async () => {
-        const category = 'country';
-        const numberOfQuestions = 10;
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const mongoUri = mongoServer.getUri();
+        process.env.MONGODB_URI = mongoUri;
+        app = require('../src/service/questionService');
+    });
 
-        const response = await request(app).get(`/getQuestionsDb/${category}`);
+    afterAll(async () => {
+        app.close();
+        await mongoServer.stop();
+    });
+
+    it('should initialize questions for categories on POST /initializeQuestionsDB', async () => {
+        const response = await request(app)
+            .post('/initializeQuestionsDB')
+            .send({ categories: ['country'] });
+
         expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('question');
+        expect(response.body.message).toBe('Questions initialized successfully');
+    }, 30000);
+
+    it('should get a question by category on GET /questions/:category', async () => {
+        const response = await request(app).get('/questions/country');
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('question', '¿A qué país pertenece esta imagen?');
         expect(response.body).toHaveProperty('options');
         expect(response.body).toHaveProperty('correctAnswer');
-        expect(response.body).toHaveProperty('category');
+        expect(response.body).toHaveProperty('category', 'country');
         expect(response.body).toHaveProperty('imageUrl');
-    }, 180000); //3 minutos
+    });
+
+    it('should return 500 if no questions are available on GET /questions/:category', async () => {
+        const response = await request(app).get('/questions/unknownCategory');
+        expect(response.status).toBe(500);
+        expect(response.body.error).toBeDefined();
+    });
+
+    it('should return all questions on GET /getDBQuestions', async () => {
+        const response = await request(app).get('/getDBQuestions');
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it('should return service health on GET /health', async () => {
+        const response = await request(app).get('/health');
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('status', 'ok');
+        expect(response.body).toHaveProperty('service', 'question-service');
+        expect(response.body).toHaveProperty('timestamp');
+    });
 });

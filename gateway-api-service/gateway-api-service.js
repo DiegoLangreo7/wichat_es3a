@@ -4,6 +4,7 @@ const cors = require('cors');
 const promBundle = require('express-prom-bundle');
 
 const app = express();
+app.disable('x-powered-by');
 const port = 8006;
 
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';

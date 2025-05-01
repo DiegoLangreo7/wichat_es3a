@@ -36,6 +36,19 @@ services:
     environment:
       MONGODB_URI: ${MONGO_URI}
 
+  historic:
+    container_name: historic-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/historic:latest
+    profiles: ["dev", "prod"]
+    build: ./historicservice
+    ports:
+      - "8007:8007"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb+srv://admin:UnunoctioGang.88@wichat.kpmh3pa.mongodb.net/?retryWrites=true&w=majority&appName=wichat
+
+
   questionservice:
     container_name: questionservice-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/questionservice:latest
@@ -49,6 +62,16 @@ services:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb:27017/questiondb
+
+  cardservice:
+    container_name: cardservice-wichat_es3a
+    image: ghcr.io/arquisoft/wichat_es3a/cardservice:latest
+    profiles: ["dev", "prod"]
+    build: ./cardservice
+    ports:
+      - "8008:8008"
+    networks:
+      - mynetwork
 
   llmservice:
     container_name: llmservice-wichat_es3a
@@ -72,6 +95,7 @@ services:
       - authservice
       - llmservice
       - questionservice
+      - historic
     ports:
       - "8000:8000"
     networks:
@@ -81,7 +105,8 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
-
+      HISTORIC_SERVICE_URL: http://historic:8007
+      
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
     image: ghcr.io/arquisoft/wichat_es3a/gateway-api-service:latest

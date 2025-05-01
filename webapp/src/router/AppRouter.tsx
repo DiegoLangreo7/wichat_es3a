@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router";
 import Login from "../components/Login/Login";
 import AddUser from "../components/AddUser/AddUser";
 import Main from "../components/Main/Main";
@@ -9,20 +9,21 @@ import Historic from "../components/Historic/Historic";
 import Api from "../components/Api/Api";
 import MainQuestionGame from "../components/Main/MainQuestionGame";
 import CardGame from "../components/Game/extras/CardGame";
+import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
     { path: "/", element: <Navigate to="/login" replace /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <AddUser /> },
-    { path: "/main", element: <Main /> },
-    { path: "/main/question", element: <MainQuestionGame /> },
-    { path: "/game", element: <Game /> },
-    { path: "/endGame", element: <EndGame /> },
+    { path: "/main", element: <ProtectedRoute><Main /></ProtectedRoute> },
+    { path: "/main/question", element: <ProtectedRoute><MainQuestionGame /></ProtectedRoute> },
+    { path: "/game", element: <ProtectedRoute><Game /></ProtectedRoute> },
+    { path: "/endGame", element: <ProtectedRoute><EndGame /></ProtectedRoute> },
     { path: "/logout", element: <Login /> },
-    { path: "/historic", element: <Historic /> },
-    { path: "/ranking", element: <Ranking /> },
-    { path: "/api", element: <Api /> },
-    { path: "/cards", element: <CardGame /> },
+    { path: "/historic", element: <ProtectedRoute><Historic /></ProtectedRoute> },
+    { path: "/ranking", element: <ProtectedRoute><Ranking /></ProtectedRoute> },
+    { path: "/api", element: <ProtectedRoute><Api /></ProtectedRoute> },
+    { path: "/cards", element: <ProtectedRoute><CardGame /></ProtectedRoute> },
 ]);
 
 export default router;

@@ -1,33 +1,52 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
+
+const MIN_QUESTIONS = 20; 
+
 const app = express();
 const port = 8004;
 
-const MIN_QUESTIONS = 5; // Reducido para facilitar el inicio rápido
-const GENERATE_BATCH = 15;
-
-// Middleware to parse JSON in request body
+app.disable('x-powered-by');
 app.use(express.json());
 
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/questiondb';
+mongoose.connect(mongoUri);
+
 app.get('/questions/:category', async (req, res) => {
-    try{
+    try {
         console.log("Question service: " + req.params.category);
         const category = req.params.category;
-        const numberQuestions = await dataService.getNumberQuestionsByCategory(category);
+
+        let numberQuestions = await dataService.getNumberQuestionsByCategory(category);
         console.log("Numero de preguntas " + numberQuestions + " category " + category);
-        if(numberQuestions < MIN_QUESTIONS){
+
+        if (numberQuestions < MIN_QUESTIONS) {
             console.log("Generando preguntas...");
-            await generateService.generateQuestionsByCategory(category, GENERATE_BATCH);
+            await generateService.generateQuestionsByCategory(category);
             console.log("Preguntas generadas correctamente");
+
+            // Esperar hasta que haya preguntas disponibles
+            const waitForQuestions = async () => {
+                while (numberQuestions < MIN_QUESTIONS) {
+                    console.log("Esperando a que se generen preguntas...");
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar 1 segundo
+                    numberQuestions = await dataService.getNumberQuestionsByCategory(category);
+                }
+            };
+
+            await waitForQuestions();
         }
+
         const question = await dataService.getRandomQuestionByCategory(category);
         console.log("Pregunta generada: " + question);
+
         if (!question) {
             return res.status(404).json({ message: "There are no more questions available." });
         }
-        await dataService.deleteQuestionById(question._id);
 
+        await dataService.deleteQuestionById(question._id);
         res.json(question);
     } catch (error) {
         console.log("Error en la petición:", error);
@@ -69,22 +88,6 @@ app.get('/getDBQuestions', async (req, res) => {
     }
 });
 
-// Endpoint para obtener preguntas por categoría (sin eliminarlas)
-app.get('/viewQuestions/:category', async (req, res) => {
-    try {
-        const category = req.params.category;
-        const questions = await dataService.getQuestionsByCategory(category);
-        res.json({
-            category,
-            count: questions.length,
-            questions
-        });
-    } catch (error) {
-        console.log("Error en la petición:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // Endpoint para verificar el estado del servicio
 app.get('/health', (req, res) => {
     const generatingCategories = Array.from(generating);
@@ -99,6 +102,10 @@ app.get('/health', (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
+});
+
+server.on('close', () => {
+    mongoose.connection.close();
 });
 
 module.exports = server;

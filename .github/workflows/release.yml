@@ -8,18 +8,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm --prefix users/authservice ci
-      - run: npm --prefix users/userservice ci
-      - run: npm --prefix questionservice ci
-      - run: npm --prefix llmservice ci
-      - run: npm --prefix gatewayservice ci
-      - run: npm --prefix gateway-api-service ci
-      - run: npm --prefix webapp ci
-
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - run: npm --prefix users/authservice ci
+    - run: npm --prefix users/userservice ci
+    - run: npm --prefix questionservice ci
+    - run: npm --prefix historicservice ci
+    - run: npm --prefix llmservice ci
+    - run: npm --prefix gatewayservice ci
+    - run: npm --prefix gateway-api-service ci
+    - run: npm --prefix webapp ci
+    - run: npm --prefix users/authservice test -- --coverage
+    - run: npm --prefix users/userservice test -- --coverage
+    - run: npm --prefix questionservice test -- --coverage
+    - run: npm --prefix historicservice test -- --coverage
+    - run: npm --prefix llmservice test -- --coverage
+      env:
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+    - run: npm --prefix gatewayservice test -- --coverage
+    - run: npm --prefix gateway-api-service test -- --coverage
+    - run: npm --prefix webapp test -- --coverage
+    - name: Analyze with SonarCloud
+      uses: SonarSource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  e2e-tests:
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - run: npm --prefix users/authservice install
+    - run: npm --prefix users/userservice install
+    - run: npm --prefix questionservice install
+    - run: npm --prefix llmservice install
+    - run: npm --prefix gatewayservice install
+    - run: npm --prefix gateway-api-service install
+    - run: npm --prefix webapp install
+    - run: npm --prefix webapp run build
+    - run: npm --prefix webapp run test:e2e
   docker-push-webapp:
     runs-on: ubuntu-latest
     permissions:

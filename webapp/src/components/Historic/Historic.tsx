@@ -31,7 +31,7 @@ interface Question {
 }
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-const historicEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
+//const historicEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8007';
 
 const Historic: React.FC = () => {
     const user: string = localStorage.getItem("username") || "Usuario";
@@ -72,7 +72,7 @@ const Historic: React.FC = () => {
         const fetchQuestions = async () => {
             try {
                 console.log("Sacando historial");
-                const response = await axios.get(`${historicEndpoint}/historic/${username}`);
+                const response = await axios.get(`${apiEndpoint}/historic/${username}`);
                 setQuestions(response.data);
             } catch (err: any) {
                 console.error('Error fetching users:', err);

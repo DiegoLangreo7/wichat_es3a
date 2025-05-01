@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, Paper, Avatar, IconButton } from "@mui/material";
 import NavBar from "./items/NavBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import PublicIcon from '@mui/icons-material/Public';
 import HistoryIcon from '@mui/icons-material/History';
@@ -53,12 +53,12 @@ const Main = () => {
                 const sorted = rankingResponse.data.sort((a: StatEntry, b: StatEntry) => b.puntuation - a.puntuation);
                 setTopRanking(sorted.slice(0, 3));
             } catch (error) {
-                console.error("Error fetching data:", error);
+                //console.error("Error fetching data:", error);
                 try {
                     const createResponse = await axios.post(`${apiEndpoint}/stats`, { username });
                     setStats(createResponse.data);
                 } catch (createError) {
-                    console.error("Error creando stats:", createError);
+                    //console.error("Error creando stats:", createError);
                 }
             }
         };
@@ -94,7 +94,6 @@ const Main = () => {
         }else{
             navigate(`/${mode}`);
         }
-
     };
 
     const nextSlide = () => {
@@ -302,6 +301,7 @@ const Main = () => {
 
                         <IconButton
                             onClick={nextSlide}
+                            data-testid="next-slide"
                             sx={{
                                 position: "absolute",
                                 right: -40,
