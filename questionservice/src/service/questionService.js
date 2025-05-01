@@ -1,14 +1,18 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const dataService = require('./questionSaverService');
 const generateService = require('./questionGeneratorService');
+
+const MIN_QUESTIONS = 20; 
+
 const app = express();
 const port = 8004;
 
 app.disable('x-powered-by');
-const MIN_QUESTIONS = 20; // Reducido para facilitar el inicio rápido
-
-// Middleware to parse JSON in request body
 app.use(express.json());
+
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/questiondb';
+mongoose.connect(mongoUri);
 
 app.get('/questions/:category', async (req, res) => {
     try {
@@ -98,6 +102,10 @@ app.get('/health', (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
+});
+
+server.on('close', () => {
+    mongoose.connection.close();
 });
 
 module.exports = server;

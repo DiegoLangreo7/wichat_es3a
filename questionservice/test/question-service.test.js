@@ -4,28 +4,27 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 let mongoServer;
 let app;
 
-beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    process.env.MONGODB_URI = mongoUri;
-    app = require('../src/service/questionService');
-});
-
-afterAll(async () => {
-    app.close();
-    await mongoServer.stop();
-});
-
 describe('Question Service', () => {
-    it('should initialize questions for categories on POST /initializeQuestionsDB', async () => {
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const mongoUri = mongoServer.getUri();
+        process.env.MONGODB_URI = mongoUri;
+        app = require('../src/service/questionService');
+    });
 
+    afterAll(async () => {
+        app.close();
+        await mongoServer.stop();
+    });
+
+    it('should initialize questions for categories on POST /initializeQuestionsDB', async () => {
         const response = await request(app)
             .post('/initializeQuestionsDB')
             .send({ categories: ['country'] });
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Questions initialized successfully');
-    });
+    }, 30000);
 
     it('should get a question by category on GET /questions/:category', async () => {
         const response = await request(app).get('/questions/country');
