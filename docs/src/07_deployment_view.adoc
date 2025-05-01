@@ -8,7 +8,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 === Infrastructure Level 1
 
 
-image::asw.png["Schema"]
+image::despliegue.png["Schema"]
 
 Motivation::
 
