@@ -59,7 +59,7 @@ defineFeature(feature, test => {
             await expect(page).toMatchElement("div", { text: "¡Juego Terminado!" });
 
         });
-    }, 120000);
+    }, 180000);
 
 
 

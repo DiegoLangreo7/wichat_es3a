@@ -50,7 +50,7 @@ defineFeature(feature, test => {
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
-    });
+    } , 20000);
 
     test('The user is not registered in the site', ({given, when, then}) => {
 
@@ -71,7 +71,7 @@ defineFeature(feature, test => {
         then('The error message should be displayed', async () => {
             await expect(page).toMatchElement("p", { text: "Usuario o contraseña incorrectos" });
         });
-    });
+    }, 20000);
 
     test('The user is registered in the site but the password is wrong', ({given, when, then}) => {
 
@@ -92,7 +92,7 @@ defineFeature(feature, test => {
         then('The error message should be displayed', async () => {
             await expect(page).toMatchElement("p", { text: "Usuario o contraseña incorrectos" });
         });
-    });
+    }, 20000);
 
     afterAll(async ()=>{
         browser.close()

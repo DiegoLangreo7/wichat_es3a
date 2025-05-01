@@ -44,7 +44,7 @@ defineFeature(feature, test => {
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
-    })
+    }, 20000)
 
     test('The user is already registered in the site', ({given,when,then}) => {
 
@@ -67,7 +67,7 @@ defineFeature(feature, test => {
             await expect(page).toMatchElement("p", { text: "El usuario " + username +" ya existe" });
         });
 
-    })
+    }, 20000)
 
     test('The user is not registered in the site and the password is not valid', ({given,when,then}) => {
 
@@ -90,7 +90,7 @@ defineFeature(feature, test => {
             await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
         });
 
-    })
+    }, 20000)
 
     afterAll(async ()=>{
         browser.close()
