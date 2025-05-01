@@ -41,6 +41,7 @@ defineFeature(feature, test => {
         }, 3000);
 
         then('The main page should be displayed', async () => {
+            await page.waitForSelector("#user-menu-button", { timeout: 3000 });
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         }, 3000);
@@ -54,6 +55,7 @@ defineFeature(feature, test => {
         given('A registered user', async () => {
             username = "signInUser"
             password = "123456q@"
+            await page.waitForSelector("#singup-link", { timeout: 3000 });
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
 

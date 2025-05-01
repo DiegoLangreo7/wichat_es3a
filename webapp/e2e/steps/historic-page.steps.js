@@ -44,6 +44,7 @@ defineFeature(feature, test => {
         }, 4000);
 
         then('I can see the historic page', async () => {
+            await page.waitForSelector("#historic-container", { timeout: 3000 });
             await expect(page).toMatchElement("h5", { text: "📊 Estadísticas" });
         }, 3000);
     }, 20000);
