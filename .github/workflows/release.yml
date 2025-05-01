@@ -1,11 +1,11 @@
-name: Build and Push Packages
+name: CI for wichat_es3a
 
 on:
   release:
     types: [published]
 
 jobs:
-  build:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -16,6 +16,7 @@ jobs:
     - run: npm --prefix users/userservice ci
     - run: npm --prefix questionservice ci
     - run: npm --prefix historicservice ci
+    - run: npm --prefix cardservice ci
     - run: npm --prefix llmservice ci
     - run: npm --prefix gatewayservice ci
     - run: npm --prefix gateway-api-service ci
@@ -34,6 +35,7 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   e2e-tests:
     needs: [unit-tests]
     runs-on: ubuntu-latest
@@ -45,18 +47,21 @@ jobs:
     - run: npm --prefix users/authservice install
     - run: npm --prefix users/userservice install
     - run: npm --prefix questionservice install
+    - run: npm --prefix historicservice install
+    - run: npm --prefix cardservice install
     - run: npm --prefix llmservice install
     - run: npm --prefix gatewayservice install
     - run: npm --prefix gateway-api-service install
     - run: npm --prefix webapp install
     - run: npm --prefix webapp run build
     - run: npm --prefix webapp run test:e2e
+
   docker-push-webapp:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Publish to Registry
@@ -81,7 +86,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -101,7 +106,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Publish to Registry
@@ -118,7 +123,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Publish to Registry
@@ -135,7 +140,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Publish to Registry
@@ -147,12 +152,46 @@ jobs:
           registry: ghcr.io
           workdir: questionservice
 
+  docker-push-historicservice:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/historicservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: historicservice
+
+  docker-push-cardservice:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: arquisoft/wichat_es3a/cardservice
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: cardservice
+
   docker-push-gatewayservice:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Update OpenAPI configuration
@@ -173,7 +212,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [build]
+    needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
       - name: Publish to Registry
@@ -192,6 +231,8 @@ jobs:
       docker-push-authservice,
       docker-push-llmservice,
       docker-push-questionservice,
+      docker-push-historicservice,
+      docker-push-cardservice,
       docker-push-gatewayservice,
       docker-push-gateway-api-service,
       docker-push-webapp
