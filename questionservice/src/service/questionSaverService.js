@@ -15,11 +15,10 @@ module.exports = {
         }
     },
 
-    /**
+    /*
      * Guarda una nueva pregunta en la base de datos.
      * @param {Object} question - Objeto con los datos de la pregunta a guardar.
      * @returns {Promise<void>}
-     */
     saveQuestion: async function(question){
         try {
             const newQuestion = new Question(question);
@@ -33,12 +32,12 @@ module.exports = {
      * Obtiene todas las URLs de imágenes asociadas a las preguntas de una categoría.
      * @param {string} category - Categoría por la cual filtrar las preguntas.
      * @returns {Promise<{ urls: Set<string> }>} - Conjunto de URLs encontradas.
-     */
     getExistingImages: async function(category){
         const questions = await Question.find({ category }, { imageUrl: 1 });
         const urls = new Set(questions.map(q => q.imageUrl));
         return { urls };
     },
+    */
 
     /**
      * Inserta en la base de datos un conjunto de preguntas en lote.
