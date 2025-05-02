@@ -1,9 +1,13 @@
-// src/components/RetroRain.tsx
 import React from 'react';
 import { Typography, Box } from '@mui/material';
 import '../styles.css';
 
 const RetroRain = () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const show = localStorage.getItem('showAnimation') !== 'false';
+
+    if (prefersReducedMotion || !show) return null;
+
     return (
         <Box id="background-animation">
             {Array.from({ length: 100 }, (_, i) => {
@@ -36,4 +40,4 @@ const RetroRain = () => {
     );
 };
 
-export default React.memo(RetroRain); // importantísimo para evitar re-renders
+export default React.memo(RetroRain);

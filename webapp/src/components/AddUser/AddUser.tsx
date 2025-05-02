@@ -72,6 +72,28 @@ const AddUser = () => {
                 }
             }}
         >
+            <Button
+                onClick={() => {
+                    const current = localStorage.getItem('showAnimation');
+                    localStorage.setItem('showAnimation', current === 'false' ? 'true' : 'false');
+                    window.location.reload();
+                }}
+                sx={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    zIndex: 2,
+                    fontSize: '0.75rem',
+                    color: '#F7B801',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #F7B801',
+                    padding: '4px 8px',
+                    minWidth: 'unset'
+                }}
+            >
+                💫 Animación: {localStorage.getItem('showAnimation') === 'false' ? 'OFF' : 'ON'}
+            </Button>
+
             <RetroRain />
 
             <Paper
@@ -119,6 +141,7 @@ const AddUser = () => {
                             '& .MuiFormHelperText-root.Mui-error': { color: '#F7B801' }
                         }}
                     />
+
                     <TextField
                         fullWidth
                         margin="normal"

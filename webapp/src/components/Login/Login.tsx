@@ -83,17 +83,32 @@ const Login = () => {
                 height: '100vh',
                 overflow: 'hidden'
             }}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    loginUser();
-                }
-            }}
         >
+            <Button
+                onClick={() => {
+                    const current = localStorage.getItem('showAnimation');
+                    localStorage.setItem('showAnimation', current === 'false' ? 'true' : 'false');
+                    window.location.reload();
+                }}
+                sx={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    zIndex: 2,
+                    fontSize: '0.75rem',
+                    color: '#F7B801',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #F7B801',
+                    padding: '4px 8px',
+                    minWidth: 'unset'
+                }}
+            >
+                💫 Animación: {localStorage.getItem('showAnimation') === 'false' ? 'OFF' : 'ON'}
+            </Button>
+
             <RetroRain />
 
             <Paper
-                id="login-paper"
                 elevation={3}
                 sx={{
                     zIndex: 1,
@@ -108,7 +123,13 @@ const Login = () => {
                     Welcome to WICHAT
                 </Typography>
 
-                <form autoComplete="on">
+                <form
+                    autoComplete="on"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        loginUser();
+                    }}
+                >
                     <TextField
                         fullWidth
                         margin="normal"
@@ -158,39 +179,39 @@ const Login = () => {
                             }
                         }}
                     />
+
+                    {error.general && (
+                        <Typography id="login-error" sx={{ mt: 1, color: '#F7B801' }}>
+                            {error.general}
+                        </Typography>
+                    )}
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', mt: 2 }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={loading}
+                            sx={{
+                                width: '40%',
+                                transition: 'transform 0.2s ease-in-out',
+                                '&:hover': { transform: 'scale(1.05)' },
+                                '&:active': { transform: 'scale(0.95)' },
+                                backgroundColor: '#F7B801',
+                                color: '#202A25'
+                            }}
+                        >
+                            {loading ? 'Loading...' : 'Login'}
+                        </Button>
+                        <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => navigate('/register')}
+                            sx={{ mt: 2, display: 'block', color: '#EDC9FF' }}
+                        >
+                            Don't have an account? Sign up here.
+                        </Link>
+                    </Box>
                 </form>
-
-                {error.general && (
-                    <Typography id="login-error" sx={{ mt: 1, color: '#F7B801' }}>
-                        {error.general}
-                    </Typography>
-                )}
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', mt: 2 }}>
-                    <Button
-                        variant="contained"
-                        onClick={loginUser}
-                        disabled={loading}
-                        sx={{
-                            width: '40%',
-                            transition: 'transform 0.2s ease-in-out',
-                            '&:hover': { transform: 'scale(1.05)' },
-                            '&:active': { transform: 'scale(0.95)' },
-                            backgroundColor: '#F7B801',
-                            color: '#202A25'
-                        }}
-                    >
-                        {loading ? 'Loading...' : 'Login'}
-                    </Button>
-                    <Link
-                        component="button"
-                        variant="body2"
-                        onClick={() => navigate('/register')}
-                        sx={{ mt: 2, display: 'block', color: '#EDC9FF' }}
-                    >
-                        Don't have an account? Sign up here.
-                    </Link>
-                </Box>
             </Paper>
         </Box>
     );
