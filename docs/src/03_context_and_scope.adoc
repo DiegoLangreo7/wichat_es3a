@@ -79,7 +79,7 @@ together with a mapping table showing the relationships between channels and inp
 ****
 endif::arc42help[]
 
-image:3.2Diagrama.png[arc42]
+image:techenical_context.png[arc42]
 
 |===
 | *Element*       | *Input*               | *Output*
