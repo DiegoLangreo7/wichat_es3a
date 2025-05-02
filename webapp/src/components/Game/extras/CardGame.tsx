@@ -22,9 +22,7 @@ const CardGame: React.FC = () => {
     const [isPaused, setIsPaused] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const cardsEndpoint: string = process.env.REACT_APP_CARDS_ENDPOINT || 'http://localhost:8008';
-
-
+    const apiEndpoint: string = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
     // Temporizador
     useEffect(() => {
@@ -53,12 +51,10 @@ const CardGame: React.FC = () => {
     const initializeGame = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${cardsEndpoint}/cardValues`);
+            const response = await axios.get(`${apiEndpoint}/cardValues`);
             const images = response.data.images || [];
-
             // Preload all images
             await preloadImages(images);
-
             // Crear pares de cartas y mezclarlas
             const cardValues = images.flatMap((image: any) => [image]) // Duplica cada imagen para hacer pares
                 .sort(() => Math.random() - 0.5) // Mezcla las cartas
@@ -68,7 +64,6 @@ const CardGame: React.FC = () => {
                     flipped: false,
                     matched: false
                 }));
-
             setCards(cardValues);
             setFlippedCards([]);
             setMoves(0);
@@ -81,10 +76,10 @@ const CardGame: React.FC = () => {
         }
     };
 
-    // Inicializar el juego
+    // Inicializar el juego al montar el componente
     useEffect(() => {
         initializeGame();
-    }, [initializeGame]);
+    }, []);
 
     const handleCardClick = (id: number) => {
         // No hacer nada si la carta ya está volteada o emparejada, o si ya hay 2 cartas volteadas
