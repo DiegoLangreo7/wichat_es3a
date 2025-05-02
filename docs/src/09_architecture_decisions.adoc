@@ -2,7 +2,27 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
 == Architecture Decisions
-1.link:https://github.com/Arquisoft/wichat_es3a/wiki/AD‐1[TypeScript]
+
+=== Architecture style
+1. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-1[Microservices]
+2. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-1[Rest]
+
+=== Development Technologies
+1. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-1[TypeScript]
+2. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-3[Node.js]
+3. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-4[TypeScript y React]
+4. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-5[MongoDB]
+
+=== Strategies
+1. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-2[Trunk-Based Development]
+2. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-2[CI/CD]
+
+=== Infrastructure
+1. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-2[Docker]
+
+=== Documentation
+1. link:https://github.com/Arquisoft/wichat_es3a/wiki/AD-2[API]
+
 
 
 ifdef::arc42help[]
