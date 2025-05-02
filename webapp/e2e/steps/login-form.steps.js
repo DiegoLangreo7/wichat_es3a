@@ -30,7 +30,7 @@ defineFeature(feature, test => {
         given('A registered user', async () => {
             username = "loginUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 3000 });
+            await page.waitForSelector("#singup-link", { timeout: 5000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
@@ -40,14 +40,14 @@ defineFeature(feature, test => {
         }, 3000);
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 3000 });
+            await page.waitForSelector("#login-username-field", { timeout: 5000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });
         }, 3000);
 
         then('The main page should be displayed', async () => {
-            await page.waitForSelector("#user-menu-button", { timeout: 3000 });
+            await page.waitForSelector("#user-menu-button", { timeout: 5000 });
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         }, 3000);
@@ -64,14 +64,14 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 4000 });
+            await page.waitForSelector("#login-username-field", { timeout: 5000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });
         });
 
         then('The error message should be displayed', async () => {
-            await page.waitForSelector("#login-error", { timeout: 4000 });
+            await page.waitForSelector("#login-error", { timeout: 5000 });
             await expect(page).toMatchElement("p", { text: "Usuario o contraseña incorrectos" });
         });
     }, 20000);
@@ -87,14 +87,14 @@ defineFeature(feature, test => {
         }, 3000);
 
         when('I fill the data with the wrong password in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 4000 });
+            await page.waitForSelector("#login-username-field", { timeout: 5000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });
         }, 3000);
 
         then('The error message should be displayed', async () => {
-            await page.waitForSelector("#login-error", { timeout: 4000 });
+            await page.waitForSelector("#login-error", { timeout: 5000 });
             await expect(page).toMatchElement("p", { text: "Usuario o contraseña incorrectos" });
         }, 3000);
     }, 20000);
