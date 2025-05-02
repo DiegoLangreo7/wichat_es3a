@@ -11,17 +11,31 @@ const renderAppAt = (route = '/login') => {
   );
 };
 
-test('renders welcome message', () => {
-  renderAppAt();
-  expect(screen.getByText(/Welcome to WICHAT/i)).toBeInTheDocument();
+describe('Login route (/login)', () => {
+  test('renders welcome message', () => {
+    renderAppAt('/login');
+    expect(screen.getByText(/Welcome to WICHAT/i)).toBeInTheDocument();
+  });
+
+  test('renders login button', () => {
+    renderAppAt('/login');
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+  });
+
+  test('renders sign up button', () => {
+    renderAppAt('/login');
+    expect(screen.getByText("Don't have an account? Sign up here.")).toBeInTheDocument();
+  });
 });
 
-test('renders login button', () => {
-  renderAppAt();
-  expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
-});
+describe('Register route (/register)', () => {
+  test('renders create account title', () => {
+    renderAppAt('/register');
+    expect(screen.getByText(/Create an account/i)).toBeInTheDocument();
+  });
 
-test('renders sign up button', () => {
-  renderAppAt();
-  expect(screen.getByText("Don't have an account? Sign up here.")).toBeInTheDocument();
+  test('renders add user button', () => {
+    renderAppAt('/register');
+    expect(screen.getByRole('button', { name: /add user/i })).toBeInTheDocument();
+  });
 });
