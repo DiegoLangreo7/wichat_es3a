@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { Typography, TextField, Button, Link, Box, Paper } from '@mui/material';
 import { useNavigate } from 'react-router';
+import RetroRain from '../Animation/RetroRain';
 import '../styles.css';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -50,12 +51,6 @@ const AddUser = () => {
         }
     };
 
-    const invaders = Array.from({ length: 25 }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        delay: `${Math.random() * 20}s`
-    }));
-
     return (
         <Box
             id="add-user-main-container"
@@ -65,33 +60,21 @@ const AddUser = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#202A25',
+                backgroundColor: '#0a0a1f',
                 width: '100%',
                 height: '100vh',
                 overflow: 'hidden'
             }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addUser();
+                }
+            }}
         >
-            {/* Fondo animado de marcianitos 👾 */}
-            <Box id="background-animation">
-                {invaders.map(inv => (
-                    <Typography
-                        key={inv.id}
-                        className="invader"
-                        sx={{
-                            left: inv.left,
-                            top: '-30px',
-                            position: 'absolute',
-                            animationDelay: inv.delay,
-                        }}
-                    >
-                        👾
-                    </Typography>
-                ))}
-            </Box>
+            <RetroRain />
 
-            {/* Contenido del formulario */}
             <Paper
-                id="add-user-paper"
                 elevation={3}
                 sx={{
                     zIndex: 1,
@@ -102,24 +85,14 @@ const AddUser = () => {
                     backgroundColor: '#5f4bb6'
                 }}
             >
-                <Typography id="add-user-title" component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7' }}>
+                <Typography component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7' }}>
                     Create an account
                 </Typography>
 
-                <form
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addUser();
-                        }
-                    }}
-                    autoComplete="on"
-                >
+                <form autoComplete="on">
                     <TextField
-                        id="username-input"
-                        name="username"
-                        margin="normal"
                         fullWidth
+                        margin="normal"
                         label="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -129,29 +102,26 @@ const AddUser = () => {
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': { borderColor: '#EDC9FF' },
-                                '&:hover fieldset': { borderColor: '#EDC9FF' },
+                                '&:hover fieldset': { borderColor: '#EDC9FF' }
                             },
                             '& .MuiOutlinedInput-root.Mui-focused fieldset': {
-                                borderColor: '#EDC9FF',
+                                borderColor: '#EDC9FF'
                             },
                             '& .MuiOutlinedInput-root.Mui-error fieldset': {
-                                borderColor: '#F7B801',
+                                borderColor: '#F7B801'
                             },
                             '& .MuiOutlinedInput-root.Mui-error:hover fieldset': {
-                                borderColor: '#F7B801',
+                                borderColor: '#F7B801'
                             },
                             '& .MuiInputLabel-root': { color: '#F7FFF7' },
                             '& .MuiInputLabel-root.Mui-focused': { color: '#F7FFF7' },
                             '& .MuiInputLabel-root.Mui-error': { color: '#F7B801' },
-                            '& .MuiFormHelperText-root.Mui-error': { color: '#F7B801' },
+                            '& .MuiFormHelperText-root.Mui-error': { color: '#F7B801' }
                         }}
                     />
-
                     <TextField
-                        id="password-input"
-                        name="password"
-                        margin="normal"
                         fullWidth
+                        margin="normal"
                         label="Password"
                         type="password"
                         value={password}
@@ -162,49 +132,34 @@ const AddUser = () => {
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': { borderColor: '#EDC9FF' },
-                                '&:hover fieldset': { borderColor: '#EDC9FF' },
+                                '&:hover fieldset': { borderColor: '#EDC9FF' }
                             },
                             '& .MuiOutlinedInput-root.Mui-focused fieldset': {
-                                borderColor: '#EDC9FF',
+                                borderColor: '#EDC9FF'
                             },
                             '& .MuiOutlinedInput-root.Mui-error fieldset': {
-                                borderColor: '#F7B801',
+                                borderColor: '#F7B801'
                             },
                             '& .MuiOutlinedInput-root.Mui-error:hover fieldset': {
-                                borderColor: '#F7B801',
+                                borderColor: '#F7B801'
                             },
                             '& .MuiInputLabel-root': { color: '#F7FFF7' },
                             '& .MuiInputLabel-root.Mui-focused': { color: '#F7FFF7' },
                             '& .MuiInputLabel-root.Mui-error': { color: '#F7B801' },
-                            '& .MuiFormHelperText-root.Mui-error': { color: '#F7B801' },
+                            '& .MuiFormHelperText-root.Mui-error': { color: '#F7B801' }
                         }}
                     />
                 </form>
 
                 {error.general && (
                     <Typography id="error-message" sx={{ mt: 1, color: '#F7B801' }}>
-                        {error.general.split('\n').map((line, index) => (
-                            <React.Fragment key={index}>
-                                {line}
-                                <br />
-                            </React.Fragment>
-                        ))}
+                        {error.general}
                     </Typography>
                 )}
 
-                <Box
-                    id="action-buttons-container"
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-end',
-                        mt: 2
-                    }}
-                >
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', mt: 2 }}>
                     <Button
-                        id="submit-button"
                         variant="contained"
-                        color="primary"
                         onClick={addUser}
                         disabled={loading}
                         sx={{
@@ -219,7 +174,6 @@ const AddUser = () => {
                         {loading ? 'Loading...' : 'Add User'}
                     </Button>
                     <Link
-                        id="login-link"
                         component="button"
                         variant="body2"
                         onClick={() => navigate('/login')}
