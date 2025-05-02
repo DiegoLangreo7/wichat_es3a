@@ -1,13 +1,10 @@
 const express = require('express');
 const axios = require('axios');
-const cors = require('cors');
-
 const app = express();
 const port = 8008;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
-app.use(cors());
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 

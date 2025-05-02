@@ -1,15 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const cors = require('cors');
-
 const User = require('./user-model');
 const Ranking = require('./ranking-model');
-
 const app = express();
 const port = 8001;
 
-app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 // Connect to MongoDB

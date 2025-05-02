@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const QuestionUser = require('./questionUser');
 
 const app = express();
@@ -9,7 +8,6 @@ const port = 8007;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
-app.use(cors());
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
