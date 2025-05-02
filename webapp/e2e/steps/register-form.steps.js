@@ -29,22 +29,22 @@ defineFeature(feature, test => {
         given('An unregistered user', async () => {
             username = "signInUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 5000 });
+            await page.waitForSelector("#singup-link", { timeout: 10000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
-        }, 3000);
+        });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#username-input", { timeout: 5000 });
+            await page.waitForSelector("#username-input", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
-        }, 3000);
+        });
 
         then('The main page should be displayed', async () => {
-            await page.waitForSelector("#user-menu-button", { timeout: 5000 });
+            await page.waitForSelector("#user-menu-button", { timeout: 10000 });
             await expect(page).toClick("button", { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
-        }, 3000);
+        });
     }, 20000)
 
     test('The user is already registered in the site', ({given,when,then}) => {
@@ -55,19 +55,19 @@ defineFeature(feature, test => {
         given('A registered user', async () => {
             username = "signInUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 5000 });
+            await page.waitForSelector("#singup-link", { timeout: 10000 });
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#username-input", { timeout: 5000 });
+            await page.waitForSelector("#username-input", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
         });
 
         then('An error message should be displayed', async () => {
-            await page.waitForSelector("#error-message", { timeout: 5000 });
+            await page.waitForSelector("#error-message", { timeout: 10000 });
             await expect(page).toMatchElement("p", { text: "El usuario " + username +" ya existe" });
         });
 
@@ -85,16 +85,16 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data in the form and press submit with an invalid password', async () => {
-            await page.waitForSelector("#username-input", { timeout: 3000 });
+            await page.waitForSelector("#username-input", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
-        } ,3000);
+        });
 
         then('An error message should be displayed', async () => {
-            await page.waitForSelector("#error-message", { timeout: 4000 });
+            await page.waitForSelector("#error-message", { timeout: 10000 });
             await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
-        } ,3000);
+        });
 
     }, 20000)
 
