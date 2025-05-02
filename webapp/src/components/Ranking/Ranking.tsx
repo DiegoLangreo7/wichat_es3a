@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -20,13 +20,16 @@ const getMedalColor = (position: number) => {
     case 0: return "#FFD700"; // Oro
     case 1: return "#C0C0C0"; // Plata
     case 2: return "#CD7F32"; // Bronce
-    default: return "#5f4bb6"; // Resto: morado como base
+    default: return "#5f4bb6";
   }
 };
 
 const Ranking: React.FC = () => {
   const [ranking, setRanking] = useState<StatEntry[]>([]);
   const [username, setUsername] = useState<string>("");
+  const [userIndex, setUserIndex] = useState<number | null>(null);
+  const userCardRef = useRef<HTMLDivElement | null>(null);
+  const [highlightUser, setHighlightUser] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
@@ -40,6 +43,9 @@ const Ranking: React.FC = () => {
           (a: StatEntry, b: StatEntry) => b.puntuation - a.puntuation
         );
         setRanking(sorted);
+
+        const index = sorted.findIndex((e: StatEntry) => e.username === parsedUsername);
+        setUserIndex(index);
       } catch (error) {
         console.error("Error fetching ranking:", error);
       }
@@ -47,6 +53,19 @@ const Ranking: React.FC = () => {
 
     fetchRanking();
   }, []);
+
+  useEffect(() => {
+    if (userCardRef.current) {
+      userCardRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      setHighlightUser(true);
+      const timeout = setTimeout(() => setHighlightUser(false), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [ranking]);
 
   return (
     <Box
@@ -85,9 +104,20 @@ const Ranking: React.FC = () => {
           const isTop3 = index < 3;
           const isCurrentUser = entry.username === username;
 
+          const glowColor = isCurrentUser
+            ? userIndex === 0
+              ? "#FFD700"
+              : userIndex === 1
+              ? "#C0C0C0"
+              : userIndex === 2
+              ? "#CD7F32"
+              : "#EDC9FF"
+            : "transparent";
+
           return (
             <Paper
               key={entry.username}
+              ref={isCurrentUser ? userCardRef : null}
               sx={{
                 mb: 2,
                 p: 2,
@@ -98,7 +128,11 @@ const Ranking: React.FC = () => {
                 alignItems: "center",
                 borderLeft: isTop3
                   ? `4px solid ${getMedalColor(index)}`
-                  : "4px solid #F7FFF7"
+                  : "4px solid #F7FFF7",
+                boxShadow: isCurrentUser && highlightUser
+                  ? `0 0 12px 4px ${glowColor}`
+                  : "none",
+                transition: "box-shadow 0.4s ease-in-out",
               }}
             >
               <Avatar

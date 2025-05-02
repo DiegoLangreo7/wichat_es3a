@@ -30,5 +30,16 @@ input:-webkit-autofill {
   .MuiFormLabel-root.Mui-error {
     color: #F7B801 !important;
   }
+
+  @keyframes pulse-highlight {
+    0% { box-shadow: 0 0 0px 0px #F7B801; }
+    50% { box-shadow: 0 0 10px 5px #F7B801; }
+    100% { box-shadow: 0 0 0px 0px #F7B801; }
+  }
+  
+  .highlight {
+    animation: pulse-highlight 2s ease-in-out;
+  }
+  
   
   
