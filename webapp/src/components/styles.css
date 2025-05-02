@@ -9,3 +9,26 @@ body, input, button, label, textarea, a {
 .MuiInputLabel-root {
     font-family: 'Consolas', monospace !important;
 }
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #5f4bb6 inset !important;
+    -webkit-text-fill-color: #F7FFF7 !important;
+    caret-color: #F7FFF7 !important;
+}
+
+/* Cambiar color del borde cuando hay error */
+.MuiFormControl-root .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+    border-color: #F7B801 !important;
+  }
+  
+  /* Cambiar color del texto del helperText cuando hay error */
+  .MuiFormHelperText-root.Mui-error {
+    color: #F7B801 !important;
+  }
+  
+  /* Cambiar color del label cuando hay error */
+  .MuiFormLabel-root.Mui-error {
+    color: #F7B801 !important;
+  }
+  
+  
