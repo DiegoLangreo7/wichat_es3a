@@ -1,22 +1,27 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import { MemoryRouter } from 'react-router-dom';
+
+const renderAppAt = (route = '/login') => {
+  window.history.pushState({}, 'Test page', route);
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <App />
+    </MemoryRouter>
+  );
+};
 
 test('renders welcome message', () => {
-    render(<App></App>);
-    const welcomeMessage = screen.getByText(/Welcome to WICHAT/i);
-    expect(welcomeMessage).toBeInTheDocument();
+  renderAppAt();
+  expect(screen.getByText(/Welcome to WICHAT/i)).toBeInTheDocument();
 });
 
 test('renders login button', () => {
-    render(<App></App>);
-    const loginButton = screen.getByText(/Login/i);
-    expect(loginButton).toBeInTheDocument();
+  renderAppAt();
+  expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
 });
 
 test('renders sign up button', () => {
-    render(<App></App>);
-    const registerButton = screen.getByText("Don't have an account? Sign up here.");
-    expect(registerButton).toBeInTheDocument();
+  renderAppAt();
+  expect(screen.getByText("Don't have an account? Sign up here.")).toBeInTheDocument();
 });
-
-
