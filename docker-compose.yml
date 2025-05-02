@@ -96,6 +96,7 @@ services:
       - llmservice
       - questionservice
       - historic
+      - cardservice
     ports:
       - "8000:8000"
     networks:
@@ -106,6 +107,7 @@ services:
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
       HISTORIC_SERVICE_URL: http://historic:8007
+      CARD_SERVICE_URL: http://cardservice:8008
       
   gateway-api-service:
     container_name: gateway-api-service-wichat_es3a
