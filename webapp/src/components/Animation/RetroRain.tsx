@@ -1,8 +1,16 @@
+// ✅ RetroRain.tsx con control de entorno y tests seguros
 import React from 'react';
 import { Typography, Box } from '@mui/material';
 import '../styles.css';
 
 const RetroRain = () => {
+    // Solo mostrar animación en entorno real de navegador (evita fallo en tests y SSR)
+    if (typeof window === 'undefined') return null;
+
+    // Solo activar animación en páginas específicas (login y registro)
+    const pathname = window.location?.pathname;
+    if (!['/login', '/register'].includes(pathname)) return null;
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const show = localStorage.getItem('showAnimation') !== 'false';
 
