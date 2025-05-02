@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../Main/items/NavBar";
-import { Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import QuestionStat from "./items/QuestionStat";
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -80,7 +80,7 @@ const Historic: React.FC = () => {
             }
 
     };
-        fetchQuestions();}, []);
+        fetchQuestions();}, [username]);
 
 
 

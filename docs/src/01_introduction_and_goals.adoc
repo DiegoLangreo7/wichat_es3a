@@ -9,9 +9,24 @@ The functional requirements that the application will include:
 * User registration.
 * Users will be able to check their statistics (time played, number of games, games won/lost, etc.).
 * The information for questions and answers will be generated automatically from Wikidata.
-* An LLM model will be used for the hint system.
+* Gemini will be used for the hint system.
 * Questions must be answered within a specified time limit.
 * Each question will have one correct answer and several incorrect or distracting answers.
+* The system allows to get information about the users by a documented API.
+* The system allows to get information about the generated questions by a documented API.
+* Another play mode about a board with cards, that the user need to get couples cards.
+* The system will have some different thematics for the question play mode, they are: 
+** countries
+** flags
+** animals
+** science 
+** football
+** movies
+* The system will have differents types of difficulty, which vary:
+** The response time, the more difficult, the less time.
+** The score, the more difficult, more points.
+** For using the clue the user lose the half of the points of the round.
+* The system will have a ranking, will be based on the points obtained by the users.
 
 === Objetivos de calidad
 [options="header",cols="1,2,2"]
@@ -42,5 +57,5 @@ The functional requirements that the application will include:
 | _Users_ | _Anyone using the application_ | Have fun playing the application we develop  
 | _WikiData_ | _Wikimedia Deutschland_ | They are interested in us using their services  
 | _RTVE_ | _RTVE_ | They want us to provide a good application based on the game "Saber y Ganar" to attract people to the program  
-| _LLM API Provider_ | _LLM API Provider_ | They are interested in us using their services  
+| _Gemini_ | _Google DeepMind_ | They are interested in us using their services  
 |===  

@@ -39,6 +39,6 @@ Mapping of Building Blocks to Infrastructure::
 | *WikiData*
 | It is an external service which will provide the necessary data for the application to work properly.
 
-| *LLM*
-| It is an external service that will provide the clues to the user by conversation
+| *Gemini*
+| We ara going to use Gemini for provide the clues to the user by conversation.
 |===
