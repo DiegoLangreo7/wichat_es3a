@@ -1,17 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-const User = require('../users/userservice/user-model');
-const Question = require('../questionservice/src/model/question');
 const QuestionUser = require('./questionUser');
 
 const app = express();
 app.disable('x-powered-by');
 const port = 8007;
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+// Middleware to parse JSON in request body
 app.use(express.json());
+app.use(cors());
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
