@@ -67,23 +67,51 @@ const Login = () => {
         }
     };
 
+    const invaders = Array.from({ length: 25 }, (_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        delay: `${Math.random() * 20}s`
+    }));
+
     return (
         <Box
             id="login-component"
             component="main"
             sx={{
+                position: 'relative',
                 display: 'flex',
                 justifyContent: 'center',
+                alignItems: 'center',
                 backgroundColor: '#202A25',
                 width: '100%',
-                height: '100vh'
+                height: '100vh',
+                overflow: 'hidden',
             }}
         >
+            {/* Fondo animado de marcianitos 👾 */}
+            <Box id="background-animation">
+                {invaders.map(inv => (
+                    <Typography
+                        key={inv.id}
+                        className="invader"
+                        sx={{
+                            left: inv.left,
+                            top: '-30px',
+                            position: 'absolute',
+                            animationDelay: inv.delay,
+                        }}
+                    >
+                        👾
+                    </Typography>
+                ))}
+            </Box>
+
+            {/* Login principal */}
             <Paper
                 id="login-paper"
                 elevation={3}
                 sx={{
-                    m: 20,
+                    zIndex: 1,
                     padding: '20px',
                     textAlign: 'center',
                     width: '40%',
@@ -97,7 +125,7 @@ const Login = () => {
                 <form
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            e.preventDefault(); // Evita submit por defecto
+                            e.preventDefault();
                             loginUser();
                         }
                     }}

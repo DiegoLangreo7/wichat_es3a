@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { Typography, TextField, Button, Link, Box, Paper } from '@mui/material';
 import { useNavigate } from 'react-router';
+import '../styles.css';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -49,23 +50,51 @@ const AddUser = () => {
         }
     };
 
+    const invaders = Array.from({ length: 25 }, (_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        delay: `${Math.random() * 20}s`
+    }));
+
     return (
         <Box
             id="add-user-main-container"
             component="main"
             sx={{
+                position: 'relative',
                 display: 'flex',
                 justifyContent: 'center',
+                alignItems: 'center',
                 backgroundColor: '#202A25',
                 width: '100%',
-                height: '100vh'
+                height: '100vh',
+                overflow: 'hidden'
             }}
         >
+            {/* Fondo animado de marcianitos 👾 */}
+            <Box id="background-animation">
+                {invaders.map(inv => (
+                    <Typography
+                        key={inv.id}
+                        className="invader"
+                        sx={{
+                            left: inv.left,
+                            top: '-30px',
+                            position: 'absolute',
+                            animationDelay: inv.delay,
+                        }}
+                    >
+                        👾
+                    </Typography>
+                ))}
+            </Box>
+
+            {/* Contenido del formulario */}
             <Paper
                 id="add-user-paper"
                 elevation={3}
                 sx={{
-                    m: 20,
+                    zIndex: 1,
                     padding: '20px',
                     textAlign: 'center',
                     width: '40%',
