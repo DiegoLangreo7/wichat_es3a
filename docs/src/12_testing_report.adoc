@@ -35,3 +35,6 @@ We tested the following scenarios:
 
 Load tests are designed to evaluate the system's performance under various conditions, including high traffic and heavy loads.
 These tests help identify potential bottlenecks and ensure that the system can handle the expected number of users and requests without degradation in performance.
+We used Artillery to simulate a large number of users and requests, allowing us to assess the system's response times and resource utilization under different scenarios.
+
+We tested the following scenarios:
