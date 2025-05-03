@@ -1,9 +1,9 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-solution-strategy]]
-== 4. Solution Strategy
+== Solution Strategy
 
-=== 4.1. Technological Decisions
+=== Technological Decisions
 
 To support the functional and non-functional requirements of WIChat, the following technologies and architectural components were selected to optimize performance, maintainability, and scalability:
 
@@ -45,7 +45,7 @@ To support the functional and non-functional requirements of WIChat, the followi
 * *Containerization:* **Docker**  
   All services are containerized using Docker. `docker-compose` orchestrates services locally and in test environments.
 
-=== 4.2. Decisions to Achieve Key Quality Goals
+=== Decisions to Achieve Key Quality Goals
 
 The following strategic decisions help fulfill the project's quality goals:
 
