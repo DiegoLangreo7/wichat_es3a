@@ -23,7 +23,6 @@ async function startServer() {
     cardservice = await require("../../cardservice/cardService");
     gatewayservice = await require("../../gatewayservice/gateway-service");
     gatewayapiservice = await require("../../gateway-api-service/gateway-api-service");
-    cardservice = await require("../../cardservice/cardService");
 }
 
 startServer();

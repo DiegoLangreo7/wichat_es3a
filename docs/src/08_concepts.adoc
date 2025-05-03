@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-concepts]]
-== 8. Cross-cutting Concepts
+== Cross-cutting Concepts
 
 
 ifdef::arc42help[]
@@ -57,13 +57,23 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== 8.1. Domain Model
-* **Users**: Represents the players, including data such as name, email, game statistics and answer history.  
-* **Questions and Answers**: Model that includes the image, statement, answer options (correct and incorrect), and the source (Wikidata).  
+=== Domain Model
+* **Users**: Represents the players, including data such as name and password.  
+* **Questions**: Model that includes the image, statement, answer options (correct and incorrect), and the source (Wikidata).  
 * **Hints**: Data dynamically generated from a language model (LLM).  
-* **Game Sessions**: Records the users' sessions, including given answers, times, and results.  
+* **Historic**: Model that includes the answers of the users to questions in the game, it saves the question, the options, answer of the user and the correct answwer.
+* **Ranking**: Model that includes the stats of users. It has data as the number of correct and incorrect answers, total points obtained and time played by the user.
 
-=== 8.2. User Experience concepts (UX)
+=== User Experience concepts (UX)
 The user interacts with the application through a user interface. In this interface, the user must either register or log in. Once the user has been identified, they can start a quiz or check their participation history.
 
 Regarding the quiz, the user will see a question on the screen along with a series of possible answers. When one of these answers is selected, the user will receive feedback based on whether the chosen answer is correct or not. Additionally, there will be a chat in the bottom left corner that will interact with the user to provide a series of hints.
+
+=== Microservices architecture
+The system will work coordinating little closed systems called microservices, these will be complete applications that work together using an API manager (gateway) so they comunicate and give the user a complete experience.
+
+=== Data Persistence
+To assure the data persistence we will use a non relational DB (using mongoDB) with schemas that will connect the data for every service in the way they need, without the rigidity of relational DBs.
+
+=== Security
+To assure that the passwords are safely saved in our DB, the system wil crypt them using bCrypt.
