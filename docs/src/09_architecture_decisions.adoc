@@ -7,18 +7,18 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 ==== Microservices
 Use of a microservices-based architecture for the project.
-===== Status
+**Status**
 Approved
-===== Context
+**Context**
 A scalable and modular architecture was required for the project. A microservices structure was preferred due to the flexibility it offers in distributing responsibilities, independently scaling components, and supporting long-term system evolution.
-===== Alternatives Considered
+**Alternatives Considered**
 * **Microservices** – Chosen for its ability to decouple components, enable independent deployments, and improve maintainability in distributed teams.
 * **Modular Monolith** – Considered for its simplicity, but limited in terms of scalability and long-term adaptability.
 * **Serverless Functions** – Evaluated for specific components, but not suitable as the main architecture due to orchestration and monitoring complexity.
-===== Decision
+**Decision**
 We chose a **microservices architecture** as the foundation for the project. This decision aligns with the need to independently scale certain services, maintain a clear separation of concerns, and allow teams to work in parallel. Each service will have its own lifecycle and will communicate through well-defined APIs (REST or gRPC), using asynchronous messaging where appropriate.
 In parallel, we decided to use **TypeScript with React** on the frontend, providing a robust codebase and a gradual transition from JavaScript.
-===== Consequences
+**Consequences**
 * Enables independent scaling of services based on demand.
 * Improves maintainability by decoupling business logic into autonomous services.
 * Facilitates parallel work among multiple teams or developers.
@@ -29,17 +29,17 @@ In parallel, we decided to use **TypeScript with React** on the frontend, provid
 
 ==== REST
 Use of RESTful APIs with JSON as the communication protocol between microservices.
-===== Status
+**Status**
 Approved
-===== Context
+**Context**
 Given the choice of a microservices architecture, a communication protocol was needed to enable interaction between services. REST, using HTTP and JSON, was selected for its simplicity, ubiquity, and ease of integration across different services and languages.
-===== Alternatives Considered
+**Alternatives Considered**
 * **REST with JSON** – Chosen for its wide adoption, human readability, and straightforward implementation using HTTP standards.
 * **gRPC** – Considered for its performance and strong typing, but requires more tooling and is less accessible for teams unfamiliar with Protocol Buffers.
 * **GraphQL** – Evaluated for client-to-service communication, but not ideal for service-to-service interactions due to complexity and over-fetching/under-fetching concerns in internal APIs.
-===== Decision
+**Decision**
 We chose to use **RESTful APIs with JSON** as the standard for inter-service communication. REST provides a simple, stateless model that aligns well with HTTP-based infrastructure and can be easily implemented and consumed by all services. JSON was selected for its readability and native support in JavaScript and TypeScript environments.
-===== Consequences
+**Consequences**
 * Simplifies service integration with well-understood HTTP semantics.
 * Facilitates debugging and monitoring due to human-readable payloads.
 * Promotes loose coupling between services via clear API contracts.
@@ -49,45 +49,45 @@ We chose to use **RESTful APIs with JSON** as the standard for inter-service com
 
 ==== TypeScript
 Usage of TypeScript for the backend and frontend development.
-===== Status
+**Status**
 Modified (!)
-===== Context
+**Context**
 A language was needed for web development, and a statically typed one was preferred over a dynamically typed one.
-===== Alternatives
+**Alternatives Considered**
 * **TypeScript**
 * **Java with SpringBoot**
-===== Decision
+**Decision**
 Since the initial code in the repository was in JavaScript, we ultimately chose TypeScript (even though several team members are not very experienced with it) because otherwise, we would have had to migrate the entire project to Java with Spring.
-===== Consequences
+**Consequences**
 It is expected to be easier to identify errors during programming and to avoid using Spring annotations for web-level functionality.
 
 ==== Node.js
 Usage of Node.js for the backend development.
-===== Status
+**Status**
 Approved
-===== Context
+**Context**
 A platform was needed for web development, and the base project was already in Node.js
-===== Alternatives
+**Alternatives Considered**
 * **Node.js**
 * **SpringBoot**
-===== Decision
+**Decision**
 Since the initial code in the repository was already in Node.js, we ultimately chose it (even though several team members are not very experienced with it) because otherwise, we would have had to migrate the entire project to Java with SpringBoot.
-===== Consequences
+**Consequences**
 It is expected to be easier to identify errors during programming and to avoid using Spring annotations for web-level functionality.
 
 ==== React & TypeScript
 Usage of React with TypeScript for the frontend development.
-===== Status
+**Status**
 Approved
-===== Context
+**Context**
 A programming language was needed for frontend development. A statically typed language was preferred over a dynamically typed one to improve maintainability, scalability, and early error detection during development.
-===== Alternatives Considered
+**Alternatives Considered**
 * **TypeScript with React**
 * **Html with swig**
-===== Decision
+**Decision**
 Since the initial code in the repository was written in JavaScript with React we chose to use **TypeScript with React**.
 Although some team members lack extensive experience with TypeScript, this choice allows for an easier transition from JavaScript and avoids the need for a complete migration to a Java + Spring Boot stack, which would be more time-consuming and complex.
-===== Consequences
+**Consequences**
 * Improves error detection at compile-time thanks to static typing.
 * Maintains compatibility and continuity with the existing codebase.
 * Avoids using Spring annotations and configuration on the frontend.
