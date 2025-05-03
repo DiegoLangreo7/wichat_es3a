@@ -30,7 +30,9 @@
     "build": "react-scripts build",
     "prod": "serve -s build",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!axios)/'",
-    "test:e2e": "start-server-and-test 'node e2e/test-environment-setup.js' http://localhost:8000/health prod 3000 \"cd e2e && jest\"",
+    "prepare:e2e": "node e2e/test-environment-setup.js",
+    "jest:e2e": "cross-env NODE_OPTIONS=--experimental-vm-modules jest e2e",
+    "test:e2e": "start-server-and-test prepare:e2e http://localhost:8000/health prod 3000 jest:e2e",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -57,6 +59,7 @@
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.21",
     "axios-mock-adapter": "^2.1.0",
+    "cross-env": "^7.0.3",
     "expect-puppeteer": "^9.0.2",
     "jest": "^29.7.0",
     "jest-cucumber": "^4.5.0",

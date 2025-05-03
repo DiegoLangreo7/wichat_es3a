@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const { defineFeature, loadFeature }=require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
-const feature = loadFeature('./features/historic-page.feature');
+const feature = loadFeature('./e2e/features/historic-page.feature');
 
 let page;
 let browser;
