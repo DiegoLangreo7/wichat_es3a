@@ -52,7 +52,7 @@ The functional requirements that the application will include:
 [options="header",cols="1,3,2"]
 |===  
 |Role/Name | Contact | Expectations  
-| Students | _Yeray Rodríguez Granda, Diego García Gonzalez, Sara Fernández González, Daniel Álvarez Blanco, Carlos Cabrera Moral, Fernando Begega Suarez_ | Develop a good application  
+| Students | _Yeray Rodríguez Granda, Diego García Gonzalez, Sara Fernández González, Daniel Álvarez Blanco_ | Develop a good application  
 | Teachers | _Diego Martín Fernandez_ | Ensure that we develop a good application and learn the concepts taught in class  
 | _Users_ | _Anyone using the application_ | Have fun playing the application we develop  
 | _WikiData_ | _Wikimedia Deutschland_ | They are interested in us using their services  
