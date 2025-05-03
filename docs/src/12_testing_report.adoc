@@ -11,7 +11,6 @@ Each component was tested with its own test suite, covering the main functionali
 
 ==== Code Coverage
 We used SonarCloud to analyze the code coverage and code duplication of our unit tests. The results are as follows:
-
 image::SonarCoverage.png["Code coverage and duplications"]
 
 As shown above, code coverage exceeds 80%, which was our target, and code duplication remains below 3%.
@@ -22,8 +21,10 @@ Some components are not covered at all, but they are either non-critical to the 
 
 Acceptance tests are designed to automatically ensure that the system fulfills its functional requirements,
 verifies its integrity—especially in relation to external sources like Wikidata and detects potential issues that might otherwise go unnoticed during development.
-These tests play a crucial role in validating the system from the user's perspective and help maintain overall reliability as the system evolves.\n
+These tests play a crucial role in validating the system from the user's perspective and help maintain overall reliability as the system evolves.
+
 We tested the following scenarios:
+
 - User registration
 - User login
 - Gameplay
