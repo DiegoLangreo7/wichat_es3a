@@ -145,7 +145,7 @@ const NavBar: React.FC = () => {
                                 borderRadius: "8px",
                                 transition: "all 0.3s ease-in-out",
                                 "&:hover": {
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                    backgroundColor: "#5f4bb6",
                                     transform: "scale(1.05)"
                                 },
                             }}
