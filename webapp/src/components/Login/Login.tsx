@@ -119,7 +119,9 @@ const Login = () => {
                     backgroundColor: '#5f4bb6'
                 }}
             >
-                <Typography component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7' }}>
+                <Typography component="h1" variant="h5" gutterBottom sx={{ color: '#F7FFF7', fontWeight: "bold",
+                    mb: 2,
+                    textShadow: '2px 2px 0 rgba(255,255,255,0.4)'}}>
                     Welcome to WICHAT
                 </Typography>
 

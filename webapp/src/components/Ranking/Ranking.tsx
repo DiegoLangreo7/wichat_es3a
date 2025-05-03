@@ -93,8 +93,10 @@ const Ranking: React.FC = () => {
           color: "#F7FFF7",
           textAlign: "center",
           letterSpacing: 1,
-          textTransform: "uppercase"
+          textTransform: "uppercase",
+          textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
         }}
+
       >
         Ranking de Jugadores
       </Typography>

@@ -161,7 +161,9 @@ const Api: React.FC = () => {
                         bgcolor: '#5f4bb6'
                     }}
                 >
-                    <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#F7FFF7'}}>
+                    <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#F7FFF7',fontWeight: "bold",
+                        mb: 2,
+                        textShadow: '2px 2px 0 rgba(255,255,255,0.4)'}}>
                         API Explorer
                     </Typography>
 
@@ -177,6 +179,9 @@ const Api: React.FC = () => {
                             centered
                             sx={{
                                 '& .MuiTab-root': {
+                                    color: '#F7FFF7',
+                                },
+                                '& .Mui-root': {
                                     color: '#F7FFF7',
                                 },
                                 '& .Mui-selected': {
