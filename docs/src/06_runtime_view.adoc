@@ -1,128 +1,23 @@
+ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
 === Registration
 Process of registering a new user.
 
+image:adduser.png[arc42]
 
-
-=== 6.2 Login
+=== Login
 Process of logging in for a registered user.
 
-[plantuml,"LogIn",png]
-----
-actor User
-participant FrontEnd
-participant AuthService
-database MongoDB
+image:auth.png[arc42]
 
-User --> FrontEnd: Selects the login option
-
-loop Until User provides valid credentials
-    User --> FrontEnd: Fills in the login form
-    FrontEnd --> FrontEnd: Verifies that all required fields are completed
-    FrontEnd --> AuthService: Sends a request to the auth service
-    AuthService --> AuthService: Validates the credentials
-    AuthService --> MongoDB: Checks if the user exists
-    MongoDB --> AuthService: Returns the search result
-
-    alt Login error
-        AuthService --> FrontEnd: Returns the errors
-        FrontEnd --> User: Displays the errors
-    end
-end
-
-AuthService --> FrontEnd: Returns the logged-in user
-FrontEnd --> User: Shows the main page for the user
-----
-
-=== 6.3 Game
+=== Game
 Process of delivering the best digital experience to the user.
 
-[plantuml,"Game",png]
-----
-actor User
-participant FrontEnd
-participant QuestionService
-participant LLM
-participant UserService
-database MongoDB
+image:game.png[arc42]
 
-User --> FrontEnd: Selects game mode and difficulty
-User --> FrontEnd: Clicks start game
+=== Request Questions
+Process of obtaining questions for the game
 
-loop Until all rounds are completed
-
-    FrontEnd --> QuestionService: Requests the next question
-    QuestionService --> FrontEnd: Returns the new question with its image
-    FrontEnd --> User: Displays the question and the answer options
-
-    alt User asks for a hint
-        User --> FrontEnd: Clicks the hint option
-        FrontEnd --> FrontEnd: Pauses the timer
-        FrontEnd --> User: Opens the LLM chat
-        loop Until conversation ends
-            User --> FrontEnd: Sends a question
-            FrontEnd --> LLM: Requests a response
-            LLM --> FrontEnd: Returns the response
-            FrontEnd --> User: Displays the response
-        end
-        User --> FrontEnd: Closes the chat
-        FrontEnd --> FrontEnd: Resumes the timer
-    end
-
-    alt User answers the question
-        User --> FrontEnd: Submits an answer
-        FrontEnd --> FrontEnd: Verifies correctness
-        FrontEnd --> FrontEnd: Stores the result locally
-
-        alt Correct answer
-            FrontEnd --> FrontEnd: Adds score based on remaining time and difficulty
-        end
-
-        alt Incorrect answer
-            FrontEnd --> FrontEnd: No score is added
-        end
-
-        FrontEnd --> User: Displays the result
-    end
-
-    alt User doesn't answer
-        FrontEnd --> FrontEnd: Stores the result locally
-        FrontEnd --> FrontEnd: No score is added
-        FrontEnd --> User: Shows the correct answer
-    end
-end
-
-FrontEnd --> FrontEnd: Calculates the final result
-FrontEnd --> User: Displays the final score and number of correct answers
-FrontEnd --> User: Shows the list of answered questions
-FrontEnd --> UserService: Sends game results
-UserService --> MongoDB: Updates the user's game history
-
-alt User chooses to play again
-    User --> FrontEnd: Chooses to play again
-    FrontEnd --> User: Displays the new game
-end
-
-alt User chooses to return to menu
-    User --> FrontEnd: Chooses to return to menu
-    FrontEnd --> User: Displays the main page
-end
-----
-
-=== 6.4 Ranking
-Process of displaying the global game ranking.
-
-[plantuml,"Ranking",png]
-----
-actor User
-participant FrontEnd
-participant UserService
-database MongoDB
-
-User --> FrontEnd: Selects the option to view the ranking
-FrontEnd --> UserService: Requests the ranking list
-FrontEnd --> FrontEnd: Prepares the ranking based on the user's position
-FrontEnd --> User: Displays the ranking
-----
+image:requestquestion.png[arc42]
