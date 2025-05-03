@@ -18,7 +18,7 @@ As shown above, code coverage exceeds 80%, which was our target, and code duplic
 Achieving these results was a challenging task, but we succeeded thanks to the collective effort of the entire team.
 Some components are not covered at all, but they are either non-critical to the system or contain functionalities that are not essential.
 
-== Acceptance Tests
+=== Acceptance Tests
 
 Acceptance tests are designed to automatically ensure that the system fulfills its functional requirements,
 verifies its integrity especially in relation to external sources like Wikidata and detects potential issues that might otherwise go unnoticed during development.
@@ -31,7 +31,7 @@ We tested the following scenarios:
 - Gameplay
 - Historic page
 
-== Load Tests
+=== Load Tests
 
 Load tests are designed to evaluate the system's performance under various conditions, including high traffic and heavy loads.
 These tests help identify potential bottlenecks and ensure that the system can handle the expected number of users and requests without degradation in performance.
@@ -75,12 +75,12 @@ Lastly, during gameplay load testing, the system again performed well. Response 
 
 All load tests were conducted under relatively low-traffic conditions due to the limitations of the virtual machine. However the results provide a useful initial insight into system behavior under concurrent access.
 
-== Usability Tests
+=== Usability Tests
 
-=== Objective
+==== Objective
 To evaluate the user experience across core features of the application — *login*, *registration*, *lobby*, *gameplay*, and *history* — using a diverse group of 5 users with varying levels of technical proficiency, all on desktop or laptop devices.
 
-=== User 1 – Low Technical Proficiency
+==== User 1 – Low Technical Proficiency
 *Device:* Laptop
 
 *Tasks:* Register, log in, start a game
@@ -94,7 +94,7 @@ To evaluate the user experience across core features of the application — *log
 - Use clearer and more intuitive button labels.
 - Add password guidelines or helper text in the registration form.
 
-=== User 2 – High Technical Proficiency
+==== User 2 – High Technical Proficiency
 *Device:* Desktop
 
 *Tasks:* Log in, join a lobby, view match history
@@ -106,7 +106,7 @@ To evaluate the user experience across core features of the application — *log
 *Suggestions:*
 - Improve the history section with additional data and filtering options.
 
-=== User 3 – Medium Technical Proficiency
+==== User 3 – Medium Technical Proficiency
 *Device:* Laptop
 
 *Tasks:* Register, access the lobby, view ranking
@@ -117,7 +117,7 @@ To evaluate the user experience across core features of the application — *log
 *Suggestions:*
 - Add a loading spinner or status message for the lobby.
 
-=== User 4 – High Technical Proficiency
+==== User 4 – High Technical Proficiency
 *Device:* Desktop
 
 *Tasks:* Quick registration, play a game, view results
@@ -129,7 +129,7 @@ To evaluate the user experience across core features of the application — *log
 *Suggestions:*
 - Improve the visual presentation of game results (e.g., use color coding or progress bars).
 
-=== User 5 – Low Technical Proficiency
+==== User 5 – Low Technical Proficiency
 *Device:* Laptop
 
 *Tasks:* Log in, access match history
