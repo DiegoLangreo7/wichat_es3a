@@ -1,15 +1,12 @@
 const axios = require('axios');
 const express = require('express');
-const cors = require('cors');
 require('dotenv').config({ path: '../.env' });
 const apiKey = process.env.LLM_API_KEY
-
 const app = express();
 const port = 8003;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
-app.use(cors());
 
 // Define configuration for Gemini API
 const geminiConfig = {

@@ -28,7 +28,7 @@ The functional requirements that the application will include:
 ** For using the clue the user lose the half of the points of the round.
 * The system will have a ranking, will be based on the points obtained by the users.
 
-=== Objetivos de calidad
+=== Quality goals
 [options="header",cols="1,2,2"]
 |===
 |Quality Objectives  

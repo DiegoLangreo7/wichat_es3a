@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('./user-model');
 const Ranking = require('./ranking-model');
-
 const app = express();
 const port = 8001;
 
