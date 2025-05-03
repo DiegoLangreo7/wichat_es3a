@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Grid, Box, CircularProgress } from '@mui/material';
 
 interface QuestionProps {
-    question: Question | null;
+    question: QuestionModel | null;
     onAnswer: (isCorrect: boolean, selectedAnswer: string) => void;
     isTransitioning: boolean;
     disabled: boolean;
 }
 
-interface Question {
+interface QuestionModel {
     _id: string;
     question: string;
     options: string[];

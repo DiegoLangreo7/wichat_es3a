@@ -33,7 +33,8 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                 await preloadImage(question.imageUrl);
             }
         };
-        fetchImage();}, []);
+        fetchImage();
+        }, [question]);
 
     return (
         <Card
