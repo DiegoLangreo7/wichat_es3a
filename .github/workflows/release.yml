@@ -25,6 +25,7 @@ jobs:
     - run: npm --prefix users/userservice test -- --coverage
     - run: npm --prefix questionservice test -- --coverage
     - run: npm --prefix historicservice test -- --coverage
+    - run: npm --prefix cardservice test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
       env:
         LLM_API_KEY: ${{ secrets.LLM_API_KEY }}

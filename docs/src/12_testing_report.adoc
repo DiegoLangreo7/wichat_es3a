@@ -1,0 +1,149 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-testing-report]]
+== Testing Report
+
+=== Unit Tests
+During this testing cycle, the system was evaluated using code coverage metrics and code duplication analysis.
+Overall code coverage reached 81.2%, which is acceptable but could be improved.
+Code duplication remains low at 1.8%, indicating good technical health of the codebase.
+Each component was tested with its own test suite, covering the main functionalities of the component.
+
+==== Code Coverage
+We used SonarCloud to analyze the code coverage and code duplication of our unit tests. The results are as follows:
+
+image::SonarReview.png["Code coverage and duplications"]
+
+As shown above, code coverage exceeds 80%, which was our target, and code duplication remains below 3%.
+Achieving these results was a challenging task, but we succeeded thanks to the collective effort of the entire team.
+Some components are not covered at all, but they are either non-critical to the system or contain functionalities that are not essential.
+
+== Acceptance Tests
+
+Acceptance tests are designed to automatically ensure that the system fulfills its functional requirements,
+verifies its integrity especially in relation to external sources like Wikidata and detects potential issues that might otherwise go unnoticed during development.
+These tests play a crucial role in validating the system from the user's perspective and help maintain overall reliability as the system evolves.
+
+We tested the following scenarios:
+
+- User registration
+- User login
+- Gameplay
+- Historic page
+
+== Load Tests
+
+Load tests are designed to evaluate the system's performance under various conditions, including high traffic and heavy loads.
+These tests help identify potential bottlenecks and ensure that the system can handle the expected number of users and requests without degradation in performance.
+We used Artillery to simulate a large number of users and requests, allowing us to assess the system's response times and resource utilization under different scenarios.
+
+We tested the following scenarios:
+
+- Login
+
+image::LoginLoadYML.png["Login load test"]
+
+- Registration
+
+image::RegisterLoadYML.png["Registration load test"]
+
+- Lobby
+
+image::LobbyLoadYML.png["Gameplay load test"]
+
+- Gameplay
+
+image::GameplayLoadYML.png["Gameplay load test"]
+
+- **Results**
+
+image::LoginLoad1.png["Results 1 login load test"]
+image::LoginLoad2.png["Results 2 login load test"]
+As observed in the login load tests, the system demonstrated excellent performance under stress conditions. Response times remained consistently low and stable, indicating that the login functionality is well-optimized and capable of handling multiple concurrent users without degradation in performance.
+
+image::RegisterLoad1.png["Results 1 register load test"]
+image::RegisterLoad2.png["Results 2 register load test"]
+Similarly, the register load tests showed that the system maintained strong performance even under significant load. Response times remained within optimal limits, confirming that the registration process is both efficient and scalable.
+
+image::LobbyLoad1.png["Results 1 lobby load test"]
+image::LobbyLoad2.png["Results 2 lobby load test"]
+However, in the case of the lobby, performance under load was noticeably poorer. This degradation is primarily attributed to the fact that every user who connects to the lobby simultaneously queries the ranking system, which creates a bottleneck. This indicates a need for optimization in how ranking data is retrieved or cached during high-traffic scenarios.
+
+image::GameplayLoad1.png["Results 1 gameplay load test"]
+image::GameplayLoad2.png["Results 2 gameplay load test"]
+Lastly, during gameplay load testing, the system again performed well. Response times remained within acceptable thresholds despite the additional load of executing queries to Wikidata to dynamically generate questions. This shows that the gameplay logic is resilient and can manage external data dependencies without major performance drawbacks.
+
+All load tests were conducted under relatively low-traffic conditions due to the limitations of the virtual machine. However the results provide a useful initial insight into system behavior under concurrent access.
+
+== Usability Tests
+
+=== Objective
+To evaluate the user experience across core features of the application — *login*, *registration*, *lobby*, *gameplay*, and *history* — using a diverse group of 5 users with varying levels of technical proficiency, all on desktop or laptop devices.
+
+=== User 1 – Low Technical Proficiency
+*Device:* Laptop
+
+*Tasks:* Register, log in, start a game
+
+*Observations:*
+- Difficulty locating the registration button; label was not intuitive.
+- Confusion around password requirements, which were not clearly communicated.
+- Once inside the gameplay screen, the user navigated it easily.
+
+*Suggestions:*
+- Use clearer and more intuitive button labels.
+- Add password guidelines or helper text in the registration form.
+
+=== User 2 – High Technical Proficiency
+*Device:* Desktop
+
+*Tasks:* Log in, join a lobby, view match history
+
+*Observations:*
+- No issues navigating the interface.
+- Noted that the history section could include more detailed information like timestamps or scores.
+
+*Suggestions:*
+- Improve the history section with additional data and filtering options.
+
+=== User 3 – Medium Technical Proficiency
+*Device:* Laptop
+
+*Tasks:* Register, access the lobby, view ranking
+
+*Observations:*
+- Experienced a noticeable delay when entering the lobby; uncertain if the page was loading.
+
+*Suggestions:*
+- Add a loading spinner or status message for the lobby.
+
+=== User 4 – High Technical Proficiency
+*Device:* Desktop
+
+*Tasks:* Quick registration, play a game, view results
+
+*Observations:*
+- Smooth interaction with the system.
+- Suggested the results screen could benefit from stronger visual elements to highlight performance.
+
+*Suggestions:*
+- Improve the visual presentation of game results (e.g., use color coding or progress bars).
+
+=== User 5 – Low Technical Proficiency
+*Device:* Laptop
+
+*Tasks:* Log in, access match history
+
+*Observations:*
+- Difficulty locating the history section; navigation wasn’t immediately clear.
+- Found the login process simple and straightforward.
+
+*Suggestions:*
+- Make the history section more visible or accessible from the main interface.
+
+=== Overall Conclusions
+The application generally offers a smooth and intuitive experience for users with moderate to high technical skills. However, users with limited technical experience encountered minor usability challenges, particularly related to navigation between the menus.
+
+Performance concerns were noted in the *lobby*, and some areas (e.g., *history* and *results*) could benefit from improved visual structure and user guidance.
+
+All tests were conducted using *desktop or laptop devices*, ensuring consistent interaction formats across participants.
