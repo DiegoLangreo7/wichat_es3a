@@ -30,17 +30,17 @@ defineFeature(feature, test => {
         given('A registered user', async () => {
             username = "loginUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 10000 });
+            await page.waitForSelector("#signup-link", { timeout: 10000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
-            await expect(page).toClick("button", { text: username });
+            await expect(page).toClick('button', { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 10000 });
+            await page.waitForSelector("#login-component", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });
@@ -48,7 +48,7 @@ defineFeature(feature, test => {
 
         then('The main page should be displayed', async () => {
             await page.waitForSelector("#user-menu-button", { timeout: 10000 });
-            await expect(page).toClick("button", { text: username });
+            await expect(page).toClick('button', { text: username });
             await expect(page).toClick("li", { text: "Cerrar sesión" });
         });
     } , 20000);
@@ -64,7 +64,7 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 10000 });
+            await page.waitForSelector("#login-component", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });
@@ -87,7 +87,7 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data with the wrong password in the form and press submit', async () => {
-            await page.waitForSelector("#login-username-field", { timeout: 10000 });
+            await page.waitForSelector("#login-component", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Login' });

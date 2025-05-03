@@ -134,6 +134,7 @@ const Login = () => {
                         fullWidth
                         margin="normal"
                         label="Username"
+                        name="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         error={!!error.username}
@@ -158,6 +159,7 @@ const Login = () => {
                         fullWidth
                         margin="normal"
                         label="Password"
+                        name="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -203,6 +205,7 @@ const Login = () => {
                             {loading ? 'Loading...' : 'Login'}
                         </Button>
                         <Link
+                            id="signup-link"
                             component="button"
                             variant="body2"
                             onClick={() => navigate('/register')}

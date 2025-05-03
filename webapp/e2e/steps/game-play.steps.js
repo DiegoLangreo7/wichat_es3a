@@ -30,7 +30,7 @@ defineFeature(feature, test => {
         given('I am on the main page', async () => {
             username = "gamePlayUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 3000 });
+            await page.waitForSelector("#signup-link", { timeout: 3000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
@@ -42,7 +42,7 @@ defineFeature(feature, test => {
             await expect(page).toClick('button', { text: 'Jugar' });
             await page.waitForSelector('#play-menu-questions', { timeout: 30000 });
             await expect(page).toClick('li', { text: 'Preguntas' });
-            await expect(page).toClick('button', { text: '🎮 JUGAR' });
+            await expect(page).toClick('button', { text: 'JUGAR' });
         });
 
         then('I can play the game', async () => {
@@ -58,7 +58,7 @@ defineFeature(feature, test => {
             await new Promise(resolve => setTimeout(resolve, 1000));
             await expect(page).toMatchElement("div", { text: "¡Juego Terminado!" });
 
-        });
+        })
     }, 180000);
 
 
