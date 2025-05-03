@@ -26,7 +26,7 @@ Contained Building Blocks::
 |===
 
 
-### **Level 2: Internal Structure of Level 1 Blocks**
+### Level 2: Internal Structure of Level 1 Blocks
 
 
 image::level2diagram.png["Hierarchy of building blocks"]
@@ -51,7 +51,7 @@ Contained Building Blocks::
 |===
 
 
-### **Level 3: Internal Structure of Level 2 Blocks**
+### Level 3: Internal Structure of Level 2 Blocks
 
 
 image::level3diagram.png["Hierarchy of building blocks"]
