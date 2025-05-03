@@ -52,7 +52,7 @@ const NavBar: React.FC = () => {
             <Toolbar id="tool-bar-component" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingX: 2 }}>
                 <Box id="elements-container" sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Typography id="home-link"
-                                variant="h6"
+                                variant="h4"
                                 onClick={handleMain}
                                 sx={{
                                     color: "white",
