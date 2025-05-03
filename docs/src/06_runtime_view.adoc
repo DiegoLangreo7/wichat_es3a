@@ -1,43 +1,10 @@
 [[section-runtime-view]]
-== 6 Runtime View
+== Runtime View
 
-=== 6.1 Registration
+=== Registration
 Process of registering a new user.
 
-[plantuml,"Register",png]
-----
-actor User
-participant FrontEnd
-participant UserService
-database MongoDB
 
-User --> FrontEnd: Selects the option to register a new user
-
-loop Until User provides valid data
-    User --> FrontEnd: Fills in the registration form
-    FrontEnd --> FrontEnd: Verifies that all required fields are completed
-    FrontEnd --> UserService: Sends a request to the user service
-    UserService --> UserService: Validates the data
-    UserService --> MongoDB: Checks if the user already exists
-    MongoDB --> UserService: Returns the search result
-
-    alt There is a registration error
-        UserService --> FrontEnd: Returns the validation errors
-        FrontEnd --> User: Displays the errors
-    end
-end
-
-UserService --> MongoDB: Inserts the new user
-MongoDB --> UserService: Returns the insertion result
-
-alt There is an insertion error
-    UserService --> FrontEnd: Returns the error
-    FrontEnd --> User: Displays the error
-end
-
-UserService --> FrontEnd: Confirms successful registration
-FrontEnd --> User: Shows the main page for the registered user
-----
 
 === 6.2 Login
 Process of logging in for a registered user.
