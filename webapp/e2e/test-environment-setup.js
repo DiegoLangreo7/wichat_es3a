@@ -9,7 +9,6 @@ let historicservice;
 let cardservice;
 let gatewayapiservice;
 let gatewayservice;
-let cardservice;
 
 async function startServer() {
     console.log('Starting MongoDB memory server...');
