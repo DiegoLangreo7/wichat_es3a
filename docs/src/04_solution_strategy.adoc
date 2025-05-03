@@ -4,47 +4,80 @@ ifndef::imagesdir[:imagesdir: ../images]
 == 4. Solution Strategy
 
 === 4.1. Technological Decisions
-For the development of the system, technologies have been selected to optimize performance, maintainability, and scalability of the project.
 
-* Programming Language: TypeScript
-TypeScript was chosen as the main language for the project. Unlike JavaScript, TypeScript is a statically typed language, which helps with early error detection during programming. Its adoption avoided the need to completely migrate the existing JavaScript code to Java with Spring Boot.
+To support the functional and non-functional requirements of WIChat, the following technologies and architectural components were selected to optimize performance, maintainability, and scalability:
 
-* Database: MongoDB
-MongoDB was chosen as the NoSQL database. This database allows handling data in a flexible format and scaling efficiently, facilitating integration with Node.js.
+* *Programming Language:* **TypeScript**  
+  TypeScript was chosen as the main programming language due to its static typing, early error detection, and improved maintainability. It enables safer code than plain JavaScript while allowing reuse of existing JS libraries and code.
 
-* Frameworks and Libraries
-** *React.js:* Used for developing the user interface due to its modularity and ease of building interactive web applications.
-** *Node.js:* Used as the runtime environment for the backend layer, enabling a full-stack architecture based on JavaScript/TypeScript.
+* *Frontend Framework:* **React.js**  
+  React.js is used to build a modular and interactive user interface, ideal for dynamic quiz generation and chat components.
 
-* Version Control: GitHub
-GitHub was selected for version control. It allows for efficient source code management, continuous integration, and remote collaboration.
+* *Backend Runtime:* **Node.js**  
+  Node.js supports an event-driven, non-blocking architecture, which is well-suited for handling concurrent requests across microservices.
 
-* APIs: Wikidata y Gemini
-** *Wikidata:* Wikidata will be used to retrieve structured information about any given topic. The system will query Wikidata to gather relevant data, which will then be processed to dynamically generate questions. By using Wikidata as a data source, the system ensures that the information is accurate and up-to-date.
-** *Gemini*: The Gemini API will be used to create an interactive chat feature that generates hints for a quiz game. This will enhance user engagement by providing intelligent clues based on the context of the questions.
+* *Architecture Pattern:* **Microservices**  
+  The system is split into independent services for separation of concerns and scalability:
+  - `webapp`: frontend interface.
+  - `gatewayservice`: routes requests to backend services.
+  - `authservice`: manages user authentication and session control.
+  - `userservice`: handles user data and roles.
+  - `historicservice`: handles user records for the historic.
+  - `llmservice`: interfaces with Gemini for AI-based hint generation.
+  - `questionservice`: interfaces with wikidata for question generation.
+  - `cardservice`: interfaces for the images generation for the card game.
+  - `gateway-api-service`: manage request to the api server.
 
-=== 4.2. Decisions on how to achieve key quality goals
-To ensure the system meets high-quality standards, several decisions have been made regarding development, deployment, and maintainability:
+* *Database:* **MongoDB**  
+  A NoSQL, document-based database was selected to support flexible schema design and efficient horizontal scaling. `authservice` and `userservice` share the same MongoDB instance.
 
-* *Performance:* The system will use a NoSQL database (MongoDB) to allow fast read and write operations.
+* *External APIs:*  
+  - **Wikidata:** Used to dynamically query structured, up-to-date knowledge to generate quiz questions.  
+  - **Gemini (LLM):** Integrated via the `llmservice` to generate intelligent hints and chat responses based on question context.
 
-* *Maintainability:*
-** TypeScript is used to prevent runtime errors and improve code readability.
-** Modularization of the frontend and backend code to facilitate updates and enhancements. 
+* *Observability:*  
+  - **Prometheus:** Collects metrics from services for monitoring.  
+  - **Grafana:** Displays dashboards and alerts for observability and system health.
 
-* *Scalability:* The backend is built on Node.js, allowing it to handle multiple concurrent requests efficiently.
+* *Version Control & CI/CD:* **GitHub**  
+  GitHub is used for collaborative development and version control. GitHub Actions automates testing and deployments.
 
-* *Usability and Accessibility:*
-** The UI will be designed following accessibility guidelines to ensure an inclusive user experience.
-** The interactive hint system using Gemini AI will improve user engagement and learning.
+* *Containerization:* **Docker**  
+  All services are containerized using Docker. `docker-compose` orchestrates services locally and in test environments.
 
-* *Testing and Deployment:* 
-** Unit and integration tests will be implemented to ensure system reliability. 
-** End-to-end (E2E) testing will validate the complete user experience.
-** Continuous Integration/Continuous Deployment (CI/CD) pipelines will automate testing and deployment processes.
-** Performance and load testing will be conducted to ensure stability under high traffic conditions.
+=== 4.2. Decisions to Achieve Key Quality Goals
 
+The following strategic decisions help fulfill the project's quality goals:
 
+* *Performance:*  
+  - MongoDB supports fast read/write operations.  
+  - Asynchronous handling of LLM requests prevents UI blocking.
+
+* *Maintainability:*  
+  - Use of TypeScript ensures code clarity and early error detection.  
+  - Modular microservices and UI components ease code updates and testing.
+
+* *Scalability:*  
+  - The microservice-based design enables independent deployment and scaling.  
+  - Stateless services facilitate horizontal scaling in containerized environments.
+
+* *Security:*  
+  - Session-based authentication with encrypted credentials.  
+  - Role-based access control (RBAC) restricts sensitive operations.  
+  - System logs all key events: user creations, logins (successful/failed), logouts, and API accesses.
+
+* *Usability and Accessibility:*  
+  - UI follows accessibility guidelines to ensure inclusivity.  
+  - Interactive hints generated by Gemini increase engagement and help users learn.
+
+* *Reliability and Testing:*  
+  - Unit and integration tests ensure individual module correctness.  
+  - End-to-end tests validate complete workflows.  
+  - Load and performance testing (via **Artillery**) verify stability under stress.
+
+* *Deployment Strategy:*  
+  - The system is prepared for deployment on ECS with Fargate or EC2 with Auto Scaling Groups using Packer-built AMIs.  
+  - A GitHub self-hosted runner on EC2 automates production deployment workflows.
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -66,7 +99,6 @@ Keep the explanations of such key decisions short.
 Motivate what was decided and why it was decided that way,
 based upon problem statement, quality goals and key constraints.
 Refer to details in the following sections.
-
 
 .Further Information
 

@@ -53,8 +53,44 @@ endif::arc42help[]
 |Express.js
 |A minimalist web framework for Node.js that simplifies the creation of applications and APIs. It provides tools for handling routing, middleware, and HTTP requests efficiently.
 
-|Term 
-|...
+|API (Application Programming Interface)
+|A set of protocols and tools that allow different software components to communicate with each other. APIs define the methods and data formats for interacting with an application or service.
 
+|MongoDB
+|A NoSQL database that stores data in flexible, JSON-like documents. It is designed for scalability and performance, making it suitable for modern applications requiring large volumes of unstructured data.
+
+|Authentication
+|The process of verifying the identity of a user or system, typically through credentials like usernames and passwords. It ensures that only authorized users can access specific resources or services.
+
+|Authorization
+|The process of granting or denying access to specific resources based on the authenticated identity. It determines what actions a user or system is allowed to perform within an application.
+
+|Docker Compose
+|A tool for defining and running multi-container Docker applications. It allows users to define all services (e.g., databases, APIs) in a `docker-compose.yml` file and manage them with a single command.
+
+|CI/CD (Continuous Integration / Continuous Deployment)
+|A set of practices that involve automatically integrating and testing code changes in a shared repository (CI), and automatically deploying those changes to production (CD). It helps ensure faster delivery and higher quality of software.
+
+|Swagger
+|A framework for API documentation and testing. Swagger provides tools for auto-generating API documentation, allowing both developers and users to understand and interact with the API endpoints.
+
+|WebSocket
+|A communication protocol that provides full-duplex communication channels over a single TCP connection. It is commonly used for real-time applications, such as live chat or gaming.
+
+|Unit Test
+|A software testing technique that involves testing individual components or units of a program in isolation. Unit tests help identify bugs early and ensure that each component works as expected.
+
+|Integration Test
+|A testing technique where individual software components are tested together to ensure they function correctly as a whole. It typically tests interactions between services, databases, or external APIs.
+
+|Web Application Firewall (WAF)
+|A security system that monitors and filters HTTP traffic to and from a web application. It helps protect against common threats, such as SQL injection or cross-site scripting (XSS).
+
+|JSON (JavaScript Object Notation)
+|A lightweight data interchange format that is easy to read and write for humans and machines. JSON is often used for transmitting data between a server and a web application.
+
+|WebSocket
+|A communication protocol that enables bidirectional, real-time communication between a client and a server over a single, long-lived connection. WebSockets are commonly used for applications like live chat or real-time notifications.
 
 |===
+
