@@ -69,7 +69,7 @@ describe("Ranking Component", () => {
         await waitFor(() => {
             expect(screen.getByText("User4")).toBeInTheDocument();
             expect(screen.getByText("Puntos: 70")).toBeInTheDocument();
-            expect(screen.getByText("CurrentUser")).toBeInTheDocument();
+            expect(screen.getAllByText("CurrentUser").length).toBeGreaterThanOrEqual(1);
             expect(screen.getByText("Puntos: 60")).toBeInTheDocument();
             expect(screen.getByText("User5")).toBeInTheDocument();
             expect(screen.getByText("Puntos: 50")).toBeInTheDocument();

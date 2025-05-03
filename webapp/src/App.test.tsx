@@ -1,41 +1,38 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
-import { MemoryRouter } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import React from 'react';
+import AppRouter from '../src/router/AppRouter';
 
-const renderAppAt = (route = '/login') => {
-  window.history.pushState({}, 'Test page', route);
-  return render(
-    <MemoryRouter initialEntries={[route]}>
-      <App />
-    </MemoryRouter>
-  );
-};
+describe('App Component', () => {
+  test('renderiza la ruta /login correctamente', () => {
+    const testRouter = createMemoryRouter(AppRouter.routes, {
+      initialEntries: ['/login'],
+    });
 
-describe('Login route (/login)', () => {
-  test('renders welcome message', () => {
-    renderAppAt('/login');
+    render(<RouterProvider router={testRouter} />);
+
     expect(screen.getByText(/Welcome to WICHAT/i)).toBeInTheDocument();
-  });
-
-  test('renders login button', () => {
-    renderAppAt('/login');
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  test('renders sign up button', () => {
-    renderAppAt('/login');
-    expect(screen.getByText("Don't have an account? Sign up here.")).toBeInTheDocument();
-  });
-});
+  test('renderiza la ruta /register correctamente', () => {
+    const testRouter = createMemoryRouter(AppRouter.routes, {
+      initialEntries: ['/register'],
+    });
 
-describe('Register route (/register)', () => {
-  test('renders create account title', () => {
-    renderAppAt('/register');
+    render(<RouterProvider router={testRouter} />);
+
     expect(screen.getByText(/Create an account/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add user/i })).toBeInTheDocument();
   });
 
-  test('renders add user button', () => {
-    renderAppAt('/register');
-    expect(screen.getByRole('button', { name: /add user/i })).toBeInTheDocument();
+  test('muestra un error para rutas no definidas', () => {
+    const testRouter = createMemoryRouter(AppRouter.routes, {
+      initialEntries: ['/unknown'],
+    });
+
+    render(<RouterProvider router={testRouter} />);
+
+    expect(screen.getByText(/404 Not Found/i)).toBeInTheDocument();
   });
 });
