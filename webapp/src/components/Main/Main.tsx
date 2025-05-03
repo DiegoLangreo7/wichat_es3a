@@ -366,7 +366,10 @@ const Main = () => {
                                 }
                             }}
                             onClick={() => {
-                                const randomMode = gameModes[Math.floor(Math.random() * gameModes.length)].value;
+                                let randomMode = gameModes[Math.floor(Math.random() * gameModes.length)].value;
+                                while(randomMode === "") {
+                                    randomMode = gameModes[Math.floor(Math.random() * gameModes.length)].value;
+                                }
                                 navigateToGameMode(randomMode);
                             }}
                         >
