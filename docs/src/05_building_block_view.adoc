@@ -7,7 +7,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 
 
-image::level1.png["Hierarchy of building blocks"]
+image::level1diagram.png["Hierarchy of building blocks"]
 
 Motivation::
 _This level shows the interaction of the user with the main system of the application, which in turn makes use of external resources._
@@ -29,7 +29,7 @@ Contained Building Blocks::
 ### **Level 2: Internal Structure of Level 1 Blocks**
 
 
-image::level2.png["Hierarchy of building blocks"]
+image::level2diagram.png["Hierarchy of building blocks"]
 
 _This level shows the division between the frontend and the backend, as well as the interface that connects both services._
 
@@ -54,7 +54,7 @@ Contained Building Blocks::
 ### **Level 3: Internal Structure of Level 2 Blocks**
 
 
-image::level3.png["Hierarchy of building blocks"]
+image::level3diagram.png["Hierarchy of building blocks"]
 
 _In this level of descomposition of the system we identify the different views of the webapp and microservices of the WichatServices._
 
