@@ -16,10 +16,6 @@ const theme = createTheme({
   },
 });
 
-interface HistoricProps {
-    username: string;
-}
-
 interface Question {
     options: [string],
     correctAnswer: string,
@@ -119,7 +115,7 @@ const Historic: React.FC = () => {
                             width: "100%",
                             maxWidth: "600px",
                             borderRadius: "10px",
-                            backgroundColor: "#F7FFF7",
+                            backgroundColor: "#5F4BB6",
                             marginBottom: 4
                         }}
                     >
@@ -130,26 +126,39 @@ const Historic: React.FC = () => {
                                 fontWeight: "bold", 
                                 mb: 2,
                                 textShadow: '2px 2px 0 rgba(0,0,0,0.2)',
-                                color: '#2c3e50'
+                                color: '#F7FFF7'
                             }}
                         >
-                            📊 Estadísticas
+                            Estadísticas
                         </Typography>
-                        <Typography id="statistics-time" variant="body1">
+                        <Typography id="statistics-time" variant="body2" sx={{color: '#F7FFF7'}}>
                             <b>Tiempo Jugado:</b> {stats.timePlayed} segundos
                         </Typography>
-                        <Typography id="statistics-games" variant="body1">
+                        <Typography id="statistics-games" variant="body2" sx={{color: '#F7FFF7'}}>
                             <b>Partidas Jugadas:</b> {stats.gamesPlayed}
                         </Typography>
-                        <Typography id="statistics-score" variant="body1">
+                        <Typography id="statistics-score" variant="body2" sx={{color: '#F7FFF7'}}>
                             <b>Puntuacion total:</b> {stats.puntuation}
                         </Typography>
-                        <Typography id="statistics-right-answers" variant="body1" sx={{ color: "#4CAF50" }}>
-                            <b>Preguntas acertadas:</b> {stats.correctAnswered}
-                        </Typography>
-                        <Typography id="statistics-wrong-answers" variant="body1" sx={{ color: "#F44336" }}>
-                            <b>Preguntas falladas:</b> {stats.incorrectAnswered}
-                        </Typography>
+                        <Box sx={{
+                            backgroundColor: "rgba(32, 42, 37, 0.5)",
+                            borderRadius: "8px",
+                            p: 2,
+                            mb: 3,
+                            ml: 15,
+                            mr: 15,
+                            mt: 3
+                        }}>
+                            <Typography id="statistics-right-answers" variant="body1" sx={{ color: "#4CAF50" }}>
+                                <b>Preguntas acertadas:</b> {stats.correctAnswered}
+                            </Typography>
+                            <Typography id="statistics-wrong-answers" variant="body1" sx={{ color: "#F7B801" }}>
+                                <b>Preguntas falladas:</b> {stats.incorrectAnswered}
+                            </Typography>
+                            <Typography id="statistics-right-answers" variant="body1" sx={{ color: "#F7FFF7" }}>
+                                <b>Preguntas acertadas por partida:</b> {(stats.correctAnswered / (stats.correctAnswered + stats.incorrectAnswered) * 10).toFixed(2)}
+                            </Typography>
+                        </Box>
                     </Paper>
                     
                     {/* Contenedor para la lista de preguntas */}

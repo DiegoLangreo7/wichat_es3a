@@ -408,7 +408,7 @@ const MainQuestionGame = () => {
                                 width: "100%"
                             }}
                         >
-                            🎮 JUGAR
+                            ¡JUGAR!
                         </Button>
                     </Paper>
                 </Box>
