@@ -30,7 +30,7 @@ defineFeature(feature, test => {
         given('I am on the main page', async () => {
             username = "historicUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 10000 });
+            await page.waitForSelector("#signup-link", { timeout: 10000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
@@ -45,7 +45,7 @@ defineFeature(feature, test => {
 
         then('I can see the historic page', async () => {
             await page.waitForSelector("#historic-container", { timeout: 10000 });
-            await expect(page).toMatchElement("h5", { text: "📊 Estadísticas" });
+            await expect(page).toMatchElement("h5", { text: "Estadísticas" });
         });
     }, 20000);
 

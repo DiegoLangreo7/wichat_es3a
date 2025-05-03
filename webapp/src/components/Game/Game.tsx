@@ -2,14 +2,15 @@ import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router';
 import axios from 'axios';
 import {Alert, Box, Button, CircularProgress, Snackbar, Typography} from '@mui/material';
+import { useCallback } from 'react';
 // @ts-ignore
 import Question from "./Question/Question";
 import NavBar from "../Main/items/NavBar";
 import LLMChat from './LLMChat';
 import PauseIcon from '@mui/icons-material/Pause';
 
-interface Question {
-    _id: string; // Added _id property to match the required type
+interface QuestionModel {
+    _id: string;
     question: string;
     options: string[];
     correctAnswer: string;
@@ -56,8 +57,8 @@ const Game: React.FC = () => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const [transitionTimer, setTransitionTimer] = useState<number>(0);
     const [isVisible, setIsVisible] = useState<boolean>(true);
-    const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-    const [nextQuestion, setNextQuestion] = useState<Question | null>(null);
+    const [currentQuestion, setCurrentQuestion] = useState<QuestionModel | null>(null);
+    const [nextQuestion, setNextQuestion] = useState<QuestionModel | null>(null);
     const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
     const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
     const [guessed, setGuessed] = useState<boolean>(false);
@@ -79,10 +80,9 @@ const Game: React.FC = () => {
         });
     };
 
-    const fetchQuestion = async (): Promise<Question | null> => {
+    const fetchQuestion = useCallback(async (): Promise<QuestionModel | null> => {
         try{
             const gameMode = location.state?.gameMode;
-            //console.log("petición de preguntas");
             const response = await axios.get(`${apiEndpoint}/questions/${gameMode}`);
             let question = response.data;
             if (question!) {
@@ -99,13 +99,12 @@ const Game: React.FC = () => {
             }
             return question;
         } catch (error) {
-            //console.error("Error fetching question:", error);
             setFetchError(true);
             setIsLoading(false);
             setErrorMessage("No se pudieron cargar preguntas para esta categoría.");
             return null;
         }
-    }
+    }, [location.state?.gameMode, usedImageUrls, apiEndpoint]);
 
     const handleTimeRemaining = (): string => {
         const remaining = isPaused ? transitionTimer : timer;
@@ -135,8 +134,8 @@ const Game: React.FC = () => {
         setShowScoreAlert(true);
     };
 
-    const handleNextRound = async (answeredCorrectly: boolean) => {
-        let upcomingQuestion: Question | null;
+    const handleNextRound = useCallback(async (answeredCorrectly: boolean) => {
+        let upcomingQuestion: QuestionModel | null;
         const currentTimer = timer;
         const roundTimeTaken = timeLimitFixed - currentTimer;
 
@@ -233,7 +232,9 @@ const Game: React.FC = () => {
             clearInterval(visibilityInterval);
             setIsVisible(true);
         }, TRANSITION_ROUND_TIME * 1000);
-    };
+    }, [timer, timeLimitFixed, nextQuestion, fetchQuestion, clueUsed, round, TOTAL_ROUNDS, TRANSITION_ROUND_TIME,
+        apiEndpoint, currentQuestion?._id, currentQuestion?.category, currentQuestion?.options,
+        currentQuestion?.correctAnswer, currentQuestion?.imageUrl, username, selectedAnswer, roundResults.length]);
 
     const handleAnswer = (isCorrect: boolean, selectedAnswer: string) => {
         setIsPaused(true);
@@ -260,7 +261,7 @@ const Game: React.FC = () => {
         };
 
         setupInitialQuestions();
-    }, []);
+    }, [fetchQuestion]);
 
     // Efecto para manejar la intermitencia del icono de pausa
     useEffect(() => {
@@ -293,7 +294,7 @@ const Game: React.FC = () => {
             }, 1000);
             return () => clearInterval(interval);
         }
-    }, [timer, isPaused, isLoading, clueOpen]);
+    }, [timer, isPaused, isLoading, clueOpen, handleNextRound]);
 
     useEffect(() => {
         if (finished && round >= TOTAL_ROUNDS) {
@@ -310,7 +311,7 @@ const Game: React.FC = () => {
                 }
             });
         }
-    }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults]);
+    }, [finished, navigate, score, numCorrect, username, totalQuestions, timeLimit, themes, roundResults, TOTAL_ROUNDS, round, location.state?.gameMode]);
 
     return (
         <Box id="game-container" data-testid="game-container" component="main" sx={{

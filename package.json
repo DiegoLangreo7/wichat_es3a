@@ -1,10 +1,10 @@
 {
   "dependencies": {
     "@mui/material": "^6.4.7",
-    "@testing-library/react": "^16.2.0",
+    "@testing-library/react": "^14.1.2",
     "@types/axios": "^0.14.4",
     "@types/mongoose": "^5.11.97",
-    "axios": "^1.8.2",
+    "axios": "^1.7.9",
     "axios-mock-adapter": "^2.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -12,19 +12,19 @@
     "list": "^2.0.19",
     "mongoose": "^8.12.1",
     "npm": "^11.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",
-    "react-router-dom": "^7.3.0",
+    "react-router-dom": "^7.5.3",
     "tailwindcss": "^4.0.9",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@types/axios-mock-adapter": "^1.10.4",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.4",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
+    "@types/node": "^18.18.10",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "@types/react-i18next": "^8.1.0"
   }
 }

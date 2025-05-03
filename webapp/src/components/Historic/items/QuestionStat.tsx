@@ -1,6 +1,5 @@
 import React, {useEffect} from "react";
-import {Box, Card, CardContent, Chip, Divider, Paper, Typography} from "@mui/material";
-import axios from "axios";
+import {Box, Card, CardContent, Chip, Divider, Typography} from "@mui/material";
 
 interface QuestionStatProps {
     question: Question;
@@ -17,7 +16,7 @@ interface Question {
 }
 
 const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
-    const isCorrect = question.correctAnswer === question.answer;
+
     const preloadImage = (src: string): Promise<void> => {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -34,7 +33,8 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                 await preloadImage(question.imageUrl);
             }
         };
-        fetchImage();}, []);
+        fetchImage();
+        }, [question]);
 
     return (
         <Card
@@ -91,9 +91,31 @@ const QuestionStat: React.FC<QuestionStatProps> = ({ question }) => {
                         <Chip
                             key={i}
                             label={option}
-                            variant={option === question.correctAnswer ? "filled" : "outlined"}
-                            color={option === question.correctAnswer ? "success" : "default"}
-                            sx ={{ borderColor: "#202A25"}}
+                            variant="outlined"
+                            sx={{
+                                borderColor: "#202A25",
+                                color: "#202A25",
+                                backgroundColor: "transparent",
+                                ...(option === question.correctAnswer && {
+                                    backgroundColor: "#4CAF50",
+                                    color: "#F7FFF7",
+                                    borderColor: "#4CAF50"
+                                }),
+                                ...(option === question.answer && option !== question.correctAnswer && {
+                                    backgroundColor: "#EF5350", // Rojo para error
+                                    color: "#F7FFF7",
+                                    borderColor: "#EF5350"
+                                }),
+                                ...(option === question.answer && option === question.correctAnswer && {
+                                    backgroundColor: "#4CAF50", // Verde más intenso
+                                    color: "#F7FFF7",
+                                    borderColor: "#4CAF50",
+                                    boxShadow: "0 0 0 2px rgba(76, 175, 80, 0.3)"
+                                }),
+                                transition: "all 0.3s ease",
+                                margin: "4px",
+                                fontWeight: "bold"
+                            }}
                         />
                     ))}
                 </Box>

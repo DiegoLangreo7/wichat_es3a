@@ -40,7 +40,7 @@ describe('Historic Component', () => {
 
     const verifyStatistics = async (stats: any) => {
         await waitFor(() => {
-            expect(screen.getByText(/📊 Estadísticas/i)).toBeInTheDocument();
+            expect(screen.getByText(/Estadísticas/i)).toBeInTheDocument();
             expect(screen.getByText((_, element) => element?.textContent === `Tiempo Jugado: ${stats.timePlayed} segundos`)).toBeInTheDocument();
             expect(screen.getByText((_, element) => element?.textContent === `Partidas Jugadas: ${stats.gamesPlayed}`)).toBeInTheDocument();
             expect(screen.getByText((_, element) => element?.textContent === `Puntuacion total: ${stats.puntuation}`)).toBeInTheDocument();

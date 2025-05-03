@@ -10,6 +10,7 @@ import {
     Alert
 } from '@mui/material';
 import NavBar from "../../Main/items/NavBar";
+import { useCallback } from 'react';
 
 
 const CardGame: React.FC = () => {
@@ -48,7 +49,7 @@ const CardGame: React.FC = () => {
         );
     };
 
-    const initializeGame = async () => {
+    const initializeGame = useCallback(async () => {
         setLoading(true);
         try {
             const response = await axios.get(`${apiEndpoint}/cardValues`);
@@ -74,12 +75,12 @@ const CardGame: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    },[apiEndpoint]);
 
     // Inicializar el juego al montar el componente
     useEffect(() => {
         initializeGame();
-    }, []);
+    }, [initializeGame]);
 
     const handleCardClick = (id: number) => {
         // No hacer nada si la carta ya está volteada o emparejada, o si ya hay 2 cartas volteadas
