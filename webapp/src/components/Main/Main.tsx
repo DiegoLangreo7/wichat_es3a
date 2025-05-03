@@ -140,7 +140,10 @@ const Main = () => {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            gap: 1
+                            gap: 1,
+                            fontWeight: "bold",
+                            textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
+                            color: '#F7FFF7'
                         }}>
                             <EmojiEventsIcon /> Top 3 Jugadores
                         </Typography>
@@ -174,7 +177,8 @@ const Main = () => {
                         ))}
 
                         <Box sx={{ mt: 4 }}>
-                            <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center" }}>
+                            <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center",
+                                textShadow: '2px 2px 0 rgba(255,255,255,0.4)' }}>
                                 Tus Estadísticas
                             </Typography>
                             <Paper sx={{ p: 2, backgroundColor: "#5f4bb6", color: "#F7FFF7", borderRadius: "8px" }}>
@@ -198,10 +202,10 @@ const Main = () => {
                     overflow: "hidden",
                 }}>
                     <Typography variant="h4" sx={{
-                        mb: 4,
-                        color: "#F7FFF7",
-                        textAlign: "center",
-                        fontWeight: "bold"
+                        fontWeight: "bold",
+                        mb: 2,
+                        textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
+                        color: '#F7FFF7'
                     }}>
                         ¡Hola {username}, elige un modo de juego!
                     </Typography>
@@ -343,9 +347,10 @@ const Main = () => {
                         textAlign: "center"
                     }}>
                         <Typography variant="h5" sx={{
-                            mb: 3,
-                            color: "#F7FFF7",
-                            fontWeight: "bold"
+                            fontWeight: "bold",
+                            mb: 2,
+                            textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
+                            color: '#F7FFF7'
                         }}>
                             ¿Te sientes aventurero?
                         </Typography>

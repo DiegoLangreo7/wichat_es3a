@@ -147,7 +147,8 @@ const MainQuestionGame = () => {
                         color: '#F7FFF7',
                         fontWeight: "bold",
                         mb: 4,
-                        fontSize: "1.6rem"
+                        fontSize: "1.6rem",
+                        textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
                     }}>
                         Elige una categoría
                     </Typography>
@@ -299,7 +300,8 @@ const MainQuestionGame = () => {
                             mb: 2,
                             fontWeight: "bold",
                             color: "#F7FFF7",
-                            textAlign: "center"
+                            textAlign: "center",
+                            textShadow: '2px 2px 0 rgba(255,255,255,0.4)',
                         }}>
                             {username}, ¿Listo para jugar?
                         </Typography>
