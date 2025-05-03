@@ -8,7 +8,6 @@ app.use(express.json());
 
 const urlApiWikidata = 'https://query.wikidata.org/sparql';
 
-
 const queries = {
     "country":
         `SELECT ?image
