@@ -8,6 +8,7 @@ let questionservice;
 let historicservice;
 let gatewayapiservice;
 let gatewayservice;
+let cardservice;
 
 async function startServer() {
     console.log('Starting MongoDB memory server...');
@@ -21,6 +22,7 @@ async function startServer() {
     historicservice = await require("../../historicservice/historicService");
     gatewayservice = await require("../../gatewayservice/gateway-service");
     gatewayapiservice = await require("../../gateway-api-service/gateway-api-service");
+    cardservice = await require("../../cardservice/cardService");
 }
 
 startServer();

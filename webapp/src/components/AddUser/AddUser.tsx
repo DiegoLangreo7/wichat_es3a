@@ -116,6 +116,7 @@ const AddUser = () => {
                         fullWidth
                         margin="normal"
                         label="Username"
+                        name="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         error={!!error.username}
@@ -146,6 +147,7 @@ const AddUser = () => {
                         fullWidth
                         margin="normal"
                         label="Password"
+                        name="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

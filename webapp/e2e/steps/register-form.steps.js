@@ -29,12 +29,12 @@ defineFeature(feature, test => {
         given('An unregistered user', async () => {
             username = "signInUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 10000 });
+            await page.waitForSelector("#signup-link", { timeout: 10000 });
             await expect(page).toClick('button', { text: "Don't have an account? Sign up here." });
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#username-input", { timeout: 10000 });
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
@@ -55,12 +55,12 @@ defineFeature(feature, test => {
         given('A registered user', async () => {
             username = "signInUser"
             password = "123456q@"
-            await page.waitForSelector("#singup-link", { timeout: 10000 });
+            await page.waitForSelector("#signup-link", { timeout: 10000 });
             await expect(page).toClick("button", { text: "Don't have an account? Sign up here." });
         });
 
         when('I fill the data in the form and press submit', async () => {
-            await page.waitForSelector("#username-input", { timeout: 10000 });
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
@@ -73,7 +73,7 @@ defineFeature(feature, test => {
 
     }, 20000)
 
-    test('The user is not registered in the site and the password is not valid', ({given,when,then}) => {
+    test('The user is not registered in the site and the password is not valid bacause of the size', ({given,when,then}) => {
 
         let username;
         let password;
@@ -85,7 +85,7 @@ defineFeature(feature, test => {
         });
 
         when('I fill the data in the form and press submit with an invalid password', async () => {
-            await page.waitForSelector("#username-input", { timeout: 10000 });
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
             await expect(page).toClick('button', { text: 'Add User' });
@@ -94,6 +94,81 @@ defineFeature(feature, test => {
         then('An error message should be displayed', async () => {
             await page.waitForSelector("#error-message", { timeout: 10000 });
             await expect(page).toMatchElement("p", { text: "La contraseña debe tener al menos 8 caracteres" });
+        });
+
+    }, 20000)
+
+    test('The user is not registered in the site and the password is not valid bacause of there aren`t letters', ({given,when,then}) => {
+
+        let username;
+        let password;
+
+
+        given('An unregistered user', async () => {
+            username = "signInUser2"
+            password = "12345678."
+        });
+
+        when('I fill the data in the form and press submit with an invalid password', async () => {
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
+        });
+
+        then('An error message should be displayed', async () => {
+            await page.waitForSelector("#error-message", { timeout: 10000 });
+            await expect(page).toMatchElement("p", { text: "La contraseña debe contener al menos una letra" });
+        });
+
+    }, 20000)
+
+    test('The user is not registered in the site and the password is not valid bacause of there aren`t numbers', ({given,when,then}) => {
+
+        let username;
+        let password;
+
+
+        given('An unregistered user', async () => {
+            username = "signInUser2"
+            password = "qqqqqqqqq."
+        });
+
+        when('I fill the data in the form and press submit with an invalid password', async () => {
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
+        });
+
+        then('An error message should be displayed', async () => {
+            await page.waitForSelector("#error-message", { timeout: 10000 });
+            await expect(page).toMatchElement("p", { text: "La contraseña debe contener al menos un número" });
+        });
+
+    }, 20000)
+
+    test('The user is not registered in the site and the password is not valid bacause of there aren`t special characters', ({given,when,then}) => {
+
+        let username;
+        let password;
+
+
+        given('An unregistered user', async () => {
+            username = "signInUser2"
+            password = "1111qqqqqqqq"
+        });
+
+        when('I fill the data in the form and press submit with an invalid password', async () => {
+            await page.waitForSelector("#add-user-main-container", { timeout: 10000 });
+            await expect(page).toFill('input[name="username"]', username);
+            await expect(page).toFill('input[name="password"]', password);
+            await expect(page).toClick('button', { text: 'Add User' });
+        });
+
+        then('An error message should be displayed', async () => {
+            await page.waitForSelector("#error-message", { timeout: 10000 });
+            await expect(page).toMatchElement("p", { text: "La contraseña debe contener al menos un caracter especial (!@#$%^&*.)" });
         });
 
     }, 20000)
