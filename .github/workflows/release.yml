@@ -50,7 +50,6 @@ jobs:
     - run: npm --prefix historicservice install
     - run: npm --prefix cardservice install
     - run: npm --prefix llmservice install
-    - run: npm --prefix cardservice install
     - run: npm --prefix gatewayservice install
     - run: npm --prefix gateway-api-service install
     - run: npm --prefix webapp install
