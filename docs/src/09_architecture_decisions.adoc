@@ -7,25 +7,25 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 ==== Microservices
 Use of a microservices-based architecture for the project.
-**Status**
+- **Status**
 Approved
-**Context**
+- **Context**
 A scalable and modular architecture was required for the project. A microservices structure was preferred due to the flexibility it offers in distributing responsibilities, independently scaling components, and supporting long-term system evolution.
-**Alternatives Considered**
-* **Microservices** – Chosen for its ability to decouple components, enable independent deployments, and improve maintainability in distributed teams.
-* **Modular Monolith** – Considered for its simplicity, but limited in terms of scalability and long-term adaptability.
-* **Serverless Functions** – Evaluated for specific components, but not suitable as the main architecture due to orchestration and monitoring complexity.
-**Decision**
+- **Alternatives Considered**
+  - **Microservices** – Chosen for its ability to decouple components, enable independent deployments, and improve maintainability in distributed teams.
+  - **Modular Monolith** – Considered for its simplicity, but limited in terms of scalability and long-term adaptability.
+  - **Serverless Functions** – Evaluated for specific components, but not suitable as the main architecture due to orchestration and monitoring complexity.
+- **Decision**
 We chose a **microservices architecture** as the foundation for the project. This decision aligns with the need to independently scale certain services, maintain a clear separation of concerns, and allow teams to work in parallel. Each service will have its own lifecycle and will communicate through well-defined APIs (REST or gRPC), using asynchronous messaging where appropriate.
 In parallel, we decided to use **TypeScript with React** on the frontend, providing a robust codebase and a gradual transition from JavaScript.
-**Consequences**
-* Enables independent scaling of services based on demand.
-* Improves maintainability by decoupling business logic into autonomous services.
-* Facilitates parallel work among multiple teams or developers.
-* Introduces complexity in service orchestration, monitoring, and deployment.
-* Requires a clear strategy for communication, service discovery, and failure handling.
-* Some team members will need time to get familiar with a distributed architecture.
-* Establishes a solid foundation for the project's growth and long-term maintainability.
+- **Consequences**
+  - Enables independent scaling of services based on demand.
+  - Improves maintainability by decoupling business logic into autonomous services.
+  - Facilitates parallel work among multiple teams or developers.
+  - Introduces complexity in service orchestration, monitoring, and deployment.
+  - Requires a clear strategy for communication, service discovery, and failure handling.
+  - Some team members will need time to get familiar with a distributed architecture.
+  - Establishes a solid foundation for the project's growth and long-term maintainability.
 
 ==== REST
 Use of RESTful APIs with JSON as the communication protocol between microservices.
