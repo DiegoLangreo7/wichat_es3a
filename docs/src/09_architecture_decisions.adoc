@@ -7,6 +7,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 ==== Microservices
 Use of a microservices-based architecture for the project.
+
     - **Status**:
       Approved
     - **Context**:
