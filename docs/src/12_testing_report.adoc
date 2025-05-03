@@ -1,0 +1,35 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-testing-report]]
+== Testing Report
+
+=== Unit Tests
+During this testing cycle, the system was evaluated using code coverage metrics and code duplication analysis.
+Overall code coverage reached 80.9%, which is acceptable but could be improved.
+Code duplication remains low at 1.8%, indicating good technical health of the codebase.
+Each component was tested with its own test suite, covering the main functionalities of the component.
+
+==== Code Coverage
+We used SonarCloud to analyze the code coverage and code duplication of our unit tests. The results are as follows:
+
+image::SonarCoverage.png["Code coverage and duplications"]
+
+As shown above, code coverage exceeds 80%, which was our target, and code duplication remains below 3%.
+Achieving these results was a challenging task, but we succeeded thanks to the collective effort of the entire team.
+Some components are not covered at all, but they are either non-critical to the system or contain functionalities that are not essential.
+
+== Acceptance Tests
+
+Acceptance tests are designed to automatically ensure that the system fulfills its functional requirements,
+verifies its integrity—especially in relation to external sources like Wikidata and detects potential issues that might otherwise go unnoticed during development.
+These tests play a crucial role in validating the system from the user's perspective and help maintain overall reliability as the system evolves.\n
+We tested the following scenarios:
+- User registration
+- User login
+- Gameplay
+- Historic page
+
+== Load Tests
+
+Load tests are designed to evaluate the system's performance under various conditions, including high traffic and heavy loads.
+These tests help identify potential bottlenecks and ensure that the system can handle the expected number of users and requests without degradation in performance.
