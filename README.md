@@ -32,13 +32,3 @@
   <img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100" alt="React Logo">
   <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100" alt="Node.js Logo">
 </p>
-
----
-
-## 🚀 Cómo ejecutar el proyecto
-
-1. Clona el repositorio:
-
-   ```bash
-   git clone https://github.com/arquisoft/wichat_es3a.git
-   cd wichat_es3a
